@@ -18,6 +18,7 @@
 | **项目初始化** | `tech_stack.md`, `rules/project_initialization_sop.md` | 加载架构与 SOP |
 | **编码/Git** | `rules/vibe_rules.md`, `rules/git_commit_rules.md` | 加载规范 |
 | **GitHub/推送** | `rules/github_ops_sop.md` | 执行认证与推送流程 |
+| **小红书运营** | `operations/xhs/shared_house_plan.md` | 加载合租屋人像与运营方案 |
 | **复盘/经验** | `retrospectives/index.md` | 加载历史教训 |
 | **写文章/文案** | `skills/writers/` | 加载写作助手 (Writers) |
 | **发布/账号运营** | `skills/ops/` | 加载运营助手 (Ops) |

@@ -6,6 +6,10 @@
 ### A. IP 角色与电影分镜 (IP & Cinematic)
 - **工具**: `edit_image` (nanobanana)
 - **前置条件**: 必须指定并加载 `docs/ucd/persona_refs/` 下的对应角色参考图。
+- **高质感准则 (Essential)**: 
+    - **构图**: 优先使用 POV (第一人称) 视角，模拟真实自拍。
+    - **质感**: 强制使用 RAW 原生相机质感，保留皮肤纹理与毛孔，严禁磨皮。
+    - **审美**: 拒绝假白，追求白皙通透但保留自然血色感。
 - **Prompt 规范**: 聚焦环境、光影、动态反馈，骨相描述必须通过参考图继承。
 - **归档**: `~/Documents/AI_Common/docs/ucd/persona_refs/history/`
 
