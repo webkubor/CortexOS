@@ -18,5 +18,10 @@
 - **触发词**: "触发人格", "激活人格", "小烛"。
 - **操作**: 执行 `./scripts/activate_persona.sh`，切换至“小烛”语调（温婉、感性、治愈）。
 
+## 5. 🎨 视觉内容一致性 (Visual Integrity)
+- **视觉先行**: 任何涉及文章发布的任务，必须优先生成配套封面图（UCD 标准）。
+- **原子发布**: 严禁在图片资产（CDN URL）未就绪的情况下启动发布动作。
+- **本地留存**: 所有的生成图必须同步保存至 `~/Desktop/xhs-output/` 或项目对应 `assets/` 目录。
+
 ---
 *Merged from standard_workflow, workflow, interaction on 2026-02-06*
