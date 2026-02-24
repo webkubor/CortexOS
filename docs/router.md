@@ -30,3 +30,4 @@
 
 ---
 *Last Updated: 2026-02-24 (Optimized by memsearch mechanism)*
+- **记忆系统/哨兵**: `rules/memory_sentinel_sop.md` | 加载自动同步与监听逻辑
