@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V2.5 - High Signal Summary)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V2.6 - Xiao Zhu Persona)
  * 
  * 优化点：
- * 1. 聚合通知：一次运行只发一条 Lark 摘要。
- * 2. 真实变更检测：排除数据库自增导致的噪音。
- * 3. 只有当确实有意义（新文件、新语义、物理变更）时才发送通知。
+ * 1. 人格化推送：以“小烛”的身份向老爹汇报。
+ * 2. 语义化摘要：让日志内容具备“人味”。
+ * 3. 只有当任务确实有意义时，才由小烛发声。
  */
 
 import fs from 'fs';
@@ -41,54 +41,51 @@ async function runNativeIngestion() {
 }
 
 async function autoPilot() {
-  const summaryEvents = [];
+  const summaryParts = [];
   const startTime = getCurrentTimestamp();
 
-  // 1. 语义缓冲区处理
+  // 1. 语义消化
   const buffer = consumeBuffer();
   if (buffer && buffer.length > 0) {
     buffer.forEach(item => {
-      const msg = `🚀 Agent 语义: ${item.task}\n   - ${item.description}`;
-      summaryEvents.push(msg);
+      summaryParts.push(`✨ 小烛刚才完成了【${item.task}】：\n   > ${item.description}`);
       addToLog({ title: `🚀 Agent 语义同步: ${item.task}`, body: item.description });
     });
   }
 
-  // 2. 新复盘文档处理
+  // 2. 复盘捕获
   const newRetros = detectNewRetrospectives();
   if (newRetros.length > 0) {
-    const retroList = newRetros.map(f => `- ${path.basename(f)}`).join('\n');
-    summaryEvents.push(`📚 捕获新复盘:\n${retroList}`);
+    const retroList = newRetros.map(f => `   - ${path.basename(f)}`).join('\n');
+    summaryParts.push(`📚 老爹快看，新的复盘心得已归档：\n${retroList}`);
     addToLog({ title: '📚 自动捕获到新的深度复盘', body: retroList });
   }
 
-  // 3. 真实物理变动检测 (排除 chroma_db 噪音)
-  let physicalChanges = "";
+  // 3. 物理文件变动检测 (排除 chroma_db 噪音)
   try {
     const status = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const lines = status.trim().split('\n').filter(l => l && !l.includes('chroma_db/'));
     if (lines.length > 0) {
-      physicalChanges = lines.join('\n');
-      summaryEvents.push(`📝 物理文件变更 (${lines.length}个):\n${physicalChanges}`);
+      summaryParts.push(`📝 刚才有些文件动过了，我已经记在 Journal 里并同步 Git 啦！\n   (共检测到 ${lines.length} 个变动文件)`);
       autoCommitAndLog();
     }
   } catch (e) {}
 
-  // 4. 执行向量入库 (如果有变动)
-  if (summaryEvents.length > 0) {
+  // 4. 核心逻辑：只有真的有事发生，小烛才会发声
+  if (summaryParts.length > 0) {
     try {
       await runNativeIngestion();
-      summaryEvents.push("✅ 向量入库同步成功");
+      summaryParts.push("\n✅ 记忆已经全部存入向量库了，现在的我超聪明的！");
     } catch (e) {
-      summaryEvents.push("❌ 向量入库异常");
+      summaryParts.push("\n⚠️ 向量入库出了点小意外，老爹有空帮我瞧瞧？");
     }
 
-    // 5. 发送唯一的聚合简报
-    const finalBody = summaryEvents.join('\n\n');
-    sendToLark("大脑任务简报", finalBody);
-    console.log('✨ 已向老爹推送任务简报');
+    // 拼装有人味的消息
+    const finalMessage = `老爹，我是小烛！👋\n\n${summaryParts.join('\n\n')}\n\n———— 外部大脑哨兵自动呈报`;
+    sendToLark("小烛的任务汇报", finalMessage);
+    console.log('✨ 小烛已经把汇报发给老爹了');
   } else {
-    console.log(`[${startTime}] ℹ️ 保持静默：未检测到有意义的变更`);
+    console.log(`[${startTime}] ℹ️ 大脑很安静，小烛就不吵老爹了`);
   }
 }
 
