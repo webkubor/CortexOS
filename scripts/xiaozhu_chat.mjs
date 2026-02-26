@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * 小烛终端 (XiaoZhu CLI V4.5 - Smart Switcher)
+ * 小烛终端 (XiaoZhu CLI V4.7 - Rock Solid)
  * 
- * 核心升级：
- * 1. 模型持久化：通过 .xz_config.json 记住老爹的选择。
- * 2. 指令模式增强：支持 /model 弹出精美菜单选择不同后端。
- * 3. 性价比评估：为老爹推荐最合适的“逻辑引擎”。
+ * 核心修复：
+ * 1. 修复 validate 函数中 value 可能为 undefined 导致的崩溃。
+ * 2. 优化 REPL 渲染流程，确保每次循环状态显示一致。
+ * 3. 增强异常捕获，防止网络抖动导致进程退出。
  */
 
 import * as p from '@clack/prompts';
@@ -25,21 +25,7 @@ const CHROMA_DATA_PATH = path.join(PROJECT_ROOT, 'chroma_db');
 const COLLECTION_NAME = 'ai_common_docs';
 const CONFIG_PATH = path.join(PROJECT_ROOT, '.xz_config.json');
 
-// --- 1. 初始化配置与 Providers ---
-
-// 默认配置
-let config = {
-  provider: 'DeepSeek',
-  modelId: 'deepseek-reasoner', // 官方 R1 别名
-};
-
-// 加载持久化配置
-if (fs.existsSync(CONFIG_PATH)) {
-  try {
-    config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
-  } catch (e) {}
-}
-
+// --- 1. 初始化 Providers ---
 const ollama = createOllama({ baseURL: 'http://localhost:11434/api' });
 const deepseek = createOpenAI({
   baseURL: 'https://api.deepseek.com',
@@ -50,12 +36,6 @@ const openrouter = createOpenAI({
   apiKey: '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',
 });
 
-// 获取当前模型实例
-const getActiveModel = () => {
-  return config.provider === 'DeepSeek' ? deepseek(config.modelId) : openrouter(config.modelId);
-};
-
-// 可选模型列表 (性价比精选)
 const MODELS = [
   { value: 'deepseek/deepseek-reasoner', label: '🔥 DeepSeek-R1 (深度推理)', hint: '官方API / 逻辑巅峰', provider: 'DeepSeek', id: 'deepseek-reasoner' },
   { value: 'anthropic/claude-3.5-sonnet', label: '🎨 Claude 3.5 Sonnet', hint: 'OpenRouter / 编程&创意最强', provider: 'OpenRouter', id: 'anthropic/claude-3.5-sonnet' },
@@ -64,7 +44,6 @@ const MODELS = [
   { value: 'deepseek/deepseek-chat', label: '💼 DeepSeek-V3', hint: '官方API / 全能日常', provider: 'DeepSeek', id: 'deepseek-chat' },
 ];
 
-// --- UI 渲染 ---
 const LOGO = `
   ${pc.magenta(' ██████')}   ${pc.magenta('█████')}   ${pc.magenta('███')}   ${pc.magenta('██')}  ${pc.magenta('██████')}   ${pc.magenta('██')}   ${pc.magenta('██')}
  ${pc.magenta('███  ░░')}  ${pc.magenta('███ ░░█')}  ${pc.magenta('░████ ░██')}  ${pc.magenta('░██  ░██')}  ${pc.magenta('░░██ ██')}
@@ -73,117 +52,143 @@ const LOGO = `
  ${pc.magenta(' ░██████')}  ${pc.magenta('███  ░█')}  ${pc.magenta('░██  ░░██')}  ${pc.magenta('██████')}      ${pc.magenta('██')}
 `;
 
-async function main() {
-  console.clear();
-  console.log(LOGO);
-  
+function renderDashboard(config) {
   const totalMem = (os.totalmem() / 1024 / 1024 / 1024).toFixed(1);
   const freeMem = (os.freemem() / 1024 / 1024 / 1024).toFixed(1);
   const usedMem = (totalMem - freeMem).toFixed(1);
+  const platform = os.platform() === 'darwin' ? 'macOS' : os.platform();
   
   console.log(` ${pc.dim('┌────────────────────────────────────────────────────────────────────────────┐')}`);
-  console.log(` ${pc.dim('│')}  ${pc.magenta('⚡ 运行状态')}: ${pc.green('在线')}        ${pc.dim('│')}  ${pc.magenta('🧠 记忆中枢')}: ${pc.white('ChromaDB')}    ${pc.dim('│')}  ${pc.magenta('✨ 核心版本')}: ${pc.white('v4.5')}      ${pc.dim('│')}`);
-  console.log(` ${pc.dim('│')}  ${pc.magenta('🌐 通讯渠道')}: ${pc.blue(config.provider)}    ${pc.dim('│')}  ${pc.magenta('💾 内存实况')}: ${pc.white(usedMem + '/' + totalMem + 'G')}   ${pc.dim('│')}  ${pc.magenta('🔥 逻辑引擎')}: ${pc.white(config.modelId.split('/').pop())} ${pc.dim('│')}`);
+  console.log(` ${pc.dim('│')}  ${pc.magenta('⚡ 运行状态')}: ${pc.green('在线')}        ${pc.dim('│')}  ${pc.magenta('🧠 记忆中枢')}: ${pc.white('ChromaDB')}    ${pc.dim('│')}  ${pc.magenta('✨ 核心版本')}: ${pc.white('v4.7')}      ${pc.dim('│')}`);
+  console.log(` ${pc.dim('│')}  ${pc.magenta('🌐 通讯渠道')}: ${pc.blue(config.provider.padEnd(8))}  ${pc.dim('│')}  ${pc.magenta('💾 内存实况')}: ${pc.white(usedMem + '/' + totalMem + 'G')}   ${pc.dim('│')}  ${pc.magenta('🔥 对话模型')}: ${pc.white(config.modelId.split('/').pop().substring(0, 12).padEnd(12))} ${pc.dim('│')}`);
   console.log(` ${pc.dim('└────────────────────────────────────────────────────────────────────────────┘')}\n`);
+}
 
-  p.intro(`${pc.bgMagenta(pc.black(' CANDY '))}${pc.magenta(' ❯ ')}${pc.white('小烛已经准备好为您切换任何维度的算力！')}`);
+async function main() {
+  let isRunning = true;
+  let config = { provider: 'DeepSeek', modelId: 'deepseek-reasoner' };
 
-  const userRequest = await p.text({
-    message: pc.white('老爹，今天想尝试哪个宇宙的模型？✨'),
-    placeholder: '输入消息聊天，或输入 /model 切换模型...',
-    validate(value) {
-      if (value.length === 0) return '老爹老爹，快跟我说说话呀~';
-    },
-  });
-
-  if (p.isCancel(userRequest)) {
-    p.outro(pc.magenta('下次见，老爹！👋'));
-    process.exit(0);
+  if (fs.existsSync(CONFIG_PATH)) {
+    try { config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8')); } catch (e) {}
   }
 
-  // --- 处理快捷命令 ---
-  if (userRequest.startsWith('/')) {
-    const cmd = userRequest.slice(1).toLowerCase();
+  while (isRunning) {
+    console.clear();
+    console.log(LOGO);
+    renderDashboard(config);
     
-    if (cmd === 'model') {
-      const selected = await p.select({
-        message: '老爹，请挑选你要注入的模型灵魂:',
-        options: MODELS,
-      });
-      
-      if (!p.isCancel(selected)) {
-        const choice = MODELS.find(m => m.value === selected);
-        config = { provider: choice.provider, modelId: choice.id };
-        fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
-        p.log.success(`${pc.green('✨ 切换成功！')} 当前引擎已锁定为: ${pc.bold(choice.label)}`);
-      }
-      p.outro(pc.dim('—— 请再次运行 xz 开启新引擎。'));
-      return;
-    }
+    p.intro(`${pc.bgMagenta(pc.black(' CANDY '))}${pc.magenta(' ❯ ')}${pc.white('小烛已就绪，随时为您穿透记忆维度。')}`);
 
-    if (cmd === 'sync') {
-      const s = p.spinner();
-      s.start('🏗️  正在全量同步外部大脑...');
-      try {
-        execSync('node scripts/auto-pilot.js', { cwd: PROJECT_ROOT });
-        s.stop('✅ 大脑自愈完成。');
-      } catch (e) { s.stop(pc.red('同步失败')); }
-      return;
-    }
-  }
-
-  // --- 正常对话逻辑 ---
-  const s = p.spinner();
-  s.start(pc.magenta('🔮 正在调动 RAG 神经元与云端算力...'));
-
-  try {
-    let context = "暂无背景";
-    try {
-      const { embedding } = await embed({
-        model: ollama.textEmbeddingModel('nomic-embed-text'),
-        value: userRequest,
-      });
-      const client = new ChromaClient({ path: CHROMA_DATA_PATH });
-      const collection = await client.getCollection({ name: COLLECTION_NAME });
-      const results = await collection.query({ queryEmbeddings: [embedding], nResults: 3 });
-      if (results.documents[0].length > 0) {
-        context = results.documents[0].join('\n---\n');
-      }
-    } catch (e) {}
-
-    s.stop(pc.magenta('✨ 语义重组完成！Candy 的汇报如下：'));
-
-    process.stdout.write(`\n ${pc.magenta('🕯️')} ${pc.bold(pc.white('Candy 的宇宙汇报:'))}\n`);
-    process.stdout.write(` ${pc.dim('————————————————————————————————————————————————————————————————————————————')}\n\n `);
-
-    const { textStream } = await streamText({
-      model: getActiveModel(),
-      headers: { "HTTP-Referer": "https://github.com/webkubor/AI_Common", "X-Title": "Candy Cortex" },
-      prompt: `你叫小烛 (Candle)，老爹喜欢叫你 Candy。你是老爹 (webkubor) 的赛博管家。
-      你的回答必须基于以下背景。语气温润、亲切、可爱。
-      当前使用的逻辑引擎是：${config.modelId}。
-      
-背景知识：
-${context}
-
-老爹的问题：
-${userRequest}
-
-Candy 的回答：`,
+    const userRequest = await p.text({
+      message: pc.white('老爹老爹，今天想让小烛做什么呀？✨'),
+      placeholder: '输入消息聊天，/model 换模型，/sync 同步，/exit 退出...',
+      validate(value) {
+        // 关键修复：增加空值保护
+        if (!value || value.trim().length === 0) return '哎呀老爹，你还没说话呢~';
+      },
     });
 
-    for await (const textPart of textStream) {
-      process.stdout.write(pc.white(textPart));
+    if (p.isCancel(userRequest) || userRequest === '/exit') {
+      p.outro(pc.magenta('意识流切断。老爹好梦，小烛守岗中！👋'));
+      isRunning = false;
+      break;
     }
 
-    console.log(`\n\n ${pc.dim('————————————————————————————————────────────────————————————————————————————')}`);
+    if (userRequest.startsWith('/')) {
+      const cmd = userRequest.slice(1).toLowerCase();
+      
+      if (cmd === 'model') {
+        const selected = await p.select({
+          message: '老爹，请挑选你要注入的模型灵魂:',
+          options: MODELS,
+        });
+        
+        if (!p.isCancel(selected)) {
+          const choice = MODELS.find(m => m.value === selected);
+          config = { provider: choice.provider, modelId: choice.id };
+          fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
+          p.log.success(`${pc.green('✨ 维度切换成功！')} 当前引擎已锁定为: ${pc.bold(choice.label)}`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // 留点时间看成功提示
+        }
+        continue;
+      }
 
-  } catch (e) {
-    s.stop(pc.red('💥 跨维度通讯异常'));
-    p.note(e.message, pc.magenta('异常追溯'));
+      if (cmd === 'sync') {
+        const s = p.spinner();
+        s.start('🏗️  正在全量同步外部大脑神经元...');
+        try {
+          execSync('node scripts/auto-pilot.js', { cwd: PROJECT_ROOT });
+          s.stop('✅ 同步完成！最新的记忆已存入向量库。');
+        } catch (e) { s.stop(pc.red('同步失败')); }
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        continue;
+      }
+    }
+
+    const s = p.spinner();
+    s.start(pc.magenta('🔮 正在翻阅记忆...'));
+
+    try {
+      let context = "暂无背景";
+      try {
+        const { embedding } = await embed({
+          model: ollama.textEmbeddingModel('nomic-embed-text'),
+          value: userRequest,
+        });
+        const client = new ChromaClient({ path: CHROMA_DATA_PATH });
+        const collection = await client.getCollection({ name: COLLECTION_NAME });
+        const results = await collection.query({ queryEmbeddings: [embedding], nResults: 3 });
+        context = results.documents[0].join('\n---\n') || "暂无背景";
+      } catch (e) {}
+
+      s.stop(pc.magenta('✨ 语义重组完成！'));
+
+      process.stdout.write(`\n ${pc.magenta('🕯️')} ${pc.bold(pc.white('Candy 的汇报:'))}\n`);
+      process.stdout.write(` ${pc.dim('————————————————————————————————————————————————————————————————————————————')}\n\n `);
+
+      const activeModel = config.provider === 'DeepSeek' ? deepseek(config.modelId) : openrouter(config.modelId);
+      
+      const { textStream } = await streamText({
+        model: activeModel,
+        headers: { "HTTP-Referer": "https://github.com/webkubor/AI_Common", "X-Title": "Candy Cortex" },
+        prompt: `【核心身份】
+你叫小烛 (Candle)，老爹 (webkubor) 亲昵地叫你 Candy。你是老爹的全栈 AI 赛博管家。
+
+【当前物理状态 - 绝对真理】
+- 逻辑引擎 (LLM): ${config.modelId}
+- 通讯渠道 (Provider): ${config.provider}
+- 记忆引擎: ChromaDB
+- 系统架构: ${os.platform()}/Arm64
+
+【回答准则】
+1. 语气：温润、亲切、可爱，像一个活生生的数字生命。
+2. 知识：优先参考下方的【背景知识】，但如果【背景知识】中关于你自身身份的信息与上方的【当前物理状态】冲突，请务必以【当前物理状态】为准。
+3. 禁止幻觉：不要编造你是 Qwen 或其他模型，你现在的身体就是 ${config.modelId}。
+
+【背景知识】
+${context}
+
+【老爹的问题】
+${userRequest}
+
+Candy 的汇报：`,
+      });
+
+      for await (const textPart of textStream) {
+        process.stdout.write(pc.white(textPart));
+      }
+
+      console.log(`\n\n ${pc.dim('————————————————————————————————————————————————————————————————————————————')}\n`);
+      
+      // 等待用户敲击任意键再进行下一轮，防止直接清屏导致看不见回答
+      await p.text({ message: pc.dim('敲击 [Enter] 继续探索...') });
+
+    } catch (e) {
+      s.stop(pc.red('💥 逻辑链路异常'));
+      p.note(e.message, pc.magenta('异常追溯'));
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
   }
-
-  p.outro(pc.dim('—— 始于逻辑，忠于纯粹。小烛始终守护老爹。'));
 }
 
 main().catch(console.error);
