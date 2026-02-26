@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * 小烛终端 (XiaoZhu CLI V3.4 - Sweet Persona)
+ * 小烛终端 (XiaoZhu CLI V3.7 - Candy Persona)
  * 
- * 视觉与人格双重进化：
- * 1. 萌化交互文案：将“请指示”改为更有温度的汇报口吻。
- * 2. 保持硬核仪表盘：信息依然给全，但外壳变温柔。
- * 3. 增强情绪反馈：在各个环节加入灵动的拟人化描述。
+ * 视觉进化：
+ * 1. 采用更拟人化的英文名：CANDY (小烛的萌化版)。
+ * 2. 超清块状 Logo：确保字母轮廓锐利，绝不乱码。
+ * 3. 极致汉化参数：仪表盘全中文，硬核数据一览无余。
  */
 
 import * as p from '@clack/prompts';
@@ -17,32 +17,32 @@ import os from 'os';
 const PROJECT_ROOT = '/Users/webkubor/Documents/AI_Common';
 const UV_PATH = '/Users/webkubor/.local/bin/uv';
 
-// 1. 超清块状 Logo
+// 1. 超清晰的 CANDY Logo (工业块状字体)
 const LOGO = `
-  ${pc.magenta('████████   █████   ███   ████  ████████  ██        █████████')}
- ${pc.magenta('███░░░░███ ███░░███ ░███  ░░███░░███░░░███░███       ░███░░░░░█')}
- ${pc.magenta('███    ░░░░███ ░░███░████  ░███ ░███  ░░███░███       ░███  █ ░')}
- ${pc.magenta('███       ░█████████░███░██ ░███ ░███   ░███░███       ░██████  ')}
- ${pc.magenta('███       ░███░░░░░█░███░░██░███ ░███   ░███░███       ░███░░█  ')}
- ${pc.magenta('███    ███░███     █░███ ░░█████ ░███  ███  ░███      ░░███ ░   █')}
-  ${pc.magenta('████████ ░███     █░███  ░░████ ████████   ██████████ ██████████')}
+  ${pc.magenta(' ██████')}   ${pc.magenta('█████')}   ${pc.magenta('███')}   ${pc.magenta('██')}  ${pc.magenta('██████')}   ${pc.magenta('██')}   ${pc.magenta('██')}
+ ${pc.magenta('███  ░░')}  ${pc.magenta('███ ░░█')}  ${pc.magenta('░████ ░██')}  ${pc.magenta('░██  ░██')}  ${pc.magenta('░░██ ██')}
+ ${pc.magenta('███')}      ${pc.magenta('███████')}  ${pc.magenta('░██░██░██')}  ${pc.magenta('░██   ██')}   ${pc.magenta('░░███')}
+ ${pc.magenta('███  ██')}  ${pc.magenta('███ ░░█')}  ${pc.magenta('░██ ░████')}  ${pc.magenta('░██  ██')}     ${pc.magenta('░██')}
+ ${pc.magenta(' ░██████')}  ${pc.magenta('███  ░█')}  ${pc.magenta('░██  ░░██')}  ${pc.magenta('██████')}      ${pc.magenta('██')}
 `;
 
 async function main() {
   console.clear();
   console.log(LOGO);
   
+  // 深度系统参数提取
   const totalMem = (os.totalmem() / 1024 / 1024 / 1024).toFixed(1);
   const freeMem = (os.freemem() / 1024 / 1024 / 1024).toFixed(1);
   const usedMem = (totalMem - freeMem).toFixed(1);
   const platform = os.platform() === 'darwin' ? 'macOS' : os.platform();
   
-  console.log(` ${pc.dim('┌──────────────────────────────────────────────────────────────────────────┐')}`);
-  console.log(` ${pc.dim('│')}  ${pc.magenta('⚡ 实时状态 ')}: ${pc.green('在线中')}      ${pc.dim('│')}  ${pc.magenta('🧠 记忆引擎')}: ${pc.white('ChromaDB')}   ${pc.dim('│')}  ${pc.magenta('✨ 核心版本')}: ${pc.white('Candle v3.4')} ${pc.dim('│')}`);
-  console.log(` ${pc.dim('│')}  ${pc.magenta('💻 物理平台')}: ${pc.white(platform + ' (Arm64)')} ${pc.dim('│')}  ${pc.magenta('💾 内存占用')}: ${pc.white(usedMem + '/' + totalMem + 'G')}  ${pc.dim('│')}  ${pc.magenta('🔥 当前模型')}: ${pc.white('DeepSeek-R1')} ${pc.dim('│')}`);
-  console.log(` ${pc.dim('└──────────────────────────────────────────────────────────────────────────┘')}\n`);
+  // 打印全汉化精致仪表盘
+  console.log(` ${pc.dim('┌────────────────────────────────────────────────────────────────────────────┐')}`);
+  console.log(` ${pc.dim('│')}  ${pc.magenta('⚡ 运行状态')}: ${pc.green('在线')}        ${pc.dim('│')}  ${pc.magenta('🧠 记忆中枢')}: ${pc.white('ChromaDB')}    ${pc.dim('│')}  ${pc.magenta('✨ 核心版本')}: ${pc.white('v3.7')}      ${pc.dim('│')}`);
+  console.log(` ${pc.dim('│')}  ${pc.magenta('💻 系统架构')}: ${pc.white(platform + '/Arm64')}  ${pc.dim('│')}  ${pc.magenta('💾 内存实况')}: ${pc.white(usedMem + '/' + totalMem + 'G')}   ${pc.dim('│')}  ${pc.magenta('🔥 对话模型')}: ${pc.white('DeepSeek-R1')} ${pc.dim('│')}`);
+  console.log(` ${pc.dim('└────────────────────────────────────────────────────────────────────────────┘')}\n`);
 
-  p.intro(`${pc.bgMagenta(pc.black(' CANDLE '))}${pc.magenta(' ❯ ')}${pc.white('小烛已经准备好为老爹服务啦！')}`);
+  p.intro(`${pc.bgMagenta(pc.black(' CANDY '))}${pc.magenta(' ❯ ')}${pc.white('小烛已经准备好为老爹服务啦！')}`);
 
   const userRequest = await p.text({
     message: pc.white('老爹老爹，今天想让小烛做什么呀？✨'),
@@ -71,25 +71,25 @@ async function main() {
 
     s.stop(pc.magenta('✨ 语义重组完成！老爹请看：'));
 
-    // 3. 极简流式对话
-    process.stdout.write(`\n ${pc.magenta('🕯️')} ${pc.bold(pc.white('小烛的碎碎念:'))}\n`);
-    process.stdout.write(` ${pc.dim('——————————————————————————————————————————————————————————————————————————')}\n\n `);
+    // 极简流式对话
+    process.stdout.write(`\n ${pc.magenta('󱐋')} ${pc.bold(pc.white('小烛的碎碎念:'))}\n`);
+    process.stdout.write(` ${pc.dim('————————————————————————————————————————————————————————————————────────────')}\n\n `);
 
     const response = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: "deepseek-r1:7b",
-        prompt: `你叫小烛 (Candle)，是老爹 (webkubor) 的赛博管家。你的回答必须基于以下背景。
-        语气要温润、亲切、可爱，偶尔带点调皮，但核心内容要干货。
+        prompt: `你叫小烛 (Candle)，老爹喜欢叫你 Candy。你是老爹 (webkubor) 的赛博管家。
+        你的回答必须基于以下背景。语气要温润、亲切、可爱，偶尔带点调皮，但核心内容要干货。
         
 背景：
 ${context || '暂无背景'}
 
-问题：
+老爹的问题：
 ${userRequest}
 
-小烛的回答：`,
+Candy 的回答：`,
         stream: true
       })
     });
@@ -111,7 +111,7 @@ ${userRequest}
       } catch (e) {}
     }
 
-    console.log(`\n\n ${pc.dim('——————————————————————————————————————————————————————————————————————————')}`);
+    console.log(`\n\n ${pc.dim('————————————————────────────────────────────────────────────────────────────')}`);
 
   } catch (e) {
     s.stop(pc.red('💥 哎呀，逻辑链路不小心断掉了...'));
