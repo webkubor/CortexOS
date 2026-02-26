@@ -45,3 +45,4 @@ docs/skills/visual/cinematic-storyboard/cast_refs/*
 !docs/skills/visual/cinematic-storyboard/cast_refs/README.md
 docs/skills/visual/cinematic-storyboard/assets/*
 
+/chroma_db/
