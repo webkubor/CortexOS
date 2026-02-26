@@ -12,6 +12,7 @@
     "vitepress-plugin-llms": "^1.11.0"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.34",
     "@clack/prompts": "^1.0.1",
     "ai": "^6.0.101",
     "chromadb": "^3.3.1",
