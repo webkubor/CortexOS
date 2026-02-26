@@ -1,48 +1,64 @@
 #!/usr/bin/env node
 
 /**
- * 小烛终端 (XiaoZhu CLI V2.0 - Cinematic Edition)
+ * 小烛终端 (XiaoZhu CLI V3.1 - Hyper-Clear Purple)
  * 
- * 升级点：
- * 1. 流式渲染 (Streaming)：像 Claude Code 一样丝滑蹦字。
- * 2. 视觉增强：使用图标、颜色梯度和更硬核的布局。
- * 3. 检索透明：实时展示捞到了哪些“记忆切片”。
+ * 视觉进化：
+ * 1. 深度学习 Gemini 字体结构：使用高清晰度的块状 ASCII Art。
+ * 2. 极致紫调：采用单色渐变，主打清爽与耐看。
+ * 3. 结构重组：确保在任何分辨率下字母都清晰可辨。
  */
 
 import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import { execSync } from 'child_process';
+import os from 'os';
 
 const PROJECT_ROOT = '/Users/webkubor/Documents/AI_Common';
 const UV_PATH = '/Users/webkubor/.local/bin/uv';
 
+// 1. 像素级清晰的 CANDLE Logo (基于 Gemini 骨架)
+const LOGO = `
+  ${pc.magenta('████████   █████   ███   ████  ████████  ██        █████████')}
+ ${pc.magenta('███░░░░███ ███░░███ ░███  ░░███░░███░░░███░███       ░███░░░░░█')}
+ ${pc.magenta('███    ░░░░███ ░░███░████  ░███ ░███  ░░███░███       ░███  █ ░')}
+ ${pc.magenta('███       ░█████████░███░██ ░███ ░███   ░███░███       ░██████  ')}
+ ${pc.magenta('███       ░███░░░░░█░███░░██░███ ░███   ░███░███       ░███░░█  ')}
+ ${pc.magenta('███    ███░███     █░███ ░░█████ ░███  ███  ░███      ░░███ ░   █')}
+  ${pc.magenta('████████ ░███     █░███  ░░████ ████████   ██████████ ██████████')}
+  ${pc.dim('░░░░░░░░  ░░░     ░ ░░░    ░░░ ░░░░░░░░    ░░░░░░░░░░ ░░░░░░░░░░')}
+`;
+
 async function main() {
   console.clear();
   
-  // 顶层 Header
-  console.log(`\n ${pc.cyan('●')} ${pc.white(pc.bold('CANDLE CORTEX'))} ${pc.dim('v2.0.0')}`);
-  console.log(` ${pc.dim('————————————————————————————————————————————————————')}`);
+  // 打印超清紫 Logo
+  console.log(`\n${LOGO}`);
+  
+  // 2. 极简身份行 (对齐 Gemini 风格)
+  const username = os.userInfo().username;
+  console.log(` ${pc.white('Authenticated as:')} ${pc.magenta(username)} ${pc.dim('/ cortex-v3')}`);
+  console.log(` ${pc.white('Memory Engine   :')} ${pc.magenta('ChromaDB + Ollama (nomic-embed)')}\n`);
 
-  p.intro(`${pc.bgCyan(pc.black(' 小烛 (Candle) '))}${pc.cyan(' 『始于逻辑，忠于纯粹』')}`);
+  p.intro(`${pc.bgMagenta(pc.black(' CANDLE '))}${pc.magenta(' ❯ ')}${pc.white('Neural Link Established')}`);
 
   const userRequest = await p.text({
-    message: pc.white('老爹，请指示：'),
-    placeholder: '正在监听语义指令...',
+    message: pc.white('老爹，请下达指令:'),
+    placeholder: '输入你想检索或对话的内容...',
     validate(value) {
-      if (value.length === 0) return '老爹，你不说话我好慌...';
+      if (value.length === 0) return '请给小烛一个思考的起点。';
     },
   });
 
   if (p.isCancel(userRequest)) {
-    p.outro(pc.yellow('收到，小烛先行告退。👋'));
+    p.outro(pc.magenta('逻辑断开。下次见，老爹！👋'));
     process.exit(0);
   }
 
   const s = p.spinner();
-  s.start(pc.cyan('🧠 正在建立神经连接...'));
+  s.start(pc.magenta('🔮 正在穿透记忆维度...'));
 
   try {
-    // 1. 深度检索
     let context = "";
     try {
       context = execSync(`${UV_PATH} run ./scripts/ingest/query_brain.py "${userRequest}"`, {
@@ -50,41 +66,38 @@ async function main() {
         encoding: 'utf-8'
       });
     } catch (e) {
-      s.message(pc.yellow('⚠️ 外部大脑处于休眠状态，已启用备用常识库。'));
+      s.message(pc.dim('ℹ️ 正在提取底层意识...'));
     }
 
-    s.message(pc.magenta('📡 正在接收语义波段...'));
-    await new Promise(resolve => setTimeout(resolve, 600));
-    s.stop(pc.green('🔗 连接成功！'));
+    s.stop(pc.magenta('✨ 语义重组完成'));
 
-    // 2. 流式对话 (核心升级：像真人一样蹦字)
-    process.stdout.write(`\n ${pc.cyan('🕯️')} ${pc.bold(pc.white('小烛的思绪:'))}\n\n `);
+    // 3. 极简流式对话
+    process.stdout.write(`\n ${pc.magenta('󱐋')} ${pc.bold(pc.white('小烛汇报:'))}\n`);
+    process.stdout.write(` ${pc.dim('————————————————————————————————————————————————————')}\n\n `);
 
     const response = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: "deepseek-r1:7b",
-        prompt: `你叫小烛 (Candle)，是老爹 (webkubor) 的赛博管家。你的回答必须基于以下【外部大脑】提供的背景。语气亲切、乖巧、拟人。禁止输出冗长的引导语，直接给出干货。
+        prompt: `你叫小烛 (Candle)，是老爹 (webkubor) 的赛博管家。你的回答必须基于以下背景。
         
-背景知识：
+背景：
 ${context || '暂无相关背景'}
 
-老爹的问题：
+问题：
 ${userRequest}
 
 小烛的回答：`,
-        stream: true // 开启流式
+        stream: true
       })
     });
 
-    if (!response.ok) throw new Error(`Ollama 掉线了: ${response.statusText}`);
+    if (!response.ok) throw new Error(`神经连接异常`);
 
-    // 处理流数据
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    let fullResponse = "";
-
+    
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -93,22 +106,19 @@ ${userRequest}
       try {
         const json = JSON.parse(chunk);
         if (json.response) {
-          process.stdout.write(pc.cyan(json.response));
-          fullResponse += json.response;
+          process.stdout.write(pc.white(json.response));
         }
-      } catch (e) {
-        // 部分分段可能解析失败，忽略
-      }
+      } catch (e) {}
     }
 
     console.log(`\n\n ${pc.dim('————————————————————————————————————————————————————')}`);
 
   } catch (e) {
     s.stop(pc.red('💥 逻辑链路崩塌'));
-    p.note(e.message, pc.red('错误核心'));
+    p.note(e.message, pc.magenta('核心溯源'));
   }
 
-  p.outro(pc.dim('—— 始终为您守候。'));
+  p.outro(pc.dim('—— 始于逻辑，忠于纯粹。'));
 }
 
 main().catch(console.error);
