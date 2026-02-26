@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress";
+import llmstxt from "vitepress-plugin-llms";
 
 export default defineConfig({
   lang: "zh-CN",
@@ -11,6 +12,14 @@ export default defineConfig({
     "**/scripts/**",
     "**/snippets/git_repos_inventory.md"
   ],
+  vite: {
+    plugins: [
+      llmstxt({
+        title: "Candle Cortex",
+        description: "Standardized AI Context Engineering & Long-term Memory Infrastructure.",
+      })
+    ]
+  },
   head: [["link", { rel: "icon", href: "/AI_Common/logo.svg" }]],
   themeConfig: {
     logo: "/logo.svg",
@@ -38,7 +47,6 @@ export default defineConfig({
           { text: "编码规范", link: "/rules/coding_rules" },
           { text: "Git 提交规范", link: "/rules/git_commit_rules" },
           { text: "隐私与忽略规范", link: "/rules/privacy_excludes" },
-          { text: "JSDoc 注释规范", link: "/rules/jsdoc_rules/" },
           { text: "标准化操作规范 (SOP)", link: "/rules/workflow" },
           { text: "Vibe 编程规则", link: "/rules/vibe_rules" },
         ],
@@ -107,7 +115,7 @@ export default defineConfig({
               { text: "📏 掘金封面规范", link: "/ucd/juejin_tech_covers" },
               { text: "📏 Slack 动图标准", link: "/ucd/slack_gif_standard" },
               { text: "🛠️ 智能绘图引擎", link: "/skills/visual/smart-image-generator" },
-              { text: "🛠️ 电影级分镜", link: "/skills/visual/cinematic-storyboard/SKILL" },
+              { text: "🛠️ 电影级分镜", link: "/skills/visual/cinematic-storyboard" },
               { text: "🛠️ 前端 UI/UX 设计", link: "/skills/visual/frontend-design" },
             ]
           },
@@ -116,7 +124,6 @@ export default defineConfig({
             collapsed: true,
             items: [
               { text: "自动复盘与 GC", link: "/skills/knowledge/auto-retro" },
-              { text: "Milvus 工具集", link: "/skills/knowledge/milvus-toolkit" },
               { text: "碎片知识管家", link: "/skills/knowledge/snippet_master" },
             ]
           }
