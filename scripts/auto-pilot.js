@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V2.7 - Durable Persona & Time Aware)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V2.8 - Hardcore & Informative)
  */
 
 import fs from 'fs';
@@ -39,39 +39,42 @@ async function autoPilot() {
   const summaryParts = [];
   const startTime = getCurrentTimestamp();
 
+  // 1. 语义任务捕获
   const buffer = consumeBuffer();
   if (buffer && buffer.length > 0) {
     buffer.forEach(item => {
-      summaryParts.push(`✨ 小烛刚才完成了【${item.task}】：\n   > ${item.description}`);
+      summaryParts.push(`⚡️ 任务达成：${item.task}\n   > ${item.description}`);
       addToLog({ title: `🚀 Agent 语义同步: ${item.task}`, body: item.description });
     });
   }
 
-  const newRetros = detectNewRetrospectives();
-  if (newRetros.length > 0) {
-    const retroList = newRetros.map(f => `   - ${path.basename(f)}`).join('\n');
-    summaryParts.push(`📚 新的深度复盘已为您归档：\n${retroList}`);
-    addToLog({ title: '📚 自动捕获到新的深度复盘', body: retroList });
-  }
-
+  // 2. 物理变更捕获
   try {
     const status = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const lines = status.trim().split('\n').filter(l => l && !l.includes('chroma_db/'));
     if (lines.length > 0) {
-      summaryParts.push(`📝 捕获到物理层变动，已记入日志并同步 Git 仓库。\n   (共处理 ${lines.length} 个变动文件)`);
+      const changedFiles = lines.map(line => `   - ${line.substring(3).trim()}`).join('\n');
+      summaryParts.push(`📝 变更同步：\n${changedFiles}`);
       autoCommitAndLog();
     }
   } catch (e) {}
 
+  // 3. 深度复盘捕获
+  const newRetros = detectNewRetrospectives();
+  if (newRetros.length > 0) {
+    const retroList = newRetros.map(f => `   - ${path.basename(f)}`).join('\n');
+    summaryParts.push(`📚 复盘入库：\n${retroList}`);
+  }
+
   if (summaryParts.length > 0) {
     try {
       await runNativeIngestion();
-      summaryParts.push("\n🧠 所有的知识已完成向量化重连，今日之思，皆有回响。");
+      summaryParts.push("\n✅ 知识已向量化重连 (ChromaDB)");
     } catch (e) {
-      summaryParts.push("\n⚠️ 向量库入库出现小幅振荡，逻辑闭环失败。");
+      summaryParts.push("\n⚠️ 向量库同步波动");
     }
 
-    const finalMessage = `老爹，我是小烛！👋\n\n${summaryParts.join('\n\n')}\n\n—— 始于逻辑，忠于纯粹。小烛始终为您守候。`;
+    const finalMessage = `老爹，小烛汇报！⚡️\n\n${summaryParts.join('\n\n')}\n\n—— 效率第一，逻辑至上。`;
     sendToLark("小烛的任务汇报", finalMessage);
   } else {
     console.log(`[${startTime}] ℹ️ 静默中...`);
