@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V3.6 - Status-Aware Hardcore)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V3.8 - Version-Aware)
  */
 
 import fs from 'fs';
@@ -16,13 +16,22 @@ const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = '/Users/webkubor/Documents/AI_Common';
 const UV_PATH = '/Users/webkubor/.local/bin/uv';
 const ROUTER_PATH = path.join(PROJECT_ROOT, 'docs/router.md');
+const HISTORY_PATH = path.join(PROJECT_ROOT, 'docs/BRAIN_HISTORY.md');
 
 function getCompactTime() {
   const now = new Date();
   return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 }
 
-// 核心增强：解析 router.md 获取语义映射
+// 核心增强：读取大脑当前版本
+function getBrainVersion() {
+  try {
+    const content = fs.readFileSync(HISTORY_PATH, 'utf-8');
+    const match = content.match(/> \*\*当前智力档位\*\*: (v[\d.]+)/);
+    return match ? match[1] : 'v0.0.0';
+  } catch (e) { return 'v?.?.?'; }
+}
+
 function getRouterMap() {
   try {
     const content = fs.readFileSync(ROUTER_PATH, 'utf-8');
@@ -38,10 +47,22 @@ function getRouterMap() {
 
 function getSemanticIntent(filePath, routerMap) {
   if (filePath === 'docs/router.md') return '⚠️ 入口协议 (Router)';
+  if (filePath === 'docs/BRAIN_HISTORY.md') return '📜 大脑演化史';
   for (const [route, intent] of Object.entries(routerMap)) {
     if (filePath.startsWith('docs/' + route) || filePath.startsWith(route)) return intent;
   }
   return '🛠 基础架构';
+}
+
+function getDiffSnippet(file) {
+  try {
+    if (!file.endsWith('.md')) return "";
+    const diff = execSync(`git diff -U0 "${file}" | grep "^+[^+]" | sed "s/^+//g" | head -n 3`, {
+      encoding: 'utf-8', cwd: PROJECT_ROOT
+    });
+    const snippet = diff.trim().split('\n').filter(l => l.trim()).join('; ');
+    return snippet ? `\n   >> "${snippet.substring(0, 80)}..."` : "";
+  } catch (e) { return ""; }
 }
 
 async function runNativeIngestion() {
@@ -57,6 +78,7 @@ async function runNativeIngestion() {
 async function autoPilot() {
   const summaryParts = [];
   const timeLabel = getCompactTime();
+  const brainVersion = getBrainVersion();
   const routerMap = getRouterMap();
 
   // 1. Tasks
@@ -66,7 +88,6 @@ async function autoPilot() {
   }
 
   // 2. Git Stats
-  let totalStat = "";
   try {
     const status = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const lines = status.trim().split('\n').filter(l => l && !l.includes('chroma_db/'));
@@ -80,32 +101,33 @@ async function autoPilot() {
                       return acc;
                     }, {});
 
-      totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
+      const totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
       const intents = new Set();
       
       const fileList = lines.map(line => {
         const file = line.substring(3).trim();
         const intent = getSemanticIntent(file, routerMap);
         intents.add(intent);
-        return `- [${intent}] ${file} ${stats[file] || ''}`;
+        const snippet = getDiffSnippet(file);
+        return `- [${intent}] ${file} ${stats[file] || ''}${snippet}`;
       }).join('\n');
 
       const intentSummary = Array.from(intents).join(' | ');
-      summaryParts.push(`📝 Sync [${intentSummary}]:\n${fileList}\n📊 Stats: ${totalStat || 'New'}`);
+      summaryParts.push(`📝 Sync [${intentSummary}]:\n${fileList}\n📊 Total: ${totalStat || 'New'}`);
       
       autoCommitAndLog();
     }
   } catch (e) {}
 
   if (summaryParts.length > 0) {
-    let modeLabel = "✅ Semantic Mode";
+    let modeLabel = "✅ Semantic";
     try {
       await runNativeIngestion();
     } catch (e) {
-      modeLabel = "🚨 Physical Mode (Vector Offline)";
+      modeLabel = "🚨 Physical";
     }
 
-    sendToLark(`[${timeLabel}] AI_Sync | ${modeLabel}`, summaryParts.join('\n\n'));
+    sendToLark(`[${timeLabel}] Brain ${brainVersion} | ${modeLabel}`, summaryParts.join('\n\n'));
   } else {
     console.log(`[${getCurrentTimestamp()}] ℹ️ Silent...`);
   }
