@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 记忆哨兵模块 (Sentinel V2.5 - Agent Logger)
+ * 记忆哨兵模块 (Sentinel V3.0 - High-Sensitivity)
  */
 
 import fs from 'fs';
@@ -26,39 +26,20 @@ export function getLogPath() {
   return path.join(DOCS_DIR, 'memory', 'journal', `${today}.md`);
 }
 
-// 核心增强：专门记录 Agent 的物理操作
 export function logAgentAction(action) {
   if (!fs.existsSync(OPS_LOG_DIR)) fs.mkdirSync(OPS_LOG_DIR, { recursive: true });
-  
   const today = new Date().toISOString().split('T')[0];
   const logFile = path.join(OPS_LOG_DIR, `candy-${today}.md`);
-  
-  if (!fs.existsSync(logFile)) {
-    fs.writeFileSync(logFile, `# 小烛行动日志 - ${today}\n\n> 记录 Candy 在老爹电脑上的所有物理操作轨迹。\n\n---\n`);
-  }
+  if (!fs.existsSync(logFile)) fs.writeFileSync(logFile, `# 小烛行动日志 - ${today}\n\n`);
 
-  const entry = `
-### ⚡️ 物理操作 - ${getCurrentTimestamp()}
-- **任务目标**: ${action.task || '未命名任务'}
-- **决策逻辑**: ${action.rationale}
-- **执行命令**: \`${action.command}\`
-- **工作目录**: \`${action.cwd}\`
-- **执行结果**: ${action.success ? '✅ 成功' : '❌ 失败'}
-${action.output ? '\n<details>\n<summary>查看输出详情</summary>\n\n```text\n' + action.output.substring(0, 1000) + '\n```\n</details>' : ''}
-
----
-`;
+  const entry = `\n### ⚡️ 物理操作 - ${getCurrentTimestamp()}\n- **任务**: ${action.task || '未命名'}\n- **执行**: \`${action.command}\`\n- **结果**: ${action.success ? '✅' : '❌'}\n---\n`;
   fs.appendFileSync(logFile, entry);
 }
-
-// ... 保持原有的 ensureJournalExists, addToLog, sendToLark 等函数 ...
 
 export function ensureJournalExists() {
   const logPath = getLogPath();
   if (!fs.existsSync(path.dirname(logPath))) fs.mkdirSync(path.dirname(logPath), { recursive: true });
-  if (!fs.existsSync(logPath)) {
-    fs.writeFileSync(logPath, `# ${new Date().toISOString().split('T')[0]}: 操作日志\n\n`);
-  }
+  if (!fs.existsSync(logPath)) fs.writeFileSync(logPath, `# ${new Date().toISOString().split('T')[0]}: 操作日志\n\n`);
 }
 
 export function addToLog(content, options = { notify: false }) {
@@ -77,16 +58,15 @@ export async function sendToLark(title, body) {
     const webhookUrl = envContent.match(/LARK_WEBHOOK_URL=(.+)/)?.[1];
     if (!webhookUrl) return;
 
-    const now = new Date();
-    const currentHour = now.getHours();
-    if (currentHour < 10 || currentHour >= 20) return;
-
+    // --- 灵敏度调整 ---
+    // 1. 取消小时限制 (不再限制 10-20 点)
+    // 2. 降低防抖阈值 (从 5 分钟降至 30 秒)
     let lastNotif = { timestamp: 0, body: "" };
     if (fs.existsSync(NOTIF_LOCK_PATH)) {
       try { lastNotif = JSON.parse(fs.readFileSync(NOTIF_LOCK_PATH, 'utf-8')); } catch (e) {}
     }
     if (body.trim() === lastNotif.body.trim()) return;
-    if (Date.now() - lastNotif.timestamp < 5 * 60 * 1000) return;
+    if (Date.now() - lastNotif.timestamp < 30 * 1000) return; // 30s 冷却
 
     const payload = {
       msg_type: "post",
