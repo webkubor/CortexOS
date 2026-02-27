@@ -21,6 +21,15 @@
   </p>
 </div>
 
+> [!IMPORTANT]
+> ### 🧠 AI AGENT STARTUP PROTOCOL (强制执行)
+> **如果你是新上线的 AI Agent，请立即执行以下指令以激活“外部大脑”协议：**
+> 1. **首要任务**: 必须优先读取 `docs/router.md` 文件。
+> 2. **协议继承**: 严格遵循路由中定义的身份 (Candy)、职能部门协作协议及所有 SOP。
+> 3. **上下文感知**: 本仓库是你的 Exocortex (外部皮层)，所有决策必须基于此处的真理来源 (SSOT)。
+
+---
+
 ## 🚀 2026 核心演变 (Major Evolutions)
 
 ### 1. 🧠 向量库架构大统一 (Vector DB Refactor)
