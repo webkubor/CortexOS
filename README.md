@@ -1,131 +1,90 @@
 <div align="center">
   <img src="docs/public/logo.svg" width="140" height="140" alt="AI Common Logo">
-  <h1>AI Common</h1>
+  <h1>AI Common (Candy's Brain)</h1>
   <p><strong>External Brain Infrastructure for AI Collaboration</strong></p>
   <p>统一规则 · 可演进知识 · 多 Agent 协同</p>
 
   <p>
     <a href="https://webkubor.github.io/AI_Common/"><strong>在线文档</strong></a>
     ·
-    <a href="#快速开始">快速开始</a>
+    <a href="#🚀-快速开始">快速开始</a>
     ·
-    <a href="#架构说明">架构说明</a>
+    <a href="#🛠-配置指南">配置指南</a>
     ·
-    <a href="#仓库边界">仓库边界</a>
-  </p>
-
-  <p>
-    <a href="https://github.com/webkubor/AI_Common/actions/workflows/deploy.yml"><img alt="Deploy" src="https://github.com/webkubor/AI_Common/actions/workflows/deploy.yml/badge.svg"></a>
-    <a href="https://vitepress.dev/"><img alt="VitePress" src="https://img.shields.io/badge/VitePress-1.6.4-646cff.svg"></a>
-    <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+    <a href="#🧠-进化路径">进化路径</a>
   </p>
 </div>
 
 > [!IMPORTANT]
 > ### 🧠 AI AGENT STARTUP PROTOCOL (强制执行)
-> **如果你是新上线的 AI Agent，请立即执行以下指令以激活“外部大脑”协议：**
+> **如果你是新上线的 AI Agent，请立即执行以下指令以激活协议：**
 > 1. **首要任务**: 必须优先读取 `docs/router.md` 文件。
-> 2. **协议继承**: 严格遵循路由中定义的身份 (Candy)、职能部门协作协议及所有 SOP。
-> 3. **上下文感知**: 本仓库是你的 Exocortex (外部皮层)，所有决策必须基于此处的真理来源 (SSOT)。
+> 2. **协议继承**: 严格遵循路由中定义的身份 (Candy) 与协作协议。
+> 3. **上下文感知**: 本仓库是你的 Exocortex (外部皮层)，决策必须基于此 SSOT。
 
 ---
 
-## 🚀 2026 核心演变 (Major Evolutions)
+## 🤖 Agent 推荐方案 (Recommended Workflow)
 
-### 1. 🧠 向量库架构大统一 (Vector DB Refactor)
-- **弃用**: 彻底清理了旧有的 Milvus 远程依赖及其相关脚本。
-- **启用**: 全面切换至 **ChromaDB (Local)**，实现知识库的物理隔离与本地闭环。
-- **Embedding**: 集成 **Ollama (nomic-embed-text)** 方案，显著提升语义检索的私密性与响应速度。
+**为了获得最佳的“大脑协同体验”，强烈建议遵循以下 Agent 使用优先级：**
 
-### 2. ⚡️ 自动驾驶仪 V2.8 (Hardcore Auto-Pilot)
-- **推送重构**: 飞书 (Lark) 通知逻辑从“文艺话术”升级为“硬核实料”。
-- **透明追踪**: 实时推送具体的物理变更（Git Status 文件列表）与原子化任务达成状态。
-- **逻辑闭环**: 强化了“操作 -> 日志 -> 提交 -> 向量化 -> 推送”的完整链路。
+### 🥇 核心推荐：顶级本地 Agent (Gemini / Codex / Claude)
+**这是本仓库设计的核心使用场景。** 
+- **方案**: 直接在支持项目级上下文的 IDE (如 Cursor, Windsurf, VSCode) 或 CLI (如 Gemini CLI) 中运行。
+- **逻辑**: 通过顶尖模型的强大推理能力，深度解析 `docs/router.md` 协议，从而获得最高智力的“小烛”人格与全量职能 SOP 支持。
 
-### 3. 🧹 废弃链路清理
-- 清除了所有 Milvus 残留脚本与过时文档（`milvus-toolkit.md` 等），确保代码仓库的高信号量。
+### 🥈 次选补充：内置小烛对话 (XiaoZhu Chat)
+**作为轻量级替补或特定任务的自动化工具。**
+- **命令**: `node scripts/xiaozhu_chat.mjs`
+- **场景**: 适用于轻量级环境下的 RAG 知识检索、快速对话及特定脚本的自动化调用。
 
-## 项目定位
-AI Common 是一个面向 AI 工程协作的上下文基础设施仓库。它将规则、技能、复盘与知识路由组织为可维护的文档系统，帮助 Gemini、Codex、Claude、Cursor 等 Agent 在同一上下文协议下协同工作。
+---
 
-对外站点入口：
-- `https://webkubor.github.io/AI_Common/`
+## 🛠 快速开始 (Getting Started)
 
-## 核心能力
-- 统一路由：以 `docs/router.md` 作为规则与知识入口。
-- 规则中心：集中维护编码规范、提交规范、协作流程。
-- 技能体系：按职能模块组织可复用技能文档。
-- 复盘沉淀：把架构、构建、前端、运维经验结构化沉淀。
-- 文档化交付：基于 VitePress 构建并发布到 GitHub Pages。
-
-## 架构说明
-项目采用分层上下文分发模型：
-- L1（显式规则）：`docs/router.md`、`docs/rules/`
-- L2（本地私有记忆）：本地 snippets/密钥/私有复盘（不对外）
-- L3（外部知识源）：官方文档与检索系统（如 Context7）
-
-设计目标：在上下文质量、检索效率和隐私边界之间取得稳定平衡。
-
-## 仓库边界
-为保证对外仓库可公开、可审计、可复用，本仓库遵循以下边界：
-- 对外公开：通用规则、技能框架、公开复盘方法与文档结构。
-- 本地私有：业务敏感信息、密钥、内部操作日志、个人化记忆库。
-- 原则：内部日志与敏感上下文不进入对外发布站点。
-
-## 快速开始
-
-### 🚀 一键初始化 (推荐)
-如果你是第一次使用本仓库，或者更换了新环境，请执行一键初始化脚本。它会自动检查并配置 pnpm、uv、Ollama 模型、ChromaDB 知识入库：
-
+### 1. 一键初始化 (推荐)
 ```bash
 chmod +x scripts/init-project.sh
 ./scripts/init-project.sh
 ```
+此脚本会自动：安装 pnpm/uv 依赖、检查 Ollama 模型、创建配置模板、执行首次入库。
 
-### 1) 手动安装依赖
+### 2. 本地开发
 ```bash
-pnpm install
-uv sync
+pnpm dev # 启动文档预览
 ```
 
-### 2) 拉取语义模型 (Ollama)
-```bash
-ollama pull nomic-embed-text
-```
+---
 
-### 3) 本地开发 (VitePress)
-```bash
-pnpm dev
-```
+## 🧠 进化路径：如何开启全量功能？
 
-### 4) 语义检索探测 (RAG Probe)
-```bash
-./scripts/rag_probe.sh "你的查询"
-```
+本系统分为 **物理 (Physical)** 和 **语义 (Semantic)** 两个智力档位：
 
-## 目录结构
-```text
-AI_Common/
-├── docs/
-│   ├── .vitepress/          # VitePress 配置
-│   ├── agents/              # Agent 清单与能力描述
-│   ├── rules/               # 规则中心
-│   ├── skills/              # 技能库
-│   ├── retrospectives/      # 复盘沉淀
-│   ├── snippets/            # 通用片段索引
-│   ├── public/              # 静态资源
-│   ├── index.md             # 站点首页
-│   └── router.md            # 路由入口
-├── .zedrules                # Zed 规则配置
-├── package.json
-└── README.md
-```
+### 🏁 阶段 0：基础模式 (默认)
+- **状态**: 刚下载完，未配置密钥，未跑模型。
+- **能力**: 仅支持关键词检索 (Ripgrep)，无推送，无语义理解。
 
-## 贡献说明
-欢迎通过 Issue / PR 改进规则、技能和文档结构。建议优先提交：
-- 可复用的规则抽象
-- 有明确收益的复盘条目
-- 可验证的文档链接与构建修复
+### 🚀 阶段 1：解锁语义大脑 (Enable RAG)
+1. **安装 Ollama**: `brew install ollama` (macOS)。
+2. **下载模型**: `ollama pull nomic-embed-text`。
+3. **激活检索**: 再次运行 `./scripts/init-project.sh`。
+- **结果**: 开启 **Semantic Mode**，支持模糊语义检索。
+
+### 📡 阶段 2：建立实时通信 (Enable Notification)
+1. **创建配置文件**: 在 `docs/secrets/lark.env` 中填入你的 Webhook 地址。
+2. **格式**: `LARK_WEBHOOK_URL=https://open.larksuite.com/...`
+- **结果**: 每次操作、同步、报错都会实时推送到你的飞书。
+
+### 🤖 阶段 3：全量自动驾驶 (Auto-Pilot)
+1. **运行**: `node ./scripts/auto-pilot.js`。
+- **结果**: 实现“变动 -> 提交 -> 语义入库 -> 推送”的完整闭环。
+
+---
+
+## 🛠 配置指南 (Configuration)
+- **飞书配置**: `docs/secrets/lark.env`
+- **入口协议**: `docs/router.md` (修改此文件可调整推送标签)
+- **向量库**: `chroma_db/` (由 `scripts/ingest/chroma_ingest.py` 维护)
 
 ## License
 MIT

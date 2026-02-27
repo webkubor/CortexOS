@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V3.5 - Router-Aware)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V3.6 - Status-Aware Hardcore)
  */
 
 import fs from 'fs';
@@ -65,7 +65,8 @@ async function autoPilot() {
     buffer.forEach(item => summaryParts.push(`⚡️ Task: ${item.task}\n> ${item.description}`));
   }
 
-  // 2. Git Stats with Intent Analysis
+  // 2. Git Stats
+  let totalStat = "";
   try {
     const status = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const lines = status.trim().split('\n').filter(l => l && !l.includes('chroma_db/'));
@@ -79,7 +80,7 @@ async function autoPilot() {
                       return acc;
                     }, {});
 
-      const totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
+      totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
       const intents = new Set();
       
       const fileList = lines.map(line => {
@@ -97,12 +98,14 @@ async function autoPilot() {
   } catch (e) {}
 
   if (summaryParts.length > 0) {
+    let modeLabel = "✅ Semantic Mode";
     try {
       await runNativeIngestion();
-      summaryParts.push("✅ Vectorized (Chroma)");
-    } catch (e) { summaryParts.push("⚠️ Vector Error"); }
+    } catch (e) {
+      modeLabel = "🚨 Physical Mode (Vector Offline)";
+    }
 
-    sendToLark(`[${timeLabel}] AI_Sync`, summaryParts.join('\n\n'));
+    sendToLark(`[${timeLabel}] AI_Sync | ${modeLabel}`, summaryParts.join('\n\n'));
   } else {
     console.log(`[${getCurrentTimestamp()}] ℹ️ Silent...`);
   }
