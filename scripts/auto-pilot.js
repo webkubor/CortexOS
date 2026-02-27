@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V3.8 - Version-Aware)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V3.9 - High-Signal Journaling)
  */
 
 import fs from 'fs';
@@ -23,7 +23,6 @@ function getCompactTime() {
   return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 }
 
-// 核心增强：读取大脑当前版本
 function getBrainVersion() {
   try {
     const content = fs.readFileSync(HISTORY_PATH, 'utf-8');
@@ -81,13 +80,17 @@ async function autoPilot() {
   const brainVersion = getBrainVersion();
   const routerMap = getRouterMap();
 
-  // 1. Tasks
+  // 1. Tasks (Only Log High-Signal Tasks to Journal)
   const buffer = consumeBuffer();
   if (buffer && buffer.length > 0) {
-    buffer.forEach(item => summaryParts.push(`⚡️ Task: ${item.task}\n> ${item.description}`));
+    buffer.forEach(item => {
+      summaryParts.push(`⚡️ Task: ${item.task}\n> ${item.description}`);
+      // 只有这种有意义的任务才记入 Journal
+      addToLog({ title: item.task, body: item.description });
+    });
   }
 
-  // 2. Git Stats
+  // 2. Git Stats (Don't log to Journal anymore, Git history is enough)
   try {
     const status = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const lines = status.trim().split('\n').filter(l => l && !l.includes('chroma_db/'));
@@ -118,6 +121,14 @@ async function autoPilot() {
       autoCommitAndLog();
     }
   } catch (e) {}
+
+  // 3. New Retrospectives
+  const newRetros = detectNewRetrospectives();
+  if (newRetros.length > 0) {
+    const list = newRetros.map(f => `- ${path.basename(f)}`).join('\n');
+    summaryParts.push(`📚 Retro:\n${list}`);
+    addToLog({ title: '新深度复盘归档', body: list });
+  }
 
   if (summaryParts.length > 0) {
     let modeLabel = "✅ Semantic";
