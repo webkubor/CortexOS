@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V4.3 - Intelligence Briefing Edition)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V4.4 - Memory Hub Edition)
  */
 
 import fs from 'fs';
@@ -16,6 +16,21 @@ const PROJECT_ROOT = '/Users/webkubor/Documents/AI_Common';
 const UV_PATH = '/Users/webkubor/.local/bin/uv';
 const ROUTER_PATH = path.join(PROJECT_ROOT, 'docs/router.md');
 const HISTORY_PATH = path.join(PROJECT_ROOT, 'docs/BRAIN_HISTORY.md');
+
+function getCompactTime() {
+  const now = new Date();
+  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+}
+
+// 核心：检测新的深度复盘
+function detectNewRetrospectives() {
+  try {
+    const result = execSync('find docs/memory/retrospectives -name "*.md" -mmin -10', {
+      encoding: 'utf-8', cwd: PROJECT_ROOT
+    });
+    return result.trim().split('\n').filter(f => f && !f.includes('index.md'));
+  } catch (e) { return []; }
+}
 
 function getBrainVersion() {
   try {
@@ -80,7 +95,9 @@ async function autoPilot() {
     const status = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const lines = status.trim().split('\n').filter(l => l && !l.includes('chroma_db/') && !l.includes('.last_notif.json'));
     
-    if (lines.length > 0 || (buffer && buffer.length > 0)) {
+    const newRetros = detectNewRetrospectives();
+
+    if (lines.length > 0 || (buffer && buffer.length > 0) || newRetros.length > 0) {
       const stats = execSync('git diff --numstat', { encoding: 'utf-8', cwd: PROJECT_ROOT })
                     .trim().split('\n')
                     .reduce((acc, line) => {
@@ -91,13 +108,20 @@ async function autoPilot() {
 
       const totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
       
-      // 1. 组装任务块
+      // 1. 任务块
       let taskSection = "";
       if (buffer && buffer.length > 0) {
         taskSection = buffer.map(item => `⚡️ **任务达成**: ${item.task}\n> ${item.description}`).join('\n\n') + "\n\n━━━━━━━━━━━━━━\n\n";
       }
 
-      // 2. 组装变更块 (按意图分组)
+      // 2. 复盘块
+      let retroSection = "";
+      if (newRetros.length > 0) {
+        const list = newRetros.map(f => `• ${path.basename(f)}`).join('\n');
+        retroSection = `📚 **复盘入库**\n${list}\n\n━━━━━━━━━━━━━━\n\n`;
+      }
+
+      // 3. 变更块
       const groupedFiles = {};
       lines.forEach(line => {
         const file = line.substring(3).trim();
@@ -115,23 +139,19 @@ async function autoPilot() {
         changeSection += `\n`;
       }
 
-      // 3. 汇总信息
-      const finalBody = `${taskSection}${changeSection}━━━━━━━━━━━━━━\n📊 **统计**: ${totalStat || '全量同步'}`;
+      const finalBody = `${taskSection}${retroSection}${changeSection}━━━━━━━━━━━━━━\n📊 **统计**: ${totalStat || '全量同步'}`;
 
-      // 4. 提交 Git
+      // 执行提交
       const intents = Object.keys(groupedFiles).join(' & ');
       execSync(`git add . && git commit -m "auto: ${intents || 'sync'} at ${startTime}"`, { cwd: PROJECT_ROOT });
 
-      // 5. 智力同步
+      // 智力同步
       let modeLabel = "Semantic ✅";
       try {
         await runNativeIngestion();
       } catch (e) { modeLabel = "Physical 🚨"; }
 
-      // 6. 发送 (标题极简)
       sendToLark(`[${timeLabel}] Brain ${brainVersion} | ${modeLabel}`, finalBody);
-      
-      // 同时记录到 Journal
       addToLog({ title: '大脑同步', body: finalBody });
       console.log(`🚀 智能简报已送达飞书！`);
     }

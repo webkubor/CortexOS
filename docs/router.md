@@ -17,16 +17,14 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 ## 3. 🔍 动态路由 (Dynamic Routing)
 | 意图 | 目标路径 (docs/) | 执行动作 |
 | :--- | :--- | :--- |
-| **执行日志/进度** | `memory/journal/` | 记录任务状态、公用记忆、完成进度 |
+| **执行日志/进度** | `memory/journal/` | 记录任务状态、操作轨迹、每日小结 |
+| **复盘/经验** | `memory/retrospectives/` | 加载历史教训、知识总结、深度复盘 |
 | **知识库自检** | `rules/external-health-check.md` | 检查路径、链接、结构完整性 |
 | **安全/Token** | `rules/privacy_excludes.md`, `secrets/` | 加载脱敏规则与密钥 |
 | **项目初始化** | `tech_stack.md`, `rules/project_initialization_sop.md` | 加载架构与 SOP |
 | **编码/Git** | `rules/vibe_rules.md`, `rules/git_commit_rules.md` | 加载规范 |
 | **GitHub/推送** | `rules/github_ops_sop.md` | 执行认证与推送流程 |
 | **小红书运营** | `operations/xhs/shared_house_plan.md` | 加载运营方案 |
-| **复盘/经验** | `retrospectives/index.md` | 加载历史教训 |
-| **写文章/文案** | `skills/writers/` | 加载写作助手 (Writers) |
-| **发布/账号运营** | `skills/ops/` | 加载运营助手 (Ops) |
 | **技能/插件** | `skills/index.md` | 获取全量职能架构 |
 
 ## 4. 🛠 工具协议 (Tooling Protocol)
@@ -44,4 +42,4 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 
 ---
 *Last Updated: 2026-02-27*
-- **智力档位**: v3.8.0 (Hardcore & Content-Aware)
+- **智力档位**: v3.8.0 (Hardcore Edition)
