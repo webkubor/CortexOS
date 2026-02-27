@@ -19,12 +19,12 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 | :--- | :--- | :--- |
 | **执行日志/进度** | `memory/journal/` | 记录任务状态、操作轨迹、每日小结 |
 | **复盘/经验** | `memory/retrospectives/` | 加载历史教训、知识总结、深度复盘 |
+| **业务运营/方案** | `memory/operations/` | 加载运营方案、执行计划、策略文档 |
 | **知识库自检** | `rules/external-health-check.md` | 检查路径、链接、结构完整性 |
 | **安全/Token** | `rules/privacy_excludes.md`, `secrets/` | 加载脱敏规则与密钥 |
 | **项目初始化** | `tech_stack.md`, `rules/project_initialization_sop.md` | 加载架构与 SOP |
 | **编码/Git** | `rules/vibe_rules.md`, `rules/git_commit_rules.md` | 加载规范 |
 | **GitHub/推送** | `rules/github_ops_sop.md` | 执行认证与推送流程 |
-| **小红书运营** | `operations/xhs/shared_house_plan.md` | 加载运营方案 |
 | **技能/插件** | `skills/index.md` | 获取全量职能架构 |
 
 ## 4. 🛠 工具协议 (Tooling Protocol)

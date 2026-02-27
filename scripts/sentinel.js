@@ -15,7 +15,7 @@ const DOCS_DIR = path.join(__dirname, '../docs');
 const BUFFER_PATH = path.join(__dirname, '../.context_buffer.json');
 const SECRETS_DIR = path.join(__dirname, '../docs/secrets');
 const NOTIF_LOCK_PATH = path.join(__dirname, '../.last_notif.json');
-const OPS_LOG_DIR = path.join(DOCS_DIR, 'operation-logs');
+const OPS_LOG_DIR = path.join(DOCS_DIR, 'memory/journal/actions');
 
 export function getCurrentTimestamp() {
   return new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
