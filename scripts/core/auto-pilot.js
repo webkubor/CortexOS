@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 外部大脑自动运转主脚本 (Brain-Pilot V4.6 - Pure Signal Edition)
+ * 外部大脑自动运转主脚本 (Brain-Pilot V4.7 - Refined UI Edition)
  */
 
 import fs from 'fs';
@@ -55,7 +55,7 @@ function getDiffSnippet(file) {
       encoding: 'utf-8', cwd: PROJECT_ROOT
     });
     const snippet = diff.trim().split('\n').filter(l => l.trim()).join('; ');
-    return snippet ? `\n   「 ${snippet.substring(0, 100).replace(/\n/g, ' ')} 」` : "";
+    return snippet ? `\n      「 ${snippet.substring(0, 100).replace(/\n/g, ' ')} 」` : "";
   } catch (e) { return ""; }
 }
 
@@ -75,7 +75,6 @@ async function autoPilot() {
   const startTime = getCurrentTimestamp();
   const timeLabel = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
-  // 1. 抓取语义任务 (核心操作)
   const buffer = consumeBuffer();
   
   try {
@@ -93,35 +92,35 @@ async function autoPilot() {
 
       const totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
       
-      // --- 推送逻辑 (保持全面，展示所有变动) ---
-      let taskSection = "";
+      let message = "";
+
+      // 1. 任务部分
       if (buffer && buffer.length > 0) {
-        taskSection = buffer.map(item => `⚡️ **任务达成**: ${item.task}\n> ${item.description}`).join('\n\n') + "\n\n━━━━━━━━━━━━━━\n\n";
-        
-        // --- 日志逻辑：只把这些“任务”记入 Journal ---
         buffer.forEach(item => {
-          addToLog({ title: item.task, body: item.description });
+          message += `🎯 **${item.task}**\n${item.description}\n\n`;
         });
       }
 
+      // 2. 变更部分 (按意图分组)
       const groupedFiles = {};
       lines.forEach(line => {
-        const file = line.substring(3).trim();
+        const file = line.slice(3).trim(); // 修复截取错误
         const intent = getSemanticIntent(file, routerMap);
         if (!groupedFiles[intent]) groupedFiles[intent] = [];
-        groupedFiles[intent].push({ name: file.replace('docs/', ''), stat: stats[file] || "", snippet: getDiffSnippet(file) });
+        groupedFiles[intent].push({ name: file, stat: stats[file] || "", snippet: getDiffSnippet(file) });
       });
 
-      let changeSection = "";
       for (const [intent, files] of Object.entries(groupedFiles)) {
-        changeSection += `📁 **${intent}**\n`;
+        message += `⚡️ **${intent}**\n`;
         files.forEach(f => {
-          changeSection += `• ${f.name}  *${f.stat}* ${f.snippet}\n`;
+          message += `   • ${f.name}  ${f.stat}${f.snippet}\n`;
         });
-        changeSection += `\n`;
+        message += `\n`;
       }
 
-      const finalBody = `${taskSection}${changeSection}━━━━━━━━━━━━━━\n📊 **统计**: ${totalStat || '全量同步'}`;
+      // 3. 脚注部分
+      message += `━━━━━━━━━━━━━━\n`;
+      message += `📊 ${totalStat || 'Success'}`;
 
       // 执行提交
       const intents = Object.keys(groupedFiles).join(' & ');
@@ -133,9 +132,12 @@ async function autoPilot() {
         await runNativeIngestion();
       } catch (e) { modeLabel = "Physical 🚨"; }
 
-      // 飞书战报 (包含所有变动)
-      sendToLark(`${brainVersion} | ${modeLabel}`, finalBody);
-      console.log(`🚀 智能简报已送达！`);
+      // 推送 (标题极简)
+      sendToLark(`Brain ${brainVersion} | ${modeLabel}`, message);
+      
+      // 记录日志
+      addToLog({ title: '大脑同步', body: message });
+      console.log(`🚀 精致战报已送达！`);
     }
   } catch (e) { console.error('⚠️ 运行异常:', e.message); }
 }
