@@ -150,6 +150,9 @@ function checkVectorStore() {
 }
 
 function runHealthCheck() {
+  const strictMode = process.argv.includes('--strict');
+  const failOnWarning = process.argv.includes('--fail-on-warning');
+
   log(colors.cyan, '🧠 AI Common 外部大脑健康检查 (Sentinel V4.1)');
   log(colors.cyan, '='.repeat(50));
 
@@ -168,7 +171,15 @@ function runHealthCheck() {
   } else {
     log(colors.red, `❌ 发现 ${issues.critical.length} 个架构性问题`);
   }
+  if (issues.warnings.length > 0) {
+    log(colors.yellow, `⚠️  发现 ${issues.warnings.length} 个警告`);
+  }
   log(colors.cyan, '='.repeat(50));
+
+  if (strictMode && (issues.critical.length > 0 || (failOnWarning && issues.warnings.length > 0))) {
+    log(colors.red, '\n🚫 strict 模式未通过');
+    process.exitCode = 1;
+  }
 }
 
 runHealthCheck();

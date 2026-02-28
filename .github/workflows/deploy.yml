@@ -44,8 +44,8 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Install dependencies
         run: pnpm install
-      - name: Build with VitePress
-        run: pnpm run docs:build
+      - name: Run brain health gate (includes docs build)
+        run: pnpm run health:gate
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
