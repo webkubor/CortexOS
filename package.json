@@ -12,6 +12,7 @@
     "health:gate": "node scripts/maintenance/health-gate.js",
     "fleet:claim": "node scripts/actions/fleet-claim.mjs",
     "gemini:auto": "scripts/actions/gemini-with-fleet.sh",
+    "claude:auto": "scripts/actions/claude-with-fleet.sh",
     "codex:auto": "scripts/actions/codex-with-fleet.sh",
     "codex:setup": "bash scripts/actions/setup-codex-alias.sh"
   },

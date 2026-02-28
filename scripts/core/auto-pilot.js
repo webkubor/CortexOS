@@ -63,21 +63,113 @@ function getSemanticIntent(filePath, routerMap) {
   return '基础架构';
 }
 
-/**
- * 提取 Git Diff 中的变更片段作为预览
- * @param {string} file - 文件名
- * @returns {string} 变更内容简述
- */
-function getDiffSnippet(file) {
+function parseStatusFile(line) {
+  const raw = line.substring(3).trim();
+  if (raw.includes(' -> ')) return raw.split(' -> ').pop().trim();
+  return raw;
+}
+
+function parseDiffStats() {
   try {
-    const fullPath = path.join(PROJECT_ROOT, file);
-    if (!file.endsWith('.md') || !fs.existsSync(fullPath)) return "";
-    const diff = execSync(`git diff -U0 "${file}" | grep "^+[^+]" | sed "s/^+//g" | head -n 2`, {
-      encoding: 'utf-8', cwd: PROJECT_ROOT
+    const output = execSync('git diff --numstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
+    if (!output) return {};
+    return output.split('\n').reduce((acc, line) => {
+      const parts = line.split('\t');
+      if (parts.length < 3) return acc;
+      const file = parts.slice(2).join('\t').trim();
+      const added = Number.isFinite(Number(parts[0])) ? Number(parts[0]) : 0;
+      const deleted = Number.isFinite(Number(parts[1])) ? Number(parts[1]) : 0;
+      acc[file] = {
+        added,
+        deleted,
+        score: added + deleted,
+        stat: `(+${added}/-${deleted})`
+      };
+      return acc;
+    }, {});
+  } catch (e) {
+    return {};
+  }
+}
+
+function compactPath(filePath) {
+  return filePath.replace(/^docs\//, '');
+}
+
+function buildTotalStat(files, statMap) {
+  const total = files.reduce((acc, file) => {
+    const stat = statMap[file];
+    if (stat) {
+      acc.added += stat.added;
+      acc.deleted += stat.deleted;
+    }
+    return acc;
+  }, { added: 0, deleted: 0 });
+  return `${files.length} 个文件变动 | ${total.added} 新增, ${total.deleted} 删除`;
+}
+
+function buildDetailedLog(buffer, groupedFiles, fileRecords, totalStat) {
+  let message = '';
+  if (buffer && buffer.length > 0) {
+    buffer.forEach(item => {
+      message += `【 任务达成 】\n${item.task}\n> ${item.description}\n\n`;
     });
-    const snippet = diff.trim().split('\n').filter(l => l.trim()).join('；');
-    return snippet ? `\n      「 ${snippet.substring(0, 100).replace(/\n/g, ' ')} 」` : "";
-  } catch (e) { return ""; }
+  }
+
+  for (const [intent, files] of Object.entries(groupedFiles)) {
+    message += `[ ${intent} ]\n`;
+    files.forEach(f => {
+      message += `  - ${f.name} ${f.stat}\n`;
+    });
+    message += `\n`;
+  }
+
+  if (fileRecords.length === 0 && (!buffer || buffer.length === 0)) {
+    message += '[ 基础架构 ]\n  - 无文件变更（仅任务缓冲）\n\n';
+  }
+
+  message += `------------------------------\n`;
+  message += `数据汇总: ${totalStat}`;
+  return message;
+}
+
+function buildLarkSummary(buffer, fileRecords, groupedFiles, totalStat) {
+  const lines = [];
+
+  if (buffer && buffer.length > 0) {
+    lines.push('🎯 任务进展');
+    buffer.slice(0, 3).forEach((item, idx) => {
+      const task = (item.task || '未命名任务').trim();
+      lines.push(`${idx + 1}. ${task}`);
+    });
+    if (buffer.length > 3) lines.push(`… 其余 ${buffer.length - 3} 项任务已省略`);
+    lines.push('');
+  }
+
+  lines.push(`📊 数据汇总: ${totalStat}`);
+
+  const moduleSummary = Object.entries(groupedFiles)
+    .sort((a, b) => b[1].length - a[1].length)
+    .map(([intent, files]) => `${intent} ${files.length}`)
+    .join(' | ');
+  if (moduleSummary) lines.push(`🧭 模块分布: ${moduleSummary}`);
+
+  if (fileRecords.length > 0) {
+    lines.push('📌 重点变更');
+    const topFiles = [...fileRecords]
+      .sort((a, b) => (b.score - a.score) || a.name.localeCompare(b.name, 'zh-CN'))
+      .slice(0, 4);
+    topFiles.forEach((f, idx) => {
+      lines.push(`${idx + 1}) ${compactPath(f.name)} ${f.stat} [${f.intent}]`);
+    });
+    if (fileRecords.length > topFiles.length) {
+      lines.push(`… 其余 ${fileRecords.length - topFiles.length} 个文件已折叠`);
+    }
+  }
+
+  lines.push('');
+  lines.push('🗂 详细记录已写入 docs/memory/logs');
+  return lines.join('\n');
 }
 
 /**
@@ -111,50 +203,27 @@ async function autoPilot() {
     const rawLines = statusOutput.split('\n').filter(l => l.trim() && !l.includes('chroma_db/') && !l.includes('.last_notif.json'));
 
     if (rawLines.length > 0 || (buffer && buffer.length > 0)) {
-      const stats = execSync('git diff --numstat', { encoding: 'utf-8', cwd: PROJECT_ROOT })
-        .trim().split('\n')
-        .reduce((acc, line) => {
-          const parts = line.split('\t');
-          if (parts.length >= 3) acc[parts[2]] = `(+${parts[0]}/-${parts[1]})`;
-          return acc;
-        }, {});
+      const stats = parseDiffStats();
+      const changedFiles = rawLines
+        .map(parseStatusFile)
+        .filter(Boolean);
+      const uniqueFiles = [...new Set(changedFiles)];
 
-      // 清理总统计中的英文和多余符号
-      let totalStat = execSync('git diff --shortstat', { encoding: 'utf-8', cwd: PROJECT_ROOT }).trim();
-      totalStat = totalStat.replace(/files? changed/, '个文件变动')
-        .replace(/insertions?\(\+\)/, '新增')
-        .replace(/deletions?\(-\)/, '删除')
-        .replace(/,/, ' |');
-
-      let message = "";
-
-      // 1. 任务汇报
-      if (buffer && buffer.length > 0) {
-        buffer.forEach(item => {
-          message += `【 任务达成 】\n${item.task}\n> ${item.description}\n\n`;
-        });
-      }
-
-      // 2. 变更详情
       const groupedFiles = {};
-      rawLines.forEach(line => {
-        // 使用更精确的截取逻辑，避开 status 标志位
-        const file = line.substring(3).trim();
+      const fileRecords = [];
+      uniqueFiles.forEach(file => {
         const intent = getSemanticIntent(file, routerMap);
         if (!groupedFiles[intent]) groupedFiles[intent] = [];
-        groupedFiles[intent].push({ name: file, stat: stats[file] || "", snippet: getDiffSnippet(file) });
+        const stat = stats[file]?.stat || '(+0/-0)';
+        const score = stats[file]?.score ?? 0;
+        const record = { name: file, stat, score, intent };
+        groupedFiles[intent].push(record);
+        fileRecords.push(record);
       });
 
-      for (const [intent, files] of Object.entries(groupedFiles)) {
-        message += `[ ${intent} ]\n`;
-        files.forEach(f => {
-          message += `  - ${f.name} ${f.stat}${f.snippet}\n`;
-        });
-        message += `\n`;
-      }
-
-      message += `------------------------------\n`;
-      message += `数据汇总: ${totalStat || '全量同步完成'}`;
+      const totalStat = buildTotalStat(uniqueFiles, stats);
+      const detailedMessage = buildDetailedLog(buffer, groupedFiles, fileRecords, totalStat || '全量同步完成');
+      const larkMessage = buildLarkSummary(buffer, fileRecords, groupedFiles, totalStat || '全量同步完成');
 
       // 执行提交
       const intents = Object.keys(groupedFiles).join(' & ');
@@ -167,10 +236,10 @@ async function autoPilot() {
       } catch (e) { modeLabel = "物理模式"; }
 
       // 推送 (标题带关键词和核心状态)
-      sendToLark(`${brainVersion} | ${modeLabel}`, message);
+      sendToLark(`${brainVersion} | ${modeLabel}`, larkMessage);
       sendNativeNotification(`大脑同步完成: ${modeLabel}`, `数据汇总: ${totalStat}`);
 
-      addToLog({ title: '大脑同步', body: message });
+      addToLog({ title: '大脑同步', body: detailedMessage });
       console.log(`🚀 飞书定制版战报已送达！`);
     }
   } catch (e) {

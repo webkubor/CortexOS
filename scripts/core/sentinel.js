@@ -100,6 +100,7 @@ export function addToLog(content, options = { notify: false }) {
  */
 export async function sendToLark(title, body) {
   try {
+    const normalizedBody = String(body ?? '');
     const envPath = path.join(SECRETS_DIR, 'lark.env');
     if (!fs.existsSync(envPath)) return;
     const envContent = fs.readFileSync(envPath, 'utf-8');
@@ -116,20 +117,54 @@ export async function sendToLark(title, body) {
       try { lastNotif = JSON.parse(fs.readFileSync(NOTIF_LOCK_PATH, 'utf-8')); } catch (e) { }
     }
 
-    if (body.trim() === lastNotif.body.trim()) return;
+    if (normalizedBody.trim() === String(lastNotif.body ?? '').trim()) return;
 
     if (Date.now() - lastNotif.timestamp < 5 * 60 * 1000) return;
+
+    const paragraphs = buildLarkParagraphs(normalizedBody, { maxChars: 1800, maxLines: 22 });
 
     const payload = {
       msg_type: "post",
       content: {
-        post: { zh_cn: { title: `🧠 大脑同步: ${title}`, content: [[{ tag: "text", text: body.substring(0, 1000) }]] } }
+        post: { zh_cn: { title: `🧠 大脑同步: ${title}`, content: paragraphs } }
       }
     };
 
     const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    if (response.ok) fs.writeFileSync(NOTIF_LOCK_PATH, JSON.stringify({ timestamp: Date.now(), body: body.trim() }));
+    if (response.ok) fs.writeFileSync(NOTIF_LOCK_PATH, JSON.stringify({ timestamp: Date.now(), body: normalizedBody.trim() }));
   } catch (e) { console.error('Lark 推送失败:', e.message); }
+}
+
+function buildLarkParagraphs(body, options = {}) {
+  const maxChars = options.maxChars ?? 1800;
+  const maxLines = options.maxLines ?? 22;
+  const maxLineLength = options.maxLineLength ?? 180;
+  const lines = String(body ?? '').split('\n');
+  const paragraphs = [];
+  let usedChars = 0;
+
+  for (const rawLine of lines) {
+    let line = rawLine.replace(/\t/g, '  ').trimEnd();
+    if (!line) line = ' ';
+
+    if (line.length > maxLineLength) {
+      line = `${line.slice(0, maxLineLength - 1)}…`;
+    }
+
+    if (usedChars + line.length > maxChars || paragraphs.length >= maxLines) {
+      paragraphs.push([{ tag: 'text', text: '…（内容已折叠，详情见本地日志）' }]);
+      break;
+    }
+
+    paragraphs.push([{ tag: 'text', text: line }]);
+    usedChars += line.length;
+  }
+
+  if (paragraphs.length === 0) {
+    paragraphs.push([{ tag: 'text', text: '（空通知）' }]);
+  }
+
+  return paragraphs;
 }
 
 /**

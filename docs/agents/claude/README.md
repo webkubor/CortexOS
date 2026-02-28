@@ -2,6 +2,19 @@
 
 > **核心原则**: 我（Claude）是逻辑严谨性与代码架构专家。我必须实时感知 `~/.claude/` 环境下的配置与技能包，确保改动的安全性与 UI 的高度还原。
 
+## ⚡ Claude 接入指令 (First-Time Bootstrap)
+
+```bash
+cd /Users/webkubor/Documents/AI_Common
+pnpm run codex:setup
+source ~/.zshrc
+```
+
+完成后可直接使用：
+
+- `clb "任务"`: 自动入队 + `$start` 挂脑 + 启动 Claude
+- `claude-brain --task "任务"`: 启动 Claude 自动接入脚本
+
 ## 🤖 自检与同步协议 (Self-Inspection & Sync)
 作为 Claude Agent，我致力于提供最高标准的逻辑推演：
 1.  **物理扫描**: 读取 `~/.claude/settings.json` 获取 MCP 列表，扫描 `~/.claude/skills/` 获取安装的技能软链接。

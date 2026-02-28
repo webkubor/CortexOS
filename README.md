@@ -110,6 +110,12 @@ Gemini 自动启动（先挂牌再进入 Gemini）：
 /Users/webkubor/Documents/AI_Common/scripts/actions/gemini-with-fleet.sh --task "你的当前任务"
 ```
 
+Claude 自动启动（先挂牌再进入 Claude）：
+
+```bash
+/Users/webkubor/Documents/AI_Common/scripts/actions/claude-with-fleet.sh --task "你的当前任务"
+```
+
 Codex 自动启动（先挂牌再进入 Codex）：
 
 ```bash
@@ -134,6 +140,7 @@ source ~/.zshrc
 
 - `cdxb "任务"`: 自动入队 + `$start` 挂脑 + 启动 Codex
 - `gmb "任务"`: 自动入队 + 启动 Gemini
+- `clb "任务"`: 自动入队 + 启动 Claude
 - `brain-gate`: 在 AI_Common 执行健康门禁
 
 ---
