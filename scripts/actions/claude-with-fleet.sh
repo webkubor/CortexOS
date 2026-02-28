@@ -84,6 +84,15 @@ fi
 CLAIM_JSON="$(node "$ROOT_DIR/scripts/actions/fleet-claim.mjs" "${CLAIM_ARGS[@]}")"
 echo "$CLAIM_JSON"
 
+WARN_TEXT="$(echo "$CLAIM_JSON" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{try{const j=JSON.parse(d);const w=Array.isArray(j.warnings)?j.warnings:[];if(w.length)process.stdout.write(w.join("；"));}catch{}})' || true)"
+if [[ -n "$WARN_TEXT" ]]; then
+  echo "⚠️  $WARN_TEXT"
+  if command -v osascript >/dev/null 2>&1; then
+    _notif="${WARN_TEXT//\"/\\\"}"
+    osascript -e "display notification \"${_notif}\" with title \"AI Team 冲突提示\"" >/dev/null 2>&1 || true
+  fi
+fi
+
 MACHINE_NUMBER="$(echo "$CLAIM_JSON" | sed -n 's/.*"machineNumber":[[:space:]]*\([0-9][0-9]*\).*/\1/p' | head -n1)"
 NODE_ID="$(echo "$CLAIM_JSON" | sed -n 's/.*"nodeId":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
 MACHINE_NUMBER="${MACHINE_NUMBER:-unknown}"

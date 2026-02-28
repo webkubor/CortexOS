@@ -140,7 +140,7 @@ function extractAgentFromNode(node) {
 
 function printHelp() {
   console.log('用法:');
-  console.log('  node scripts/actions/fleet-claim.mjs --workspace <path> --task <任务描述> [--agent Gemini] [--alias Candy] [--status "[ 执行中 ] 活跃"] [--force-switch]');
+  console.log('  node scripts/actions/fleet-claim.mjs --workspace <path> --task <任务描述> [--agent Gemini] [--alias Candy] [--status "[ 执行中 ] 活跃"]');
   console.log('示例:');
   console.log('  node scripts/actions/fleet-claim.mjs --workspace "$PWD" --task "修复登录流程" --agent Gemini');
 }
@@ -178,26 +178,26 @@ function main() {
     parsedRows.push({ ...row, index: i });
   }
 
-  const sameWorkspaceRow = parsedRows.find(row => row.workspace === args.workspace);
-  if (sameWorkspaceRow) {
-    const existingAgent = sameWorkspaceRow.agent || extractAgentFromNode(sameWorkspaceRow.node);
-    if (existingAgent !== 'Unknown' && existingAgent !== args.agent && !args.forceSwitch) {
-      console.error(JSON.stringify({
-        ok: false,
-        code: 'identity_mismatch',
-        workspace: args.workspace,
-        existingNode: stripMarkdown(sameWorkspaceRow.node),
-        existingAgent,
-        incomingAgent: args.agent,
-        hint: '同一路径已存在不同模型登记。若确认发生模型切换，请追加 --force-switch。'
-      }, null, 2));
-      process.exit(2);
-    }
+  const sameWorkspaceRows = parsedRows.filter(row => row.workspace === args.workspace);
+  const sameWorkspaceSameAgentRow = sameWorkspaceRows.find(row => {
+    const existingAgent = row.agent || extractAgentFromNode(row.node);
+    return existingAgent === args.agent;
+  });
+
+  const parallelRows = sameWorkspaceRows.filter(row => row !== sameWorkspaceSameAgentRow);
+  const warnings = [];
+  if (args.forceSwitch) {
+    warnings.push('参数 --force-switch 当前为兼容保留项；同路径多模型默认允许并行登记。');
+  }
+  if (parallelRows.length > 0) {
+    const agents = parallelRows.map(row => row.agent || extractAgentFromNode(row.node)).join(', ');
+    const nodes = parallelRows.map(row => stripMarkdown(row.node)).join(' | ');
+    warnings.push(`同一路径已有其他模型在线: ${agents}（${nodes}）。已允许并行登记，请注意文件冲突。`);
   }
 
   let number;
-  if (sameWorkspaceRow) {
-    const nodeText = stripMarkdown(sameWorkspaceRow.node);
+  if (sameWorkspaceSameAgentRow) {
+    const nodeText = stripMarkdown(sameWorkspaceSameAgentRow.node);
     const match = nodeText.match(/\b(\d+)\b/);
     if (match) {
       number = Number(match[1]);
@@ -220,8 +220,8 @@ function main() {
     status: number === 0 ? '[ 队长锁 ] 活跃' : args.status
   });
 
-  if (sameWorkspaceRow) {
-    lines[sameWorkspaceRow.index] = rowLine;
+  if (sameWorkspaceSameAgentRow) {
+    lines[sameWorkspaceSameAgentRow.index] = rowLine;
   } else {
     const exampleIndex = lines.findIndex((line, idx) => idx >= dataStart && idx < dataEnd && line.includes('示例节点'));
     const insertAt = exampleIndex !== -1 ? exampleIndex : dataEnd;
@@ -242,6 +242,7 @@ function main() {
     agent: args.agent,
     workspace: args.workspace,
     task: args.task,
+    warnings,
     dryRun: args.dryRun
   }, null, 2));
 }

@@ -102,7 +102,7 @@ pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent G
 - 会自动读取 `docs/memory/fleet_status.md` 并判定当前是几号机。
 - 如果该工作路径已登记，则执行更新；未登记则自动新增一行。
 - 返回 JSON，包含 `machineNumber` 与 `nodeId`，可直接给终端/脚本读取。
-- 新增身份防漂移：同一路径若已登记为 Gemini/Codex，默认拒绝被另一模型覆盖；确需切换时追加 `--force-switch`。
+- 新增同路径并行告警：同一路径若已有其他模型在线，会提示冲突风险（终端 + 系统通知），但不拦截启动与登记。
 
 Gemini 自动启动（先挂牌再进入 Gemini）：
 
