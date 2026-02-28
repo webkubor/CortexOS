@@ -11,7 +11,8 @@
 
 | 节点 ID (模型/别名) | 物理坐标 (绝对工作路径) | 当前执行的核心任务 (含目标) | 领命时间 | 状态与锁 (Status & Locks) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Candy (Gemini本尊)** | `/Users/webkubor/Documents/AI_Common` | 编排大脑监控体系、完善双轨制报告。 | 2026-02-28 15:55 | `[ 核心区锁 ] 活跃` |
+| **Candy-Prime (0号机/Gemini)** | `/Users/webkubor/Documents/AI_Common` | 队长编排与冲突仲裁 | 2026-02-28 17:12 | [ 队长锁 ] 活跃 |
+| **Candy-1 (Gemini)** | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 深度接入外部大脑：建立项目索引、规则沉淀与记忆链条初始化 | 2026-02-28 17:11 | [ 执行中 ] 活跃 |
 | *(示例节点)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 
 ---

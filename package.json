@@ -9,7 +9,9 @@
     "health:core": "node scripts/tools/health-check.js --strict",
     "health:docs-index": "node scripts/maintenance/check-docs-index.js",
     "health:verify": "node scripts/maintenance/verify-health.js",
-    "health:gate": "node scripts/maintenance/health-gate.js"
+    "health:gate": "node scripts/maintenance/health-gate.js",
+    "fleet:claim": "node scripts/actions/fleet-claim.mjs",
+    "gemini:auto": "scripts/actions/gemini-with-fleet.sh"
   },
   "devDependencies": {
     "vitepress": "^1.6.4",

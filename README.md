@@ -91,5 +91,23 @@ pnpm run health:gate
 - 该命令会依次执行核心健康检查、文档索引脚本运行检查、健康验证脚本运行检查与 docs 构建。
 - 任一 P0 检查失败会直接返回非 0 退出码，可直接用于 CI 阻断。
 
+## 🚦 自动判号与挂牌
+
+```bash
+pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent Gemini
+```
+
+说明：
+
+- 会自动读取 `docs/memory/fleet_status.md` 并判定当前是几号机。
+- 如果该工作路径已登记，则执行更新；未登记则自动新增一行。
+- 返回 JSON，包含 `machineNumber` 与 `nodeId`，可直接给终端/脚本读取。
+
+Gemini 自动启动（先挂牌再进入 Gemini）：
+
+```bash
+/Users/webkubor/Documents/AI_Common/scripts/actions/gemini-with-fleet.sh --task "你的当前任务"
+```
+
 ---
 *Last Updated: 2026-02-28 (The Exocortex MCP Edition)*
