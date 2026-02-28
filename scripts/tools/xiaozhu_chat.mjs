@@ -62,7 +62,7 @@ async function renderDashboard() {
   console.log(` ${pc.dim('└────────────────────────────────────────────────────────────────────────────┘')}\n`);
 
   if (typeof ds !== 'string') {
-    console.log(pc.yellow(` 💡 提示: 核心算力缺失，请手动在 docs/secrets/deepseek.md 中补全 Key。\n`));
+    console.log(pc.yellow(` 💡 提示: 核心算力缺失，请手动在 brain/secrets/deepseek.md 中补全 Key。\n`));
   }
 }
 

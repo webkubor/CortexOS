@@ -4,7 +4,7 @@
 当老爹提到 "Push", "Repo", "创建仓库", "同步到 GitHub" 时，必须立即执行此流程。
 
 ## 🛠 执行逻辑
-1. **凭证检索**: 强制读取 `/Users/webkubor/Documents/AI_Common/docs/secrets/github.md` 获取 Token。
+1. **凭证检索**: 强制读取 `/Users/webkubor/Documents/AI_Common/brain/secrets/github.md` 获取 Token。
 2. **环境检查**: 检查是否安装了 `gh` (GitHub CLI)。
 3. **认证注入**: 
    - 优先使用 `echo "$TOKEN" | gh auth login --with-token`。

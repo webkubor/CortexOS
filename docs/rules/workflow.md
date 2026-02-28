@@ -6,9 +6,9 @@
 - **复盘沉淀**: 任务后在 `.agent/reviews/` 记录并更新 README。
 
 ## 2. 🌍 外部平台协议 (Platforms)
-- **GitHub**: 读取 `docs/secrets/github.md`，优先使用 `gh` CLI。
-- **GitLab**: 读取 `docs/secrets/gitlab.md`，优先使用 `glab` CLI。
-- **WeChat**: 读取 `docs/secrets/wechat.md`，调用 `wechat-writer` 技能。
+- **GitHub**: 读取 `brain/secrets/github.md`，优先使用 `gh` CLI。
+- **GitLab**: 读取 `brain/secrets/gitlab.md`，优先使用 `glab` CLI。
+- **WeChat**: 读取 `brain/secrets/wechat.md`，调用 `wechat-writer` 技能。
 
 ## 3. 📦 发布与质量审计 (Release SOP)
 - **NPM**: 发布前强制执行 `npm view <package-name>` 校验唯一性，优先使用 Scoped Package (@webkubor/xxx)。

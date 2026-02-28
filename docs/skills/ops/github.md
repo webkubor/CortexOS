@@ -12,7 +12,7 @@ priority: 1
 ## 🛠 工作流 (Workflows)
 
 ### 1. 凭证管理 (Auth)
-- **源**: `/Users/webkubor/Documents/AI_Common/docs/secrets/accounts_unified.md` 
+- **源**: `/Users/webkubor/Documents/AI_Common/brain/secrets/accounts_unified.md` 
 - **模式**: 优先使用 `gh auth login --with-token`。
 
 ### 2. 自动化发版 (Release Loop)

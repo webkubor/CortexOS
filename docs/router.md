@@ -12,7 +12,7 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 - **冷启动**: 1.确认身份 -> 2.继承部门规范 -> 3.确认 MCP 状态。
 
 ## 2. 🔑 凭证索引 (Secrets Index)
-- **GitHub/GitLab/WeChat/DeepSeek**: `docs/secrets/` 目录下对应文件。
+- **GitHub/GitLab/WeChat/DeepSeek**: `brain/secrets/` 目录下对应文件。
 - **触发**: 提到 "Token", "Key", "登录", "认证"。
 
 ## 3. 🔍 动态路由 (Dynamic Routing)
@@ -23,7 +23,7 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 | **🎭 业务方案/计划** | `memory/plans/` | 存放运营方案、执行策略、策略文档 |
 | **⚖️ 核心规则中心** | `rules/` | 加载编码规范、SOP、协作协议 |
 | **🛠️ 初始化与工具** | `tech_stack.md`, `scripts/` | 加载技术栈、执行环境初始化 |
-| **📡 通信与推送** | `docs/secrets/lark.env` | 配置飞书战报推送 |
+| **📡 通信与推送** | `brain/secrets/lark.env` | 配置飞书战报推送 |
 
 ## 4. 🛠 工具协议 (Tooling Protocol)
 - **物理访问**: `run_shell_command (cat / ls / grep)`。

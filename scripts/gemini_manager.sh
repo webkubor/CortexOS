@@ -3,7 +3,7 @@
 # Path: /Users/webkubor/Documents/AI_Common/docs/scripts/gemini_manager.sh
 
 GEMINI_DIR="$HOME/.gemini"
-PROFILE_STORE="$HOME/Documents/AI_Common/docs/secrets/gemini_profiles"
+PROFILE_STORE="$HOME/Documents/AI_Common/brain/secrets/gemini_profiles"
 LOGGER="$HOME/Documents/AI_Common/docs/scripts/log.sh"
 
 # Ensure profile store exists

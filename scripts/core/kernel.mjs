@@ -34,7 +34,7 @@ class BrainKernel {
     
     this.config = {
       docsDir: path.join(PROJECT_ROOT, 'docs'),
-      secretsDir: path.join(PROJECT_ROOT, 'docs/secrets'),
+      secretsDir: path.join(PROJECT_ROOT, 'brain/secrets'),
       logsDir: path.join(PROJECT_ROOT, 'docs/memory/logs'),
     };
 
@@ -45,7 +45,7 @@ class BrainKernel {
   getSecret(fileName, keyName) {
     const fullPath = path.join(this.config.secretsDir, fileName);
     if (!fs.existsSync(fullPath)) {
-      return { __status: 'MISSING', message: `需手动重建: docs/secrets/${fileName}` };
+      return { __status: 'MISSING', message: `需手动重建: brain/secrets/${fileName}` };
     }
 
     try {

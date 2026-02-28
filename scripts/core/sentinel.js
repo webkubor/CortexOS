@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 
 const DOCS_DIR = path.join(__dirname, '../../docs');
 const BUFFER_PATH = path.join(__dirname, '../../.context_buffer.json');
-const SECRETS_DIR = path.join(__dirname, '../../docs/secrets');
+const SECRETS_DIR = path.join(__dirname, '../../brain/secrets');
 const NOTIF_LOCK_PATH = path.join(__dirname, '../../.last_notif.json');
 const LOGS_DIR = path.join(DOCS_DIR, 'memory/logs');
 
