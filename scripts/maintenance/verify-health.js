@@ -15,6 +15,7 @@ const colors = {
   red: '\x1b[31m',
   green: '\x1b[32m',
   yellow: '\x1b[33m',
+  blue: '\x1b[34m',
   cyan: '\x1b[36m'
 };
 
@@ -193,22 +194,6 @@ function checkUnreferencedFiles() {
   }
 
   return unreferenced.length;
-}
-
-function getAllMarkdownFiles(dir) {
-  const files = [];
-  const items = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const item of items) {
-    const fullPath = path.join(dir, item.name);
-    if (item.isDirectory()) {
-      files.push(...getAllMarkdownFiles(fullPath));
-    } else if (item.name.endsWith('.md')) {
-      files.push(fullPath);
-    }
-  }
-
-  return files;
 }
 
 function generateIndexReport() {
