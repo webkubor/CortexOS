@@ -173,7 +173,10 @@ async function autoPilot() {
       addToLog({ title: '大脑同步', body: message });
       console.log(`🚀 飞书定制版战报已送达！`);
     }
-  } catch (e) { console.error('⚠️ 运行异常:', e.message); }
+  } catch (e) {
+    console.error('⚠️ 运行异常:', e.message);
+    sendNativeNotification('⚠️ 大脑神经元异常', `自动记录与同步失败: ${e.message}`);
+  }
 }
 
 autoPilot();
