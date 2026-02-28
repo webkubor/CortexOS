@@ -49,7 +49,6 @@ description: 职能部门化的 AI 扩展能力。核心逻辑已托管至 GitHu
 负责历史经验检索与碎片化资产定位。
 
 - [**知识导力 (Knowledge-Navigator)**](https://github.com/webkubor/knowledge-navigator-skill) - 混合 RAG 架构下的语义检索专家。
-- [**碎片管家 (Snippet-Master)**](./knowledge/snippet_master.md) - 常用配置与命令备忘。
 
 ---
 *Last Updated: 2026-02-28 (Powered by Candle)*
