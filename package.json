@@ -11,6 +11,7 @@
     "health:verify": "node scripts/maintenance/verify-health.js",
     "health:gate": "node scripts/maintenance/health-gate.js",
     "fleet:claim": "node scripts/actions/fleet-claim.mjs",
+    "fleet:status": "node scripts/actions/fleet-status.mjs",
     "fleet:handover": "node scripts/actions/fleet-handover.mjs",
     "gemini:auto": "scripts/actions/gemini-with-fleet.sh",
     "claude:auto": "scripts/actions/claude-with-fleet.sh",

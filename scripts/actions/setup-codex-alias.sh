@@ -29,6 +29,7 @@ usage() {
     - claude-brain
     - clb "任务描述"
     - handoverc "节点ID"
+    - fleetstat
     - brain-gate
 EOF
 }
@@ -116,6 +117,7 @@ $START_MARK
 alias codex-brain="${ROOT_DIR}/scripts/actions/codex-with-fleet.sh"
 alias gemini-brain="${ROOT_DIR}/scripts/actions/gemini-with-fleet.sh"
 alias claude-brain="${ROOT_DIR}/scripts/actions/claude-with-fleet.sh"
+alias fleetstat='cd "${ROOT_DIR}" && pnpm run fleet:status'
 alias brain-gate='cd "${ROOT_DIR}" && pnpm run health:gate'
 
 cdxb() {
@@ -175,3 +177,4 @@ echo "♻️ 让配置生效: source \"$RC_FILE\""
 echo "🚀 启动 Codex 并自动入脑: cdxb \"你的任务\""
 echo "🚀 启动 Claude 并自动入脑: clb \"你的任务\""
 echo "👑 移交 0 号机队长: handoverc \"Codex-3 (Codex)\""
+echo "📊 查看 Agent Team 状态: fleetstat"

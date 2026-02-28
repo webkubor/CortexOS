@@ -27,6 +27,7 @@ pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent "
   - Claude: `--agent "Claude" --alias "Claude"`
   - Codex: `--agent "Codex" --alias "Codex"`
 - **执行中补报**: 若 Agent 已经在执行任务但尚未登记，允许立即执行同一命令补报入队。
+- **一键看队列**: `pnpm run fleet:status` 可直接查看全体 Agent 状态、模型分布、队长与同路径并行风险。
 - **任务回填**: 初始为“待分配任务”时，拿到明确需求后必须再次执行 `fleet:claim` 回填任务字段。
 - **同路径并行提示**: 同一路径若已登记其他模型，系统会给出冲突告警（终端 + 系统通知），但不拦截启动与登记。
 - **队长移交触发**: 需要把 0 号机队长移交给其他正在执行的 Agent 时，执行：

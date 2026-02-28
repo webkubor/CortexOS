@@ -110,6 +110,7 @@ ${START_BLOCK}
 6. 用户称呼协议：默认称呼用户为“老爹”；若上一条遗漏称呼，下一条先纠正再继续任务。
 7. 若用户说“移交队长给 XXX / 把0号机交给 XXX / 队长切到 XXX”，直接触发：
    cd /Users/webkubor/Documents/AI_Common && pnpm run fleet:handover -- --to-node "XXX"
+8. 语言协议：默认且全程使用中文回复；仅在代码、命令、路径、专有名词场景保留英文。
 EOF
 )"
 
