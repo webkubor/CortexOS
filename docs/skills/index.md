@@ -23,6 +23,12 @@ description: 职能部门化的 AI 扩展能力。核心逻辑已托管至 GitHu
 - [**分镜导演 (Cinematic-Storyboard)**](https://github.com/webkubor/cinematic-storyboard-skill) - **顾栖月流**分镜与视频脚本。
 - [**音频工程师 (Audio-Music-Engineer)**](https://github.com/webkubor/audio-music-engineer-skill) - 乐理、编曲与音频处理逻辑。
 
+## ☁️ 存储与分发平台 (Hosting & Assets)
+
+负责引导用户搭建私人云存储与全类型资产大文件的高速跨域直达分发。
+
+- [**云端存储大师 (File-Hosting-Master)**](https://github.com/webkubor/file-hosting-master-skill) - 引导用户搭建专有 R2 或 GitHub 高速大文件图床。
+
 ## 🤖 工程与自动化部 (Engineering)
 
 负责基建、PWA 优化与全栈方案。
