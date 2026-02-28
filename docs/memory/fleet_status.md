@@ -16,6 +16,7 @@
 | **Candy-2 (Gemini)** | Gemini | `/Users/webkubor/Desktop/skills` | 技能路由排查与规则对齐 | 2026-02-28 17:52 | [ 执行中 ] 活跃 |
 | **Codex-3 (Codex)** | Codex | `/Users/webkubor/Desktop/create` | TTS 技术推进 | 2026-02-28 18:34 | [ 执行中 ] 活跃 |
 | **Codex-4 (Codex)** | Codex | `/Users/webkubor/Desktop/create/Qwen3-TTSBoiling-Snow-TTS` | 深度接入外部大脑：TTS 项目 AI 初始化（索引/规则/记忆链路） | 2026-02-28 18:45 | [ 执行中 ] 活跃 |
+| **Claude-5 (Claude)** | Claude | `/Users/webkubor/Desktop/claude-test` | test | 2026-02-28 19:03 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 
 ---

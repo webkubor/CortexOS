@@ -53,8 +53,16 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if ! command -v claude >/dev/null 2>&1; then
-  echo "未找到 claude 命令，请先安装并确保在 PATH 中。"
+LAUNCHER=()
+if command -v ccr >/dev/null 2>&1; then
+  # Prefer Claude Code Router when available (OpenRouter path).
+  ccr start >/dev/null 2>&1 || true
+  eval "$(ccr activate)"
+  LAUNCHER=(ccr code)
+elif command -v claude >/dev/null 2>&1; then
+  LAUNCHER=(claude)
+else
+  echo "未找到 claude/ccr 命令，请先安装并确保在 PATH 中。"
   exit 1
 fi
 
@@ -112,10 +120,10 @@ fi
 if [[ ${#PASS_ARGS[@]} -gt 0 ]]; then
   for arg in "${PASS_ARGS[@]}"; do
     if [[ "$arg" == "--help" || "$arg" == "-h" || "$arg" == "--version" || "$arg" == "-V" ]]; then
-      exec claude "${PASS_ARGS[@]}"
+      exec "${LAUNCHER[@]}" "${PASS_ARGS[@]}"
     fi
   done
-  exec claude "${PASS_ARGS[@]}" "$BOOTSTRAP_PROMPT"
+  exec "${LAUNCHER[@]}" "${PASS_ARGS[@]}" "$BOOTSTRAP_PROMPT"
 fi
 
-exec claude "$BOOTSTRAP_PROMPT"
+exec "${LAUNCHER[@]}" "$BOOTSTRAP_PROMPT"
