@@ -121,5 +121,19 @@ Codex 自动启动（先挂牌再进入 Codex）：
 - 默认自动注入 `$start`，让 Codex 冷启动就挂载 `router.md`。
 - 可用 `--dry-run` 仅预览入队结果与注入提示，不启动 Codex。
 
+一键配置终端快捷命令（zsh/bash）：
+
+```bash
+cd /Users/webkubor/Documents/AI_Common
+pnpm run codex:setup
+source ~/.zshrc
+```
+
+配置后常用命令：
+
+- `cdxb "任务"`: 自动入队 + `$start` 挂脑 + 启动 Codex
+- `gmb "任务"`: 自动入队 + 启动 Gemini
+- `brain-gate`: 在 AI_Common 执行健康门禁
+
 ---
 *Last Updated: 2026-02-28 (The Exocortex MCP Edition)*
