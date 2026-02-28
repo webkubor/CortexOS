@@ -11,7 +11,7 @@
 
 | 节点 ID (模型/别名) | 模型标签 (Agent) | 物理坐标 (绝对工作路径) | 当前执行的核心任务 (含目标) | 领命时间 | 状态与锁 (Status & Locks) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Claude-Prime (0号机/Claude)** | Claude | `/Users/webkubor/Documents/AI_Common` | Claude 接入测试：读取 router 并上报机号 | 2026-02-28 18:58 | [ 队长锁 ] 活跃 |
+| **Claude-Prime (0号机/Claude)** | Claude | `/Users/webkubor/Documents/AI_Common` | 你的任务 | 2026-02-28 19:04 | [ 队长锁 ] 活跃 |
 | **Candy-1 (Gemini)** | Gemini | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 深度接入外部大脑：建立项目索引、规则沉淀与记忆链条初始化 | 2026-02-28 18:10 | [ 执行中 ] 活跃 |
 | **Candy-2 (Gemini)** | Gemini | `/Users/webkubor/Desktop/skills` | 技能路由排查与规则对齐 | 2026-02-28 17:52 | [ 执行中 ] 活跃 |
 | **Codex-3 (Codex)** | Codex | `/Users/webkubor/Desktop/create` | TTS 技术推进 | 2026-02-28 18:34 | [ 执行中 ] 活跃 |
