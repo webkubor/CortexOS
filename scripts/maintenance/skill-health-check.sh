@@ -16,6 +16,9 @@ CORE_SKILLS=(
     "pwa-master|https://github.com/webkubor/pwa-master-skill"
     "ai-modification|https://github.com/webkubor/gemini-skill-ai-native"
     "omni-publisher|https://github.com/webkubor/omni-publisher-skill"
+    "knowledge-navigator|https://github.com/webkubor/knowledge-navigator-skill"
+    "code-aureate|https://github.com/webkubor/code-aureate-skill"
+    "brain-sentinel|https://github.com/webkubor/brain-sentinel-skill"
 )
 
 # 获取当前已安装技能列表

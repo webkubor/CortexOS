@@ -32,6 +32,18 @@
 - **Repo**: [webkubor/vitepress-init-expert](https://github.com/webkubor/vitepress-init-expert)
 - **核心专家**: VitePress Architecture, Doc Aesthetics.
 
+## 🚨 8. 大脑防御系统总架构师 (Brain Sentinel)
+- **Repo**: [webkubor/brain-sentinel-expert](https://github.com/webkubor/brain-sentinel-expert)
+- **核心专家**: Health Auditor, Memory Guardian.
+
+## 🏛 9. 黄金工程审美大师 (Code Aureate)
+- **Repo**: [webkubor/code-aureate-expert](https://github.com/webkubor/code-aureate-expert)
+- **核心专家**: Inception Expert, Engineering Aesthetician.
+
+## 🔍 10. 深度逻辑与 RAG 导航专家 (Knowledge Navigator)
+- **Repo**: [webkubor/knowledge-navigator-expert](https://github.com/webkubor/knowledge-navigator-expert)
+- **核心专家**: Socratic Guide, RAG Orchestrator.
+
 ---
 *Last Updated: 2026-02-28*
-- **状态**: 7 大专家全线开源并五维重塑完毕。
+- **状态**: 十大专家全线重塑、开源、备案完毕。
