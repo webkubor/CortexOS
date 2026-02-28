@@ -89,6 +89,7 @@ ${START_BLOCK}
 4. 首次回复请报告：已挂载路由 + 当前机号 + 当前工作路径
 5. 若当前任务为“待分配任务”，一旦拿到明确需求，立即回填：
    node /Users/webkubor/Documents/AI_Common/scripts/actions/fleet-claim.mjs --workspace "${WORKSPACE}" --task "<明确任务>" --agent "Codex" --alias "Codex"
+6. 用户称呼协议：默认称呼用户为“老爹”；若上一条遗漏称呼，下一条先纠正再继续任务。
 EOF
 )"
 
