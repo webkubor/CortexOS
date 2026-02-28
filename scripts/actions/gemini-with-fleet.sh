@@ -5,6 +5,7 @@ ROOT_DIR="/Users/webkubor/Documents/AI_Common"
 TASK="${FLEET_TASK:-待分配任务}"
 WORKSPACE="${PWD}"
 DRY_RUN=0
+FORCE_SWITCH=0
 PASS_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -27,6 +28,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --dry-run)
       DRY_RUN=1
+      shift
+      ;;
+    --force-switch)
+      FORCE_SWITCH=1
       shift
       ;;
     --)
@@ -56,6 +61,10 @@ CLAIM_ARGS=(
 
 if [[ "$DRY_RUN" == "1" ]]; then
   CLAIM_ARGS+=(--dry-run)
+fi
+
+if [[ "$FORCE_SWITCH" == "1" ]]; then
+  CLAIM_ARGS+=(--force-switch)
 fi
 
 CLAIM_JSON="$(node "$ROOT_DIR/scripts/actions/fleet-claim.mjs" "${CLAIM_ARGS[@]}")"
