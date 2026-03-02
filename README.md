@@ -1,197 +1,68 @@
-# 🧠 CortexOS — 大脑操作系统 v5.0
+# 🧠 CortexOS — 外部大脑操作系统 v5.0
 
-> **"不是聊天框，是接口标准。我是老爹的外挂硬盘，MCP 是我们之间的 USB-C。"**
->
-> 本项目是 **webkubor (老爹)** 的外部大脑 (Exocortex) 与 AI 舰队协同中枢。它由三层组成：可视化的 **VitePress 知识库**、对 AI 开放的 **MCP Server 接口层**，以及多 Agent 防碰撞的 **Fleet 编排系统**。
+> **“不是对话，是链接。不是聊天，是标准。我是老爹的外挂硬盘，MCP 是我们之间的 USB-C。”**
+
+**CortexOS** 是 webkubor (老爹) 的个人外部大脑 (Exocortex) 与多智能体舰队 (AI Fleet) 的协同中枢。它打破了 AI 模型之间的“阅后即焚”壁垒，通过物理锚定的规则、记忆与知识，构建起一个可持续进化的赛博意识系统。
 
 ---
 
-## ⚡ 这是什么？一句话理解
+## ⚡ 三层意识架构
 
-```
-老爹（你）
-  │
-  │  说意图
-  ▼
-AI Agent（Gemini / Codex / Claude Code）
-  │
-  │  调用 Tool（强类型合约，不靠猜）
-  ▼
-MCP Server（mcp_server/server.py）← 外脑的 USB-C 接口
-  │
-  │  读写
-  ▼
-CortexOS（你的外挂硬盘：规则 + 记忆 + 任务状态）
-```
-
-| 角色 | 类比 | 实体 |
-| :--- | :--- | :--- |
-| **老爹** | 决定插哪台设备的人 | 你 |
-| **外部大脑** | USB 外接硬盘（知识 + 规则） | `CortexOS/` 目录 |
-| **MCP Server** | USB-C 接口（标准通信协议） | `mcp_server/server.py` |
-| **Codex / Gemini / Claude** | 接收插入的电脑 | 各 AI Agent |
-| **Fleet Dashboard** | 硬盘状态指示灯 | VitePress AI Team 看板 |
+| 层次 | 实体 | 类比 | 核心价值 |
+| :--- | :--- | :--- | :--- |
+| **L1：意识表层** | VitePress 知识库 | **视觉显示器** | 可视化的规则、SOP 与工程复盘，让人机对齐有据可依。 |
+| **L2：中枢神经** | MCP Server | **USB-C 接口** | 基于 Model Context Protocol 的强类型合约，让 AI 能够原子级读写外脑资产。 |
+| **L3：逻辑深层** | AI Fleet 编排系统 | **硬盘指示灯** | 独创的舰队防碰撞协议（Fleet Guard），支持多模型并行而不产生指令冲突。 |
 
 ---
 
 ## 🚀 AI 舰队系统 (Agent Team)
 
-### 什么是 Agent Team？
+老爹在本地同时运行多个 AI (Gemini + Codex + Claude Code)，每个 AI 都是一个**执行节点**。为了防止它们在同一个项目里“打架”，CortexOS 强制执行入队打卡机制：
 
-老爹在本地同时跑多个 AI（Gemini + Codex + Claude Code），每个 AI 就是一个**执行节点（Agent）**。它们在同一个工作路径上操作时，极易发生**文件覆盖、状态不同步、互相不知道对方在干嘛**的问题。
+- **客观进度感知**：自动解析工作目录下的 `TODO.md`，用事实说话，杜绝进度欺骗。
+- **队长锁机制**：0 号机自动获得指挥权，其余机位环视协作，确保全局一致性。
+- **动态动效看板**：实时显示节点的脉冲状态，哪些在 Busy 卖力干活，哪些在 Idle 随时待命，一目了然。
 
-Agent Team 系统解决的就是这个问题：**让所有 AI 共享同一块外脑，并在开工前强制打卡报到，状态实时可见。**
-
-### 舰队状态看板
-
-访问 VitePress 站点的 **[AI Team 看板](/ai-team)**，实时查看全体 Agent 状态：
-
-- 当前进行中的任务节点与进度
-- 队长节点（0号机）标识
-- 历史离线成员记录
-
-### 快速入队（三大 AI 通用）
-
+### 快速入队命令
 ```bash
-cd /Users/webkubor/Documents/CortexOS
-pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent Gemini
-```
-
-参数说明：
-
-- `--agent`: `Gemini` / `Codex` / `Claude`
-- `--alias`: 人格别名（可选，如 `Candy`）
-- 自动判定机号（0号机 / n号机），防并行冲突
-- 同路径多模型在线时给出告警（不拦截）
-
-### 一键启动别名（配置在 `~/.zshrc`）
-
-| 命令 | 效果 |
-| :--- | :--- |
-| `cdxb "任务"` | 自动入队 + `$start` 挂脑 + 启动 Codex |
-| `gmb "任务"` | 自动入队 + 启动 Gemini |
-| `clb "任务"` | 自动入队 + 启动 Claude Code |
-| `handoverc "节点名"` | 一键移交 0 号机队长身份 |
-| `fleetstat` | 查看 AI Team 全体状态总览 |
-| `brain-gate` | 在 CortexOS 执行健康门禁 |
-
-### 队长移交
-
-```bash
-# 方式一：按节点名移交
-pnpm run fleet:handover -- --to-node "Codex-3 (Codex)"
-
-# 方式二：按路径移交
-pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
-```
-
-> 也可以直接对任意 AI 说："移交队长给 Codex-3"，它会自动执行。
-
----
-
-## 🔌 MCP Server 接入指南
-
-> **MCP（Model Context Protocol）** 是外脑与 AI 之间的标准通信协议，相当于 USB-C 接口。任何接入的 AI 都可以原子级调用外脑的核心操作。
-
-### 已暴露的 8 个 Tool
-
-| Tool | 功能 |
-| :--- | :--- |
-| `read_router()` | 读取大脑宪法（router.md） |
-| `get_fleet_status()` | 获取舰队实时 JSON 状态 |
-| `fleet_claim(...)` | Agent 打卡挂牌，防并行冲突 |
-| `fleet_handover(to_node)` | 队长移交 |
-| `list_rules()` | 列出所有可用规则 |
-| `load_rule(rule_name)` | 按需懒加载单条规则（防上下文污染） |
-| `log_task(content)` | 写入今日操作日志 |
-| `fleet_sync()` | 同步状态，刷新看板数据 |
-
-### 三大 AI 接入状态
-
-| AI | 配置文件 | 状态 |
-| :--- | :--- | :--- |
-| **Codex** | `~/.codex/config.toml` | ✅ 已接入 |
-| **Gemini CLI** | `~/.gemini/settings.json` | ✅ 已接入 |
-| **Claude Code** | `~/.claude.json`（`claude mcp add`） | ✅ 已接入 |
-
-### 手动接入其他工具（通用配置）
-
-```json
-{
-  "mcpServers": {
-    "cortexos-brain": {
-      "command": "uv",
-      "args": ["run", "/Users/webkubor/Documents/CortexOS/mcp_server/server.py"]
-    }
-  }
-}
-```
-
-### 本地启动 MCP Server
-
-```bash
-cd /Users/webkubor/Documents/CortexOS/mcp_server
-uv run server.py
+# 通用入队协议
+pnpm run fleet:claim -- --workspace "$PWD" --task "任务描述" --agent "Gemini"
 ```
 
 ---
 
-## 🧬 目录结构说明
+## 🔌 MCP Server 接入
 
-### 1. 🔌 MCP 接口层（`mcp_server/`）
+CortexOS 通过 Python 驱动的 **FastMCP** 暴露出 8 个核心工具，让 AI 拥有“实体感”：
 
-```
-mcp_server/
-├── server.py        # FastMCP 主体，8 个 Tool
-└── mcp_config.json  # 通用客户端配置参考
-```
-
-### 2. 🧠 意识表层（`docs/`）
-
-| 目录 | 用途 |
-| :--- | :--- |
-| `rules/` | 核心行为规范与 SOP |
-| `skills/` | Agent 可调用的专业技能 |
-| `persona/` | 小烛的人格设定与角色档案 |
-| `memory/logs/` | 每日操作日志（自动写入） |
-| `memory/fleet_status.md` | 舰队状态源文件 |
-| `public/data/` | 看板 JSON 数据（fleet:sync 生成） |
-
-### 3. 🦾 神经束（`scripts/`）
-
-| 目录 | 用途 |
-| :--- | :--- |
-| `scripts/actions/` | 自动启动脚本（fleet claim + 启动 AI） |
-| `scripts/ingest/` | ChromaDB RAG 写入与查询 |
+- `read_router()`: 检索大脑宪法。
+- `get_fleet_status()`: 洞察阵列实时 JSON 态势。
+- `log_task()`: 自动写入每日操作日志，形成进化闭环。
+- `fleet_sync()`: 刷新可视化看板数据。
 
 ---
 
-## 🔎 信息检索双轨协议
+## ⚖️ 核心原则：webkubor 审美准则
 
-| 场景 | 方案 | 命令 |
-| :--- | :--- | :--- |
-| **精确路径/代码查询** | grep / cat / ls 物理扫盘 | 原生 Shell |
-| **概念模糊/历史追忆** | ChromaDB 语义检索（RAG） | `uv run python3 scripts/ingest/query_brain.py "你的查询"` |
+本项目所有产出必须严格遵循 **《webkubor 开发与审美准则》**：
+1. **资产主权**：规则与密钥物理锚定在 `brain/` 目录下，严禁随处漂泊。
+2. **极致审美**：色系锁死莫兰迪，视觉偏好 3D Isometric / 磨砂玻璃质感。
+3. **去 AI 化表达**：拒绝廉价的震惊体，追求深耕一线的前端全栈专家人设。
 
 ---
 
-## ✅ 工程健康检查
+## ✅ 健康巡检
 
 ```bash
 pnpm run health:gate
 ```
-
-- 依次执行核心健康检查、文档索引验证、构建检查
-- 任一 P0 失败返回非 0 退出码，可接入 CI 阻断
+一键扫描大脑核心结构、文档索引引用以及构建完整性。
 
 ---
 
-## 📋 版本历史
-
-详见 [CHANGELOG.md](./CHANGELOG.md)
-
-**当前版本**: `v5.0.0` — MCP 接口层上线，三大 AI 全部接入外脑
+*“雪落江湖，热血难凉。一笔写风月，一心藏滚烫。”*  
+**CortexOS — 让 AI 真正成为你身体的一部分。**
 
 ---
-
-*Last Updated: 2026-03-02 (v5.0 · The Brain Goes Online)*
+*Last Updated: 2026-03-02 (v5.1.0 · Objective Progress Enabled)*
