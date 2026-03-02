@@ -30,6 +30,10 @@ pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent "
 - **一键看队列**: `pnpm run fleet:status` 可直接查看全体 Agent 状态、模型分布、队长与同路径并行风险。
 - **任务回填**: 初始为“待分配任务”时，拿到明确需求后必须再次执行 `fleet:claim` 回填任务字段。
 - **同路径并行提示**: 同一路径若已登记其他模型，系统会给出冲突告警（终端 + 系统通知），但不拦截启动与登记。
+- **入队回执前缀（强制）**: 完成 `fleet:claim` 后，Agent 第一条回复必须显式带前缀：
+  - 格式：`[AI-TEAM][<nodeId>][#<machineNumber>]`
+  - 示例：`[AI-TEAM][Codex-3 (Codex)][#3]`
+  - 目标：用户无需追问“是否排队/几号机”，开场即见机号与身份。
 - **队长移交触发**: 需要把 0 号机队长移交给其他正在执行的 Agent 时，执行：
 
 ```bash
@@ -86,6 +90,6 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 - **自动同步**: 每 5 分钟执行一次 Git 同步与推送。
 
 ---
-*Last Updated: 2026-02-28*
+*Last Updated: 2026-03-02*
 
-- **版本**: v4.6.0 (Fleet Self-Registration)
+- **版本**: v4.7.0 (Queue Prefix Handshake)

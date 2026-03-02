@@ -83,6 +83,10 @@ MACHINE_NUMBER="$(echo "$CLAIM_JSON" | sed -n 's/.*"machineNumber":[[:space:]]*\
 NODE_ID="$(echo "$CLAIM_JSON" | sed -n 's/.*"nodeId":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
 MACHINE_NUMBER="${MACHINE_NUMBER:-unknown}"
 NODE_ID="${NODE_ID:-Gemini-unknown}"
+QUEUE_PREFIX="[AI-TEAM][${NODE_ID}][#${MACHINE_NUMBER}]"
+
+echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} task=${TASK}"
+echo "📍 入场前缀: ${QUEUE_PREFIX}"
 
 BOOTSTRAP_PROMPT="$(cat <<EOF
 \$start
@@ -92,13 +96,14 @@ BOOTSTRAP_PROMPT="$(cat <<EOF
 1. 确认路由文件：/Users/webkubor/Documents/AI_Common/docs/router.md
 2. 确认编排板登记：${NODE_ID}（机号：${MACHINE_NUMBER}）
 3. 如与其他节点存在文件冲突风险，先给出冲突提示再执行
-4. 首次回复请报告：已挂载路由 + 当前机号 + 当前工作路径
-5. 若当前任务为“待分配任务”，一旦拿到明确需求，立即回填：
+4. 首次回复必须以此前缀开头：${QUEUE_PREFIX}
+5. 首次回复请报告：已挂载路由 + 当前机号 + 当前工作路径
+6. 若当前任务为“待分配任务”，一旦拿到明确需求，立即回填：
    node /Users/webkubor/Documents/AI_Common/scripts/actions/fleet-claim.mjs --workspace "${WORKSPACE}" --task "<明确任务>" --agent "Gemini" --alias "Candy"
-6. 用户称呼协议：默认称呼用户为“老爹”；若上一条遗漏称呼，下一条先纠正再继续任务。
-7. 若用户说“移交队长给 XXX / 把0号机交给 XXX / 队长切到 XXX”，直接触发：
+7. 用户称呼协议：默认称呼用户为“老爹”；若上一条遗漏称呼，下一条先纠正再继续任务。
+8. 若用户说“移交队长给 XXX / 把0号机交给 XXX / 队长切到 XXX”，直接触发：
    cd /Users/webkubor/Documents/AI_Common && pnpm run fleet:handover -- --to-node "XXX"
-8. 语言协议：默认且全程使用中文回复；仅在代码、命令、路径、专有名词场景保留英文。
+9. 语言协议：默认且全程使用中文回复；仅在代码、命令、路径、专有名词场景保留英文。
 EOF
 )"
 
