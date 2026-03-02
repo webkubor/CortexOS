@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-03-02T08:09:41.577Z",
+  "source": "docs/memory/fleet_status.md",
+  "total": 8,
+  "active": 2,
+  "offline": 6,
+  "queued": 0,
+  "members": [
+    {
+      "member": "Candy-Prime (0号机/Gemini)",
+      "agent": "Gemini",
+      "workspace": "/Users/webkubor",
+      "task": "协助老爹安装工具并同步密钥，维护外部大脑核心配置",
+      "since": "2026-03-02 10:33",
+      "status": "[ 队长锁 ] 活跃",
+      "type": "active",
+      "progress": 60,
+      "isCaptain": true
+    },
+    {
+      "member": "Claude-0 (Claude)",
+      "agent": "Claude",
+      "workspace": "/Users/webkubor/Documents/AI_Common",
+      "task": "你的任务",
+      "since": "2026-02-28 19:39",
+      "status": "[ 已离线 ] 存档",
+      "type": "offline",
+      "progress": 100,
+      "isCaptain": false
+    },
+    {
+      "member": "Candy-1 (Gemini)",
+      "agent": "Gemini",
+      "workspace": "/Users/webkubor/Desktop/omni-chatbot-sdk",
+      "task": "深度接入外部大脑：建立项目索引、规则沉淀与记忆链条初始化",
+      "since": "2026-02-28 18:10",
+      "status": "[ 已离线 ] 存档",
+      "type": "offline",
+      "progress": 100,
+      "isCaptain": false
+    },
+    {
+      "member": "Candy-2 (Gemini)",
+      "agent": "Gemini",
+      "workspace": "/Users/webkubor/Desktop/skills",
+      "task": "技能路由排查与规则对齐",
+      "since": "2026-02-28 17:52",
+      "status": "[ 已离线 ] 存档",
+      "type": "offline",
+      "progress": 100,
+      "isCaptain": false
+    },
+    {
+      "member": "Codex-3 (Codex)",
+      "agent": "Codex",
+      "workspace": "/Users/webkubor/Desktop/create",
+      "task": "TTS 技术推进",
+      "since": "2026-02-28 18:34",
+      "status": "[ 已离线 ] 存档",
+      "type": "offline",
+      "progress": 100,
+      "isCaptain": false
+    },
+    {
+      "member": "Codex-4 (Codex)",
+      "agent": "Codex",
+      "workspace": "/Users/webkubor/Desktop/create/Qwen3-TTSBoiling-Snow-TTS",
+      "task": "深度接入外部大脑：TTS 项目 AI 初始化（索引/规则/记忆链路）",
+      "since": "2026-02-28 18:45",
+      "status": "[ 已离线 ] 存档",
+      "type": "offline",
+      "progress": 100,
+      "isCaptain": false
+    },
+    {
+      "member": "Claude-5 (Claude)",
+      "agent": "Claude",
+      "workspace": "/Users/webkubor/Desktop/claude-test",
+      "task": "test",
+      "since": "2026-02-28 19:03",
+      "status": "[ 已离线 ] 存档",
+      "type": "offline",
+      "progress": 100,
+      "isCaptain": false
+    },
+    {
+      "member": "Candy-6 (Gemini)",
+      "agent": "Gemini",
+      "workspace": "/Users/webkubor/Documents/AI_Common",
+      "task": "待分配任务",
+      "since": "2026-03-02 12:16",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false
+    }
+  ]
+}

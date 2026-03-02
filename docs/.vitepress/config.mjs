@@ -25,6 +25,7 @@ export default defineConfig({
     logo: "/logo.svg",
     nav: [
       { text: "首页", link: "/" },
+      { text: "AI Team 看板", link: "/ai-team" },
       { text: "路由总览", link: "/router" },
       { text: "规则中心", link: "/rules/" },
       { text: "技能库", link: "/skills/" },
@@ -35,6 +36,7 @@ export default defineConfig({
         text: "🧠 核心配置 (Core)",
         items: [
           { text: "首页", link: "/" },
+          { text: "AI Team 看板", link: "/ai-team" },
           { text: "路由总览", link: "/router" },
           { text: "技术栈偏好", link: "/tech_stack" },
           { text: "代码片段", link: "/snippets/" },
