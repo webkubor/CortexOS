@@ -29,4 +29,4 @@
 
 - **向量引擎**: 本地 ChromaDB。
 - **Embedding**: Ollama (nomic-embed-text)。
-- **逻辑引擎**: 云端 API (DeepSeek / OpenRouter)。
+- **AI 舰队 (Agent Team)**: Gemini CLI / Codex / Claude Code，通过 MCP Server（CortexOS）统一接入外脑。
