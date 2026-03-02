@@ -22,7 +22,7 @@ export default defineConfig({
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],
   themeConfig: {
-    logo: "/CortexOS/logo.svg",
+    logo: "/logo.svg",
     nav: [
       { text: "AI Team 看板", link: "/ai-team" },
       { text: "路由总览", link: "/router" },
