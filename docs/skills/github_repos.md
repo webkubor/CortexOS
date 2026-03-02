@@ -23,8 +23,7 @@
 
 | 候选技能 | 当前位置 | 建议包名 |
 | :--- | :--- | :--- |
-| GitHub Ops | `/docs/skills/ops/github.md` | `github-ops-skill` |
-| GitLab Ops | `/docs/skills/ops/gitlab.md` | `gitlab-ops-skill` |
+| SCM Ops（GitHub + GitLab） | `/docs/skills/ops/github.md` + `/docs/skills/ops/gitlab.md` | `scm-ops-skill` |
 | XHS Ops | `/docs/skills/ops/xhs.md` | `xhs-ops-skill` |
 | Snippet Master | `/docs/skills/knowledge/snippet_master.md` | `snippet-master-skill` |
 

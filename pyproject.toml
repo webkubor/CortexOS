@@ -18,3 +18,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["scripts"]
+
+[tool.uv.workspace]
+members = [
+    "mcp_server",
+]

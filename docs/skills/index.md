@@ -27,8 +27,7 @@ description: 职能部门化的 AI 扩展能力。核心逻辑已托管至 GitHu
 
 优先级建议（按“复用价值 / 独立发布价值”）：
 
-- `skills/ops/github.md`：可拆 `github-ops-skill`
-- `skills/ops/gitlab.md`：可拆 `gitlab-ops-skill`
+- `skills/ops/github.md` + `skills/ops/gitlab.md`：合并拆成 `scm-ops-skill`
 - `skills/ops/xhs.md`：可拆 `xhs-ops-skill`
 - `skills/knowledge/snippet_master.md`：可拆 `snippet-master-skill`
 
