@@ -19,7 +19,9 @@
 | Knowledge-Navigator | `gemini skills install https://github.com/webkubor/knowledge-navigator-expert` | 知识检索、语义路由与 RAG 协同 | 已拆分 |
 | File-Hosting | `gemini skills install https://github.com/webkubor/file-hosting-expert` | R2/GitHub 图床与静态资产分发 | 已拆分 |
 | SCM-Ops | `gemini skills install https://github.com/webkubor/scm-ops-skill` | 跨平台代码托管与发版自动化（GitHub/GitLab） | 已拆分 |
-| XHS-Manager | `gemini skills install https://github.com/webkubor/xhs-manager-skill` | 小红书多账户管理与自动化发布协议 | 已拆分 |## 本地未拆分（候选）
+| XHS-Manager | `gemini skills install https://github.com/webkubor/xhs-manager-skill` | 小红书多账户管理与自动化发布协议 | 已拆分 |
+
+## 本地未拆分（候选）
 
 | 候选技能 | 当前位置 | 建议包名 |
 | :--- | :--- | :--- |

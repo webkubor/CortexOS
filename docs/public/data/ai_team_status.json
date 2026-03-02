@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-02T10:29:30.899Z",
+  "generatedAt": "2026-03-02T10:47:45.026Z",
   "version": "v5.1.0 (Objective Progress)",
   "source": "docs/memory/fleet_status.md",
   "total": 5,
@@ -39,7 +39,7 @@
       "since": "2026-03-02 18:15",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
-      "progress": 100,
+      "progress": 67,
       "isCaptain": false,
       "hasTodo": true
     },
