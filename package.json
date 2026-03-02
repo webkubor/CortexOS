@@ -14,6 +14,7 @@
     "fleet:status": "node scripts/actions/fleet-status.mjs",
     "fleet:handover": "node scripts/actions/fleet-handover.mjs",
     "fleet:sync-dashboard": "node scripts/actions/sync-fleet-dashboard.mjs",
+    "feishu:bot": "node scripts/services/feishu-bot-bridge.mjs",
     "gemini:auto": "scripts/actions/gemini-with-fleet.sh",
     "claude:auto": "scripts/actions/claude-with-fleet.sh",
     "codex:auto": "scripts/actions/codex-with-fleet.sh",
