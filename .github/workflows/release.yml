@@ -1,0 +1,65 @@
+name: Auto Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version info
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=${TAG#v}" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes from CHANGELOG
+        id: changelog
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # 从 CHANGELOG.md 提取对应版本的内容
+          if [ -f "CHANGELOG.md" ]; then
+            # 提取 ## [vX.Y.Z] 到下一个 ## 之间的内容
+            NOTES=$(awk "/^## \[?v?${VERSION}\]?/,/^## \[?v?[0-9]/" CHANGELOG.md | head -n -1 | tail -n +2)
+            if [ -z "$NOTES" ]; then
+              NOTES="详见 [CHANGELOG.md](./CHANGELOG.md)"
+            fi
+          else
+            NOTES="详见提交历史。"
+          fi
+
+          # 写入多行文本
+          {
+            echo "notes<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "CortexOS ${{ steps.version.outputs.tag }}"
+          body: |
+            ${{ steps.changelog.outputs.notes }}
+
+            ---
+            **完整变更日志**: [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.tag, '-') }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
