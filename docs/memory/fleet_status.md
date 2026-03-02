@@ -14,7 +14,7 @@
 | **Candy-Prime (0号机/Gemini)** | Gemini | `/Users/webkubor` | 协助老爹安装工具并同步密钥，维护外部大脑核心配置 | 2026-03-02 10:33 | [ 队长锁 ] 活跃 |
 | **Claude-0 (Claude)** | Claude | `/Users/webkubor/Documents/AI_Common` | 你的任务 | 2026-02-28 19:39 | [ 已离线 ] 存档 |
 | **Candy-1 (Gemini)** | Gemini | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 深度接入外部大脑：建立项目索引、规则沉淀与记忆链条初始化 | 2026-02-28 18:10 | [ 已离线 ] 存档 |
-| **Candy-2 (Gemini)** | Gemini | `/Users/webkubor/Desktop/skills` | 包装并推送 scm-ops-skill | 2026-03-02 17:11 | [ 执行中 ] 活跃 |
+| **Candy-2 (Gemini)** | Gemini | `/Users/webkubor/Desktop/skills` | 已完成：scm-ops-skill 与 xhs-manager-skill 的包装推送 | 2026-03-02 18:02 | [ 执行中 ] 活跃 |
 | **Codex-3 (Codex)** | Codex | `/Users/webkubor/Desktop/create` | TTS 技术推进 | 2026-02-28 18:34 | [ 已离线 ] 存档 |
 | **Codex-4 (Codex)** | Codex | `/Users/webkubor/Desktop/create/Qwen3-TTSBoiling-Snow-TTS` | 深度接入外部大脑：TTS 项目 AI 初始化（索引/规则/记忆链路） | 2026-02-28 18:45 | [ 已离线 ] 存档 |
 | **Claude-5 (Claude)** | Claude | `/Users/webkubor/Desktop/claude-test` | test | 2026-02-28 19:03 | [ 已离线 ] 存档 |
