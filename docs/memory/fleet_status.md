@@ -19,6 +19,8 @@
 | **Codex-4 (Codex)** | Codex | `/Users/webkubor/Desktop/create/Qwen3-TTSBoiling-Snow-TTS` | 深度接入外部大脑：TTS 项目 AI 初始化（索引/规则/记忆链路） | 2026-02-28 18:45 | [ 已离线 ] 存档 |
 | **Claude-5 (Claude)** | Claude | `/Users/webkubor/Desktop/claude-test` | test | 2026-02-28 19:03 | [ 已离线 ] 存档 |
 | **Candy-6 (Gemini)** | Gemini | `/Users/webkubor/Documents/AI_Common` | 待分配任务 | 2026-03-02 12:16 | [ 执行中 ] 活跃 |
+| **Claude-7 (Claude)** | Claude | `/Users/webkubor` | 待分配任务 | 2026-03-02 17:00 | [ 执行中 ] 活跃 |
+| **Candy-8 (Gemini)** | Gemini | `/Users/webkubor/Desktop/AI-tools` | 待分配任务 | 2026-03-02 17:04 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 
 ---
