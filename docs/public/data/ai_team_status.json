@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-02T08:09:41.577Z",
+  "generatedAt": "2026-03-02T09:52:50.294Z",
   "source": "docs/memory/fleet_status.md",
-  "total": 8,
-  "active": 2,
-  "offline": 6,
+  "total": 10,
+  "active": 5,
+  "offline": 5,
   "queued": 0,
   "members": [
     {
@@ -43,11 +43,11 @@
       "member": "Candy-2 (Gemini)",
       "agent": "Gemini",
       "workspace": "/Users/webkubor/Desktop/skills",
-      "task": "技能路由排查与规则对齐",
-      "since": "2026-02-28 17:52",
-      "status": "[ 已离线 ] 存档",
-      "type": "offline",
-      "progress": 100,
+      "task": "包装并推送 scm-ops-skill",
+      "since": "2026-03-02 17:11",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
       "isCaptain": false
     },
     {
@@ -89,6 +89,28 @@
       "workspace": "/Users/webkubor/Documents/AI_Common",
       "task": "待分配任务",
       "since": "2026-03-02 12:16",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false
+    },
+    {
+      "member": "Claude-7 (Claude)",
+      "agent": "Claude",
+      "workspace": "/Users/webkubor",
+      "task": "待分配任务",
+      "since": "2026-03-02 17:00",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false
+    },
+    {
+      "member": "Candy-8 (Gemini)",
+      "agent": "Gemini",
+      "workspace": "/Users/webkubor/Desktop/AI-tools",
+      "task": "待分配任务",
+      "since": "2026-03-02 17:04",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,

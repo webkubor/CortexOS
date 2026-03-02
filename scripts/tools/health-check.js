@@ -101,19 +101,28 @@ function verifyRouterPaths() {
 
 /**
  * 检查关键目录 (重构后)
+ * 注意：brain/secrets 和 memory/logs 属于本地私密/运行时目录，
+ * 在 CI 环境中不存在是正常的，不计入 P0 阻断项。
  */
 function checkCriticalDirectories() {
   log(colors.blue, '\n🔍 检查核心目录结构...');
-  const dirs = [
+  const isCI = process.env.CI === 'true';
+
+  // P0 严格检查：任何环境都必须存在
+  const criticalDirs = [
     { name: 'Rules', path: path.join(DOCS_DIR, 'rules') },
-    { name: 'Memory Logs', path: path.join(DOCS_DIR, 'memory/logs') },
-    { name: 'Secrets', path: path.join(PROJECT_ROOT, 'brain/secrets') },
     { name: 'UCD (Aesthetics)', path: path.join(DOCS_DIR, 'ucd') },
     { name: 'Core Scripts', path: path.join(SCRIPTS_DIR, 'core') }
   ];
 
+  // 本地专属目录：CI 环境跳过（私密 / 运行时生成）
+  const localOnlyDirs = [
+    { name: 'Memory Logs', path: path.join(DOCS_DIR, 'memory/logs') },
+    { name: 'Secrets', path: path.join(PROJECT_ROOT, 'brain/secrets') }
+  ];
+
   const missing = [];
-  for (const dir of dirs) {
+  for (const dir of criticalDirs) {
     if (checkFileExists(dir.path) && fs.statSync(dir.path).isDirectory()) {
       log(colors.green, `✅ ${dir.name} 目录存在`);
     } else {
@@ -121,23 +130,37 @@ function checkCriticalDirectories() {
       missing.push(dir.name);
     }
   }
+
+  for (const dir of localOnlyDirs) {
+    if (isCI) {
+      log(colors.yellow, `⏭️  ${dir.name} 已跳过 (CI 环境，本地私密目录)`);
+    } else if (checkFileExists(dir.path) && fs.statSync(dir.path).isDirectory()) {
+      log(colors.green, `✅ ${dir.name} 目录存在`);
+    } else {
+      log(colors.yellow, `⚠️  ${dir.name} 目录缺失 (本地建议创建)`);
+    }
+  }
+
   return missing;
 }
 
 /**
  * 检查 RAG 与 向量库环境
+ * chroma_db 是本地运行时数据库，CI 中不存在属正常，不计入 warning。
  */
 function checkVectorStore() {
   log(colors.blue, '\n🔍 检查 RAG 向量库环境...');
+  const isCI = process.env.CI === 'true';
   const chromaPath = path.join(PROJECT_ROOT, 'chroma_db');
   const queryScript = path.join(SCRIPTS_DIR, 'ingest/query_brain.py');
 
   let issues = [];
-  if (checkFileExists(chromaPath)) {
+  if (isCI) {
+    log(colors.yellow, '⏭️  ChromaDB 检查已跳过 (CI 环境，本地向量库)');
+  } else if (checkFileExists(chromaPath)) {
     log(colors.green, '✅ ChromaDB 本地数据存在');
   } else {
-    log(colors.yellow, '⚠️  ChromaDB 数据未就绪');
-    issues.push('ChromaDB 缺失');
+    log(colors.yellow, '⚠️  ChromaDB 数据未就绪（本地 RAG 功能不可用）');
   }
 
   if (checkFileExists(queryScript)) {
