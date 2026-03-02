@@ -36,7 +36,7 @@ onMounted(async () => {
   error.value = "";
   try {
     const res = await fetch("/CortexOS/data/ai_team_status.json", { cache: "no-store", headers: { pragma: 'no-cache' } });
-    if (!res.ok) throw new Error("HTTP " + res.status);
+    if (!res.ok) throw new Error("HTTP 错误 " + res.status);
     data.value = await res.json();
   } catch (e) {
     error.value = "加载失败: " + (e && e.message ? e.message : String(e));
@@ -59,15 +59,15 @@ function statusTone(member) {
 
 <template>
   <div class="fleet-dashboard">
-    <!-- Hero Section -->
+    <!-- 顶部状态栏 -->
     <header class="hero-panel">
       <div class="hero-glow"></div>
       <div class="hero-content">
         <div class="hero-kicker">
           <span class="live-dot" :class="{ 'is-working': currentMembers.some(m => isWorking(m)) }"></span>
-          AI TEAM COMMAND CENTER
+          CortexOS 阵列指挥部
         </div>
-        <h2 class="hero-title">CortexOS 阵列实时态势</h2>
+        <h2 class="hero-title">星际舰队实时态势</h2>
         <p class="hero-meta">大脑中枢同步: <span>{{ timeText }}</span></p>
       </div>
 
@@ -124,7 +124,7 @@ function statusTone(member) {
       {{ error }}
     </div>
     <template v-else>
-      <!-- Active Members -->
+      <!-- 活跃节点 -->
       <section class="section-container">
         <header class="section-head">
           <h3 class="section-title">全域节点矩阵</h3>
@@ -136,17 +136,17 @@ function statusTone(member) {
             <div class="card-glow"></div>
             <div class="working-flow" v-if="isWorking(member)"></div>
             
-            <div class="card-inner" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="card-inner">
               <header class="card-header">
                 <div class="member-info">
                   <h3 class="member-name">{{ member.member }}</h3>
                   <div class="badges">
                     <span class="badge agent">{{ member.agent }}</span>
-                    <span v-if="member.isCaptain" class="badge captain-badge">PRIME COMMANDER</span>
-                    <span v-if="member.hasTodo" class="badge todo-badge">OBJECTIVE PROG</span>
+                    <span v-if="member.isCaptain" class="badge captain-badge">首席指挥官</span>
+                    <span v-if="member.hasTodo" class="badge todo-badge">客观进度背书</span>
                   </div>
                 </div>
-                <div class="status-indicator" style="margin-left:auto;flex-shrink:0;">
+                <div class="status-indicator">
                   <span class="status-dot" :class="{ 'pulse': isWorking(member) }"></span>
                 </div>
               </header>
@@ -176,7 +176,7 @@ function statusTone(member) {
                   <code class="meta-value path" :title="member.workspace">{{ member.workspace }}</code>
                 </div>
                 <div class="meta-row">
-                  <span class="meta-label">已在线</span>
+                  <span class="meta-label">在线时长</span>
                   <span class="meta-value">{{ member.since }}</span>
                 </div>
               </div>
@@ -185,7 +185,7 @@ function statusTone(member) {
         </div>
       </section>
 
-      <!-- History -->
+      <!-- 历史记录 -->
       <details class="history-accordion">
         <summary class="history-summary">
           <span class="summary-content">
@@ -251,7 +251,7 @@ function statusTone(member) {
   height: 1.25em;
 }
 
-/* ===== Hero Section (玻璃拟态与流光) ===== */
+/* ===== 顶部面板 ===== */
 .hero-panel {
   position: relative;
   overflow: hidden;
@@ -368,7 +368,7 @@ function statusTone(member) {
               linear-gradient(90deg, #f59e0b, #9333ea, #3b82f6) border-box;
 }
 
-/* ===== 节点矩阵 (3D Isometric 感) ===== */
+/* ===== 节点矩阵 ===== */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -424,14 +424,8 @@ function statusTone(member) {
 
 .task-box {
   background: rgba(0,0,0,0.02);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 12px; padding: 16px; margin: 16px 0;
   border: 1px solid rgba(0,0,0,0.05);
-  min-height: 52px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
 }
 
 .working-label {
@@ -445,24 +439,9 @@ function statusTone(member) {
   font-family: var(--vp-font-family-mono); font-size: 13px; line-height: 1.6;
 }
 
-/* 进度条 */
-.progress-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.progress-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-.progress-value { font-size: 12px; color: var(--text-main); font-weight: 700; font-family: var(--vp-font-family-mono); }
-
+/* 进度条动画 */
 .progress-track {
-  height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden;
+  height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin-top: 8px;
 }
 
 .progress-fill {
@@ -485,45 +464,11 @@ function statusTone(member) {
   100% { background-position: 30px 0; }
 }
 
-.meta-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 4px;
-  border-top: 1px solid var(--card-border);
-}
-
-.meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 12px;
-}
-
-.meta-label {
-  color: var(--text-muted);
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.meta-value {
-  color: var(--text-main);
-  font-family: var(--vp-font-family-mono);
-  font-size: 12px;
-  text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 200px;
-}
-
 .meta-value.path {
-  background: #f8fafc; padding: 3px 8px; border-radius: 6px; font-size: 11px;
-  color: var(--vp-c-brand-1);
+  background: #f8fafc; padding: 4px 10px; border-radius: 8px; font-size: 11px;
 }
 
-/* ===== 历史面板 (精简化) ===== */
+/* ===== 历史面板 ===== */
 .history-accordion {
   margin-top: 12px;
   background: var(--vp-c-bg-soft);
