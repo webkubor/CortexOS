@@ -1,10 +1,8 @@
 """
-AI_Common 外部大脑 MCP Server
-基于 FastMCP，暴露"大脑"的核心操作为可被 AI 直接调用的 Tool。
-启动方式：
-  uv run server.py
-在 Gemini CLI / Claude 的 MCP 配置中添加：
-  { "command": "uv", "args": ["run", "/Users/webkubor/Documents/AI_Common/mcp_server/server.py"] }
+CortexOS 外部大脑 MCP Server（统一版 v2）
+基于 FastMCP，暴露大脑的 11 个核心操作 Tool。
+启动方式：uv run server.py
+接入配置：{ "command": "uv", "args": ["run", "/Users/webkubor/Documents/AI_Common/mcp_server/server.py"] }
 """
 
 import json
@@ -12,6 +10,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
+import requests
 from fastmcp import FastMCP
 
 # ===== 全局路径常量 =====
@@ -22,8 +21,10 @@ FLEET_JSON = BRAIN_ROOT / "docs" / "public" / "data" / "ai_team_status.json"
 RULES_DIR = DOCS / "rules"
 MEMORY_LOGS = DOCS / "memory" / "logs"
 ROUTER = DOCS / "router.md"
+SECRETS_DIR = BRAIN_ROOT / "brain" / "secrets"
+KNOWLEDGE_DIR = DOCS / "memory" / "knowledge"
 
-mcp = FastMCP(name="AI_Common Brain")
+mcp = FastMCP(name="CortexOS Brain")
 
 
 # ─────────────────────────────────────────────
@@ -68,10 +69,10 @@ def fleet_claim(
     必须在开始任何实质性工作之前调用，防止多 Agent 抢占同一工作路径造成冲突。
 
     参数:
-        workspace: 当前工作目录的绝对路径（例如 /Users/webkubor/Desktop/my-project）
+        workspace: 当前工作目录的绝对路径
         task: 本次任务的简短描述（1-2 句话）
         agent: 底层模型名称（Gemini / Claude / Codex）
-        alias: 人格名称（Candy / Opus / 等）
+        alias: 人格名称（Candy / 等）
     """
     cmd = [
         "pnpm", "run", "fleet:claim", "--",
@@ -81,17 +82,10 @@ def fleet_claim(
         "--alias", alias,
     ]
     try:
-        result = subprocess.run(
-            cmd,
-            cwd=str(BRAIN_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        output = result.stdout.strip()
+        result = subprocess.run(cmd, cwd=str(BRAIN_ROOT), capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
             return f"挂牌失败（exit {result.returncode}）：\n{result.stderr.strip()}"
-        return f"✅ 挂牌成功！\n{output}"
+        return f"✅ 挂牌成功！\n{result.stdout.strip()}"
     except subprocess.TimeoutExpired:
         return "超时：fleet:claim 命令执行超过 30 秒。"
     except Exception as e:
@@ -104,20 +98,13 @@ def fleet_claim(
 @mcp.tool()
 def fleet_handover(to_node: str) -> str:
     """将队长身份移交给指定的 Agent 节点。
-    当需要切换主控 Agent 时调用。
 
     参数:
         to_node: 目标节点名称（例如 "Codex-3 (Codex)"）
     """
     cmd = ["pnpm", "run", "fleet:handover", "--", "--to-node", to_node]
     try:
-        result = subprocess.run(
-            cmd,
-            cwd=str(BRAIN_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
+        result = subprocess.run(cmd, cwd=str(BRAIN_ROOT), capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
             return f"移交失败：\n{result.stderr.strip()}"
         return f"✅ 队长移交完成！\n{result.stdout.strip()}"
@@ -126,12 +113,11 @@ def fleet_handover(to_node: str) -> str:
 
 
 # ─────────────────────────────────────────────
-# Tool 5: 按标签按需加载规则文件（防上下文污染）
+# Tool 5: 按需加载规则文件（防上下文污染）
 # ─────────────────────────────────────────────
 @mcp.tool()
 def load_rule(rule_name: str) -> str:
-    """按名称加载 docs/rules/ 目录下的特定规则文件（按需懒加载，防止上下文污染）。
-    调用前先用 list_rules() 获取可用的规则列表。
+    """按名称加载 docs/rules/ 目录下的特定规则文件（懒加载，防止上下文污染）。
 
     参数:
         rule_name: 规则文件名（不含 .md，例如 "webkubor_vibe_manifesto"）
@@ -148,17 +134,11 @@ def load_rule(rule_name: str) -> str:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def list_rules() -> str:
-    """列出 docs/rules/ 目录下所有可用的规则文件名称。
-    用于在 load_rule() 前选择正确的规则标识符。
-    """
+    """列出 docs/rules/ 目录下所有可用的规则文件名称。"""
     if not RULES_DIR.exists():
         return "rules 目录不存在。"
     rules = [f.stem for f in sorted(RULES_DIR.glob("*.md"))]
-    return json.dumps(
-        {"available_rules": rules, "count": len(rules)},
-        ensure_ascii=False,
-        indent=2,
-    )
+    return json.dumps({"available_rules": rules, "count": len(rules)}, ensure_ascii=False, indent=2)
 
 
 # ─────────────────────────────────────────────
@@ -166,26 +146,21 @@ def list_rules() -> str:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def log_task(content: str, agent: str = "Gemini") -> str:
-    """将当前操作记录写入今日的 memory/logs/YYYY-MM-DD.md 日志文件。
-    任何完成的关键操作都应调用该 Tool 留档，形成可回溯的外脑记忆。
+    """将操作记录写入今日的 memory/logs/YYYY-MM-DD.md 日志文件。
 
     参数:
-        content: 要记录的内容（Markdown 格式，1-5 句话描述发生了什么）
+        content: 要记录的内容（Markdown 格式，1-5 句话）
         agent: 操作执行者（模型名称）
     """
     today = datetime.now().strftime("%Y-%m-%d")
     log_file = MEMORY_LOGS / f"{today}.md"
     MEMORY_LOGS.mkdir(parents=True, exist_ok=True)
-
     timestamp = datetime.now().strftime("%H:%M:%S")
     entry = f"\n## [{timestamp}] by {agent}\n{content}\n"
-
     if not log_file.exists():
         log_file.write_text(f"# 操作日志 {today}\n", encoding="utf-8")
-
     with log_file.open("a", encoding="utf-8") as f:
         f.write(entry)
-
     return f"✅ 日志已写入 {log_file.name}"
 
 
@@ -194,9 +169,7 @@ def log_task(content: str, agent: str = "Gemini") -> str:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def fleet_sync() -> str:
-    """触发 pnpm run fleet:sync 同步舰队状态，刷新 VitePress 看板数据。
-    在任何修改了成员状态后，应调用此 Tool 使前端 Dashboard 实时更新。
-    """
+    """触发 pnpm run fleet:sync 同步舰队状态，刷新 VitePress 看板数据。"""
     try:
         result = subprocess.run(
             ["pnpm", "run", "fleet:sync"],
@@ -210,6 +183,97 @@ def fleet_sync() -> str:
         return f"✅ 同步完成！\n{result.stdout.strip()}"
     except Exception as e:
         return f"执行异常：{e}"
+
+
+# ─────────────────────────────────────────────
+# Tool 9: 列出密钥文件
+# ─────────────────────────────────────────────
+@mcp.tool()
+def list_secrets() -> list[str]:
+    """列出 brain/secrets/ 目录下所有可用的密钥文件名称。"""
+    if not SECRETS_DIR.exists():
+        return []
+    return [f.name for f in SECRETS_DIR.iterdir() if f.is_file() and not f.name.startswith(".")]
+
+
+# ─────────────────────────────────────────────
+# Tool 10: 读取密钥文件
+# ─────────────────────────────────────────────
+@mcp.tool()
+def read_secret(name: str) -> str:
+    """读取 brain/secrets/ 目录中的指定密钥文件内容。
+
+    参数:
+        name: 密钥文件名（例如 'github.md'、'lark.env'）
+    """
+    secret_path = SECRETS_DIR / name
+    if not secret_path.exists():
+        available = list_secrets()
+        return f"错误：密钥文件 '{name}' 不存在。可用文件：{available}"
+    try:
+        return secret_path.read_text(encoding="utf-8")
+    except Exception as e:
+        return f"读取失败：{e}"
+
+
+# ─────────────────────────────────────────────
+# Tool 11: 发送飞书通知
+# ─────────────────────────────────────────────
+@mcp.tool()
+def send_lark_notification(title: str, body: str) -> str:
+    """通过飞书 Webhook 向老爹发送通知（仅工作时间 10:00-20:00 有效）。
+
+    参数:
+        title: 通知标题
+        body: 通知正文（最多 1000 字）
+    """
+    env_path = SECRETS_DIR / "lark.env"
+    if not env_path.exists():
+        return "错误：lark.env 不存在于 brain/secrets/ 目录。"
+    webhook_url = None
+    try:
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("LARK_WEBHOOK_URL="):
+                webhook_url = line.split("=", 1)[1].strip()
+                break
+    except Exception as e:
+        return f"读取配置失败：{e}"
+    if not webhook_url:
+        return "错误：lark.env 中未配置 LARK_WEBHOOK_URL。"
+    if not (10 <= datetime.now().hour < 20):
+        return "通知已跳过：当前不在工作时间（10:00-20:00）。"
+    payload = {
+        "msg_type": "post",
+        "content": {"post": {"zh_cn": {"title": f"🧠 CortexOS: {title}", "content": [[{"tag": "text", "text": body[:1000]}]]}}},
+    }
+    try:
+        resp = requests.post(webhook_url, json=payload, timeout=10)
+        return "✅ 飞书通知发送成功。" if resp.status_code == 200 else f"发送失败：HTTP {resp.status_code}"
+    except Exception as e:
+        return f"请求异常：{e}"
+
+
+# ─────────────────────────────────────────────
+# Tool 12: 知识库关键词检索
+# ─────────────────────────────────────────────
+@mcp.tool()
+def search_knowledge(query: str) -> list[dict]:
+    """在 docs/memory/knowledge/ 目录下全文检索包含指定关键词的知识文件。
+
+    参数:
+        query: 要检索的关键词或短语
+    """
+    results = []
+    if not KNOWLEDGE_DIR.exists():
+        return results
+    for file_path in KNOWLEDGE_DIR.iterdir():
+        if file_path.is_file() and not file_path.name.startswith("."):
+            try:
+                if query.lower() in file_path.read_text(encoding="utf-8").lower():
+                    results.append({"file": file_path.name, "match": True})
+            except Exception:
+                continue
+    return results
 
 
 # ─────────────────────────────────────────────

@@ -1108,10 +1108,14 @@ version = "0.1.0"
 source = { virtual = "mcp_server" }
 dependencies = [
     { name = "fastmcp" },
+    { name = "requests" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "fastmcp", specifier = ">=3.0.2" }]
+requires-dist = [
+    { name = "fastmcp", specifier = ">=3.0.2" },
+    { name = "requests", specifier = ">=2.32.5" },
+]
 
 [[package]]
 name = "mdurl"
