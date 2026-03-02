@@ -18,12 +18,11 @@
 | Code-Aureate | `gemini skills install https://github.com/webkubor/code-aureate-expert` | 工程质量审查与代码美学规则 | 已拆分 |
 | Knowledge-Navigator | `gemini skills install https://github.com/webkubor/knowledge-navigator-expert` | 知识检索、语义路由与 RAG 协同 | 已拆分 |
 | File-Hosting | `gemini skills install https://github.com/webkubor/file-hosting-expert` | R2/GitHub 图床与静态资产分发 | 已拆分 |
-
+| SCM-Ops | `gemini skills install https://github.com/webkubor/scm-ops-skill` | 跨平台代码托管与发版自动化（GitHub/GitLab） | 已拆分 |
 ## 本地未拆分（候选）
 
 | 候选技能 | 当前位置 | 建议包名 |
 | :--- | :--- | :--- |
-| SCM Ops（GitHub + GitLab） | `/docs/skills/ops/github.md` + `/docs/skills/ops/gitlab.md` | `scm-ops-skill` |
 | XHS Ops | `/docs/skills/ops/xhs.md` | `xhs-ops-skill` |
 | Snippet Master | `/docs/skills/knowledge/snippet_master.md` | `snippet-master-skill` |
 

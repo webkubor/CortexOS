@@ -139,7 +139,8 @@ source ~/.zshrc
 配置后常用命令：
 
 - `cdxb "任务"`: 自动入队 + `$start` 挂脑 + 启动 Codex
-- `gmb "任务"`: 自动入队 + 启动 Gemini
+- `
+"任务"`: 自动入队 + 启动 Gemini
 - `clb "任务"`: 自动入队 + 启动 Claude
 - `handoverc "Codex-3 (Codex)"`: 一键移交 0 号机队长
 - `fleetstat`: 一键查看 AI Team 状态总览
