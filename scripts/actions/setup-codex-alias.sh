@@ -117,6 +117,8 @@ $START_MARK
 alias codex-brain="${ROOT_DIR}/scripts/actions/codex-with-fleet.sh"
 alias gemini-brain="${ROOT_DIR}/scripts/actions/gemini-with-fleet.sh"
 alias claude-brain="${ROOT_DIR}/scripts/actions/claude-with-fleet.sh"
+# Direct launcher mapping: keep native habit while auto-joining fleet.
+alias gemini='gemini-brain'
 alias fleetstat='cd "${ROOT_DIR}" && pnpm run fleet:status'
 alias brain-gate='cd "${ROOT_DIR}" && pnpm run health:gate'
 
