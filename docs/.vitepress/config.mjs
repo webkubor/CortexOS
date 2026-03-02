@@ -3,8 +3,8 @@ import llmstxt from "vitepress-plugin-llms";
 
 export default defineConfig({
   lang: "zh-CN",
-  title: "小烛的外部大脑",
-  description: "小烛 (Candle) 的外部大脑：集成标准化操作规范 (SOP)、工程实践深度复盘与知识路由的 统一协同中枢。",
+  title: "CortexOS",
+  description: "个人外部大脑操作系统：基于 MCP 协议的多智能体协同中枢。",
   base: "/CortexOS/",
   srcExclude: [
     "**/secrets/**",
@@ -25,78 +25,39 @@ export default defineConfig({
     logo: "/logo.svg",
     nav: [
       { text: "🛰️ 阵列态势", link: "/" },
-      { text: "🗺️ 路由索引", link: "/router" },
+      { text: "🚀 使用指南", link: "/guide/" },
       {
-        text: "📚 大脑基座",
+        text: "🧩 技能矩阵",
         items: [
-          { text: "📏 规则中心", link: "/rules/" },
-          { text: "🧩 技能资产", link: "/skills/" },
-          { text: "🕒 深度复盘", link: "/retrospectives/" },
-          { text: "👋 关于主理人", link: "/about" },
+          { text: "开源技能库", link: "/skills/github_repos" },
+          { text: "本地集成能力", link: "/skills/" },
         ]
       },
+      { text: "🗺️ 路由索引", link: "/router" },
     ],
     sidebar: [
       {
-        text: "🧠 核心配置 (Core)",
+        text: "🚀 快速上手",
         items: [
-          { text: "AI Team 看板", link: "/ai-team" },
+          { text: "使用指引", link: "/guide/" },
           { text: "路由总览", link: "/router" },
-          { text: "技术栈偏好", link: "/tech_stack" },
-          { text: "代码片段", link: "/snippets/" },
         ],
       },
       {
-        text: "📏 规则中心 (Rules)",
+        text: "🧩 技能矩阵",
         items: [
-          { text: "总览", link: "/rules/" },
-          { text: "编码规范", link: "/rules/coding_rules" },
-          { text: "Git 提交规范", link: "/rules/git_commit_rules" },
-          { text: "隐私与忽略规范", link: "/rules/privacy_excludes" },
-          { text: "标准化操作规范 (SOP)", link: "/rules/workflow" },
-          { text: "Vibe 编程规则", link: "/rules/vibe_rules" },
+          { text: "开源技能库 (GitHub)", link: "/skills/github_repos" },
+          { text: "本地集成能力", link: "/skills/" },
         ],
       },
       {
-        text: "💎 职能部门 (Departments)",
+        text: "⚖️ 核心底座",
+        collapsed: true,
         items: [
-          { text: "Skills 包总览（唯一入口）", link: "/skills/github_repos" },
-          { text: "Skills 说明页", link: "/skills/" },
-          {
-            text: "本地保留能力（未拆分）",
-            collapsed: true,
-            items: [
-              { text: "Core 协议", link: "/skills/core/common_manifest" },
-              { text: "Ops 总览", link: "/skills/ops/" },
-              { text: "碎片知识管家", link: "/skills/knowledge/snippet_master" },
-            ]
-          },
-          {
-            text: "🤖 Agent 参谋矩阵",
-            collapsed: true,
-            items: [
-              { text: "矩阵总览", link: "/agents/" },
-              { text: "Claude", link: "/agents/claude/manifest" },
-              { text: "Gemini", link: "/agents/gemini/manifest" },
-              { text: "Codex", link: "/agents/codex/manifest" },
-            ]
-          }
+          { text: "审美准则", link: "/rules/webkubor_vibe_manifesto" },
+          { text: "关于主理人", link: "/about" },
         ]
-      },
-      {
-        text: "🕒 深度复盘 (Retrospectives)",
-        items: [
-          { text: "复盘总览", link: "/retrospectives/" },
-          {
-            text: "📚 规则复盘 (Rules)",
-            collapsed: true,
-            items: [
-              { text: "规则复盘总览", link: "/retrospectives/rules/" },
-              { text: "交互协议复盘", link: "/retrospectives/rules/interaction" },
-            ]
-          },
-        ],
-      },
+      }
     ],
 
     docFooter: {
