@@ -1,12 +1,11 @@
 {
-  "generatedAt": "2026-03-02T11:27:11.274Z",
-  "version": "v5.3.0 (Objective Progress + Zombie Detection + Heartbeat Meta)",
+  "generatedAt": "2026-03-02T11:28:35.893Z",
+  "version": "v5.3.0 (客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
   "total": 2,
   "active": 2,
   "offline": 0,
   "queued": 0,
-  "stale": 0,
   "members": [
     {
       "member": "Candy-2 (Gemini)",
@@ -19,12 +18,7 @@
       "progress": 60,
       "isCaptain": true,
       "hasTodo": false,
-      "isStale": false,
-      "firstLoginAt": "2026-03-02 18:02",
-      "lastHeartbeatAt": "2026-03-02 18:02",
-      "lastTask": "已完成：scm-ops-skill 与 xhs-manager-skill 的包装推送",
-      "lastStatus": "[ 队长锁 ] 活跃",
-      "lastCompletedTask": null
+      "isStale": false
     },
     {
       "member": "Candy-6 (Gemini)",
@@ -37,12 +31,7 @@
       "progress": 100,
       "isCaptain": false,
       "hasTodo": true,
-      "isStale": false,
-      "firstLoginAt": "2026-03-02 18:15",
-      "lastHeartbeatAt": "2026-03-02 18:15",
-      "lastTask": "待分配任务",
-      "lastStatus": "[ 执行中 ] 活跃",
-      "lastCompletedTask": null
+      "isStale": false
     }
   ]
 }

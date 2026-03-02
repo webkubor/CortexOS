@@ -1,7 +1,7 @@
 [project]
 name = "cortexos"
 version = "0.1.0"
-description = "External Brain Infrastructure for AI Collaboration"
+description = "CortexOS — 个人外部大脑操作系统核心基座"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
