@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-02T10:57:26.152Z",
+  "generatedAt": "2026-03-02T11:09:18.670Z",
   "version": "v5.3.0 (Objective Progress + Zombie Detection + Heartbeat Meta)",
   "source": "docs/memory/fleet_status.md",
   "total": 4,
@@ -34,7 +34,7 @@
       "since": "2026-03-02 18:15",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
-      "progress": 67,
+      "progress": 100,
       "isCaptain": false,
       "hasTodo": true,
       "isStale": false,
