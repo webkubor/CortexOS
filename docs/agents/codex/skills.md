@@ -18,7 +18,6 @@
 
 ### 3. 自动化与测试
 - **webapp-testing**: 基于 Playwright 的 E2E 测试。
-- **wechat-release**: 微信平台发布自动化。
 - **slack-gif-creator**: 动图生成逻辑模板。
 
 ### 4. 存储与逻辑
