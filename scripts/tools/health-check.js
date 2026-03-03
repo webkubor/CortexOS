@@ -6,6 +6,7 @@
  */
 
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,6 +17,7 @@ const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.join(__dirname, '../../');
 const DOCS_DIR = path.join(PROJECT_ROOT, 'docs');
 const SCRIPTS_DIR = path.join(PROJECT_ROOT, 'scripts');
+const EXTERNAL_SECRETS_DIR = process.env.CORTEXOS_SECRET_HOME || path.join(os.homedir(), 'Documents', 'CortexOS-Secrets');
 
 // 颜色输出
 const colors = {
@@ -101,7 +103,7 @@ function verifyRouterPaths() {
 
 /**
  * 检查关键目录 (重构后)
- * 注意：brain/secrets 和 memory/logs 属于本地私密/运行时目录，
+ * 注意：外置秘钥目录和 memory/logs 属于本地私密/运行时目录，
  * 在 CI 环境中不存在是正常的，不计入 P0 阻断项。
  */
 function checkCriticalDirectories() {
@@ -118,7 +120,7 @@ function checkCriticalDirectories() {
   // 本地专属目录：CI 环境跳过（私密 / 运行时生成）
   const localOnlyDirs = [
     { name: 'Memory Logs', path: path.join(DOCS_DIR, 'memory/logs') },
-    { name: 'Secrets', path: path.join(PROJECT_ROOT, 'brain/secrets') }
+    { name: 'External Secrets', path: EXTERNAL_SECRETS_DIR }
   ];
 
   const missing = [];

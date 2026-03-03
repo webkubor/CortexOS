@@ -19,7 +19,7 @@ priority: 1
 - **✅ 路径可达性**
   - [ ] `router.md` 可读取
   - [ ] 核心目录存在：`rules/`, `skills/`, `agents/`
-  - [ ] 凭证目录存在：`secrets/`
+  - [ ] 外置秘钥库可达（默认 `~/Documents/CortexOS-Secrets`）
 
 - **✅ 配置一致性**
   - [ ] `docs/.vitepress/config.mjs` 语法正确
@@ -118,7 +118,7 @@ find docs -name "*.json" -exec node -e "JSON.parse(require('fs').readFileSync('{
    - 修复或删除无效链接
    - 不要影响现有文档
 
-3. **凭证文件缺失**
+3. **外置秘钥文件缺失**
    - 立即声明无法继续
    - 指引用户手动补充
    - 不要尝试生成或猜测

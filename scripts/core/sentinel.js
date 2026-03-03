@@ -6,6 +6,7 @@
  */
 
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -15,7 +16,7 @@ const __dirname = path.dirname(__filename);
 
 const DOCS_DIR = path.join(__dirname, '../../docs');
 const BUFFER_PATH = path.join(__dirname, '../../.context_buffer.json');
-const SECRETS_DIR = path.join(__dirname, '../../brain/secrets');
+const SECRETS_DIR = process.env.CORTEXOS_SECRET_HOME || path.join(os.homedir(), 'Documents', 'CortexOS-Secrets');
 const NOTIF_LOCK_PATH = path.join(__dirname, '../../.last_notif.json');
 const LOGS_DIR = path.join(DOCS_DIR, 'memory/logs');
 
