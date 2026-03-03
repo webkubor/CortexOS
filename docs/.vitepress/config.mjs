@@ -59,14 +59,12 @@ export default defineConfig({
         items: [
           { text: "🌍 开源技能库 (GitHub)", link: "/skills/github_repos" },
           { text: "🏠 本地集成能力", link: "/skills/" },
-          { text: "🛠️ 技能工厂 (SOP)", link: "/skills/core/skill-creator" },
         ],
       },
       {
         text: "📏 核心准则 (Rules)",
         items: [
           { text: "🎨 webkubor 审美准则", link: "/rules/webkubor_vibe_manifesto" },
-          { text: "🧬 项目进化 SOP", link: "/skills/core/project_evolution_skill" },
           { text: "📝 编码规范", link: "/rules/coding_rules" },
           { text: "🔒 隐私排除规范", link: "/rules/privacy_excludes" },
         ],
