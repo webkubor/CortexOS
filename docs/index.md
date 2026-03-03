@@ -20,6 +20,7 @@ import FleetDashboard from './.vitepress/theme/components/FleetDashboard.vue'
 | **状态同步** | `pnpm run fleet:sync-dashboard` | 刷新看板动效与客观进度 (TODO.md) |
 | **队长移交** | `pnpm run fleet:handover` | 切换 0 号机指挥权 |
 | **健康门禁** | `pnpm run health:gate` | 扫描大脑结构与索引完整性 |
+| **功能总表** | `/guide/feature-matrix` | 查看全部命令与 MCP Tool |
 
 ---
 
