@@ -130,6 +130,62 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 
 ---
 
+## 4.1 后台自动任务（必须知道）
+
+你看到的“5 分钟自动同步、日志、舰队维护”都由后台进程 `brain-cortex-pilot` 负责。  
+如果它没跑，系统就不会自动记录和同步。
+
+### 什么时候启动
+
+- **首次安装完成后**：启动一次并保存为开机自启。  
+- **每天开工前**：先看状态是不是 `online`。  
+- **你改了 `scripts/core/auto-pilot.js` 或相关脚本后**：重启一次进程。  
+
+### 怎么启动（推荐）
+
+```bash
+cd CortexOS
+bash scripts/core/init-project.sh
+```
+
+这个初始化脚本会自动启动 PM2 里的 `brain-cortex-pilot`。
+
+### 已安装环境下的手动启动
+
+```bash
+cd CortexOS
+pm2 start scripts/core/auto-pilot.js --name brain-cortex-pilot --cron-restart "*/5 * * * *" --no-autorestart
+pm2 save
+```
+
+### 怎么确认它在跑
+
+```bash
+pm2 ls
+pm2 describe brain-cortex-pilot
+pm2 logs brain-cortex-pilot --lines 80
+```
+
+判定标准：
+
+- `pm2 ls` 里 `brain-cortex-pilot` 状态是 `online`。  
+- 日志里能看到同步/维护输出，而不是持续报错重启。  
+
+### 改完代码后怎么生效
+
+```bash
+pm2 restart brain-cortex-pilot
+```
+
+### 开机自动恢复（只需配置一次）
+
+```bash
+pm2 startup
+pm2 save
+```
+
+---
+
 ## 5. 目录怎么理解（用户视角）
 
 路径说明（统一约定）：
