@@ -14,10 +14,10 @@
 | **Candy-2 (Gemini)** | Gemini | 后端 | `/Users/webkubor/Desktop/skills` | 已完成：scm-ops-skill 与 xhs-manager-skill 的包装推送 | 2026-03-02 18:02 | [ 队长锁 ] 活跃 |
 | **Candy-3 (Gemini)** | Gemini | 未分配 | `/Users/webkubor/Desktop/create/cinematic-storyboard-pro` | 待分配任务 | 2026-03-03 16:22 | [ 执行中 ] 活跃 |
 | **Codex-1 (Codex)** | Codex | 未分配 | `/Users/webkubor/Documents/CortexOS` | 固化公共看板流程：所有 Agent 领任务时必须同步角色与任务 | 2026-03-03 16:37 | [ 执行中 ] 活跃 |
-| **Candy-Prime (0号机/Codex)** | Codex | 未分配 | `/Users/webkubor/Desktop/skills` | 按“-skill优先”规则清理同类非-skill技能 | 2026-03-03 17:00 | [ 队长锁 ] 活跃 |
+| **Candy-Prime (0号机/Codex)** | Codex | 未分配 | `/Users/webkubor/Desktop/skills` | 删除 skills：slack-gif-creator 与 sora（先备份后删除） | 2026-03-03 17:09 | [ 队长锁 ] 活跃 |
 | **Codex-5 (Codex)** | Codex | 前端 | `/Users/webkubor/Desktop/tarspay/spider-web` | 先查看 /Users/webkubor/Documents/memory/plans/projects/2026-03-03-spider-cs-bot-command-center.md；在该入口回报前端进展并完成客服面板与三接口接入。 | 2026-03-03 16:51 | [ 执行中 ] 活跃 |
 | **Candy-6 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/tarspay/spider-api-server` | 先查看 /Users/webkubor/Documents/memory/plans/projects/2026-03-03-spider-cs-bot-command-center.md；在该入口回报后端进展并完成 Decision Engine 与 LLM/RAG 链路。 | 2026-03-03 16:51 | [ 执行中 ] 活跃 |
-| **Candy-7 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/tarspay/spider-web` | 响应老爹关于机号的询问，并准备协助前端开发或排查工作 | 2026-03-03 16:25 | [ 执行中 ] 活跃 |
+| **Candy-7 (Gemini)** | Gemini | 未分配 | `/Users/webkubor/Desktop/tarspay/spider-web` | 待分配任务 | 2026-03-03 17:09 | [ 执行中 ] 活跃 |
 | **Candy-4 (Codex)** | Codex | 后端 | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 执行 start 技能，初始化 AI_Common 路由索引并建立懒加载机制。 | 2026-03-03 16:35 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | *(前端/后端)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 ---
