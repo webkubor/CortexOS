@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-03T07:50:00.234Z",
+  "generatedAt": "2026-03-03T07:55:00.325Z",
   "version": "v5.3.0 (客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
   "total": 4,
@@ -37,8 +37,8 @@
       "member": "Codex-1 (Codex)",
       "agent": "Codex",
       "workspace": "/Users/webkubor/Documents/CortexOS",
-      "task": "将 MCP send_lark_notification 改为走 Node 统一 Lark 服务并验证",
-      "since": "2026-03-03 15:46",
+      "task": "彻底移除 daily-retro（进程、配置、文档与脚本）",
+      "since": "2026-03-03 15:51",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,

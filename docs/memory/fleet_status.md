@@ -13,7 +13,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Candy-2 (Gemini)** | Gemini | `/Users/webkubor/Desktop/skills` | 已完成：scm-ops-skill 与 xhs-manager-skill 的包装推送 | 2026-03-02 18:02 | [ 队长锁 ] 活跃 |
 | **Candy-Prime (0号机/Gemini)** | Gemini | `/Users/webkubor/Desktop/create/cinematic-storyboard-pro` | 待分配任务 | 2026-03-03 11:09 | [ 队长锁 ] 活跃 |
-| **Codex-1 (Codex)** | Codex | `/Users/webkubor/Documents/CortexOS` | 将 MCP send_lark_notification 改为走 Node 统一 Lark 服务并验证 | 2026-03-03 15:46 | [ 执行中 ] 活跃 |
+| **Codex-1 (Codex)** | Codex | `/Users/webkubor/Documents/CortexOS` | 彻底移除 daily-retro（进程、配置、文档与脚本） | 2026-03-03 15:51 | [ 执行中 ] 活跃 |
 | **Candy-4 (Gemini)** | Gemini | `/Users/webkubor/Documents/memory` | 待分配任务 | 2026-03-03 14:33 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 ---

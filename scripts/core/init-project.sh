@@ -67,14 +67,10 @@ if command -v "pm2" &> /dev/null; then
   printf "${GREEN}🔄 正在启动大脑自动驾驶仪 (PM2)...${NC}\n"
   PILOT_ENABLED="true"
   PILOT_SCHEDULE="*/5 * * * *"
-  RETRO_ENABLED="false"
-  RETRO_SCHEDULE="0 18 * * *"
 
   if [ -f "$RUNTIME_CONFIG" ]; then
     PILOT_ENABLED=$(node -e 'const fs=require("fs");const c=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(c?.daemons?.["brain-cortex-pilot"]?.enabled ?? true));' "$RUNTIME_CONFIG" 2>/dev/null || echo "true")
     PILOT_SCHEDULE=$(node -e 'const fs=require("fs");const c=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(c?.daemons?.["brain-cortex-pilot"]?.schedule ?? "*/5 * * * *"));' "$RUNTIME_CONFIG" 2>/dev/null || echo "*/5 * * * *")
-    RETRO_ENABLED=$(node -e 'const fs=require("fs");const c=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(c?.daemons?.["daily-retro"]?.enabled ?? false));' "$RUNTIME_CONFIG" 2>/dev/null || echo "false")
-    RETRO_SCHEDULE=$(node -e 'const fs=require("fs");const c=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(c?.daemons?.["daily-retro"]?.schedule ?? "0 18 * * *"));' "$RUNTIME_CONFIG" 2>/dev/null || echo "0 18 * * *")
     printf "   ✅ 已加载后台配置: %s\n" "$RUNTIME_CONFIG"
   else
     printf "${YELLOW}⚠️ 未找到后台配置文件，使用默认调度。${NC}\n"
@@ -86,14 +82,6 @@ if command -v "pm2" &> /dev/null; then
   else
     pm2 delete brain-cortex-pilot 2>/dev/null || true
     printf "   ℹ️ brain-cortex-pilot 已按配置禁用。\n"
-  fi
-
-  if [ "$RETRO_ENABLED" = "true" ]; then
-    pm2 delete daily-retro 2>/dev/null || true
-    pm2 start scripts/actions/daily-report.js --name daily-retro --cron-restart="$RETRO_SCHEDULE" --no-autorestart
-  else
-    pm2 delete daily-retro 2>/dev/null || true
-    printf "   ℹ️ daily-retro 已按配置禁用。\n"
   fi
 
   pm2 save

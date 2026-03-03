@@ -16,13 +16,6 @@
       "script": "scripts/core/auto-pilot.js",
       "schedule": "*/5 * * * *",
       "purpose": "自动同步、AI Team 态势记录、僵尸清理、看板刷新"
-    },
-    "daily-retro": {
-      "enabled": false,
-      "managedBy": "pm2",
-      "script": "scripts/actions/daily-report.js",
-      "schedule": "0 18 * * *",
-      "purpose": "每天 18:00 弹出复盘提醒（Typora 打开当日日志）"
     }
   }
 }

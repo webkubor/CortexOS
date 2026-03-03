@@ -139,7 +139,7 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 如果它没跑，系统就不会自动记录和同步。
 
 后台任务的统一配置文件：`config/brain-runtime.json`  
-其中包含 `brain-cortex-pilot` 与 `daily-retro` 的默认状态、调度表达式和用途说明。
+其中包含 `brain-cortex-pilot` 的默认状态、调度表达式和用途说明。
 Lark 战报发送实现统一在：`scripts/services/lark-service.mjs`。
 
 ### 什么时候启动
