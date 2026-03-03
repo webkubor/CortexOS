@@ -13,7 +13,6 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Candy-2 (Gemini)** | Gemini | 后端 | `/Users/webkubor/Desktop/skills` | 已完成：scm-ops-skill 与 xhs-manager-skill 的包装推送 | 2026-03-02 18:02 | [ 队长锁 ] 活跃 |
 | **Candy-Prime (0号机/Codex)** | Codex | 未分配 | `/Users/webkubor/Desktop/skills` | 删除 skills：slack-gif-creator 与 sora（先备份后删除） | 2026-03-03 17:09 | [ 队长锁 ] 活跃 |
-| **Candy-9 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 排查 SDK 到 Spider API Server 的跨域/连接问题，确认 3000 端口服务状态。 | 2026-03-03 17:47 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | *(前端/后端)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 ---
 

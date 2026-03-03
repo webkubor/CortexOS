@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-03T11:10:00.397Z",
+  "generatedAt": "2026-03-03T12:40:30.902Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
-  "total": 3,
-  "active": 3,
+  "total": 2,
+  "active": 2,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -32,20 +32,6 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Candy-9 (Gemini)",
-      "agent": "Gemini",
-      "role": "前端",
-      "workspace": "/Users/webkubor/Desktop/omni-chatbot-sdk",
-      "task": "排查 SDK 到 Spider API Server 的跨域/连接问题，确认 3000 端口服务状态。",
-      "since": "2026-03-03 17:47",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     }
