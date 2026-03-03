@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-03T11:03:47.120Z",
+  "generatedAt": "2026-03-03T11:10:00.397Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
-  "total": 4,
-  "active": 4,
+  "total": 3,
+  "active": 3,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -32,20 +32,6 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Candy-8-7 (Gemini)",
-      "agent": "Gemini",
-      "role": "前端",
-      "workspace": "/Users/webkubor/Desktop/tarspay/spider-web",
-      "task": "同步项目指挥中心计划，协助 Codex-5 完成前端任务。",
-      "since": "2026-03-03 17:10",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     },
