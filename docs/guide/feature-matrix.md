@@ -40,7 +40,7 @@
 | 命令 | 用途 | 什么时候用 |
 | :--- | :--- | :--- |
 | `pnpm run feishu:bot` | 启动飞书机器人桥接服务 | 需要飞书桥接时 |
-| `pnpm run gemini:auto` | Gemini 自动接入脚本 | Gemini 端快速开工 |
+| `pnpm run gemini:auto` | Gemini 自动接入脚本（不注入 `$start`） | Gemini 端快速开工 |
 | `pnpm run claude:auto` | Claude 自动接入脚本 | Claude 端快速开工 |
 | `pnpm run codex:auto` | Codex 自动接入脚本 | Codex 端快速开工 |
 | `pnpm run codex:setup` | 安装 Codex 快捷命令 | 新机器初始化 |

@@ -13,11 +13,11 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Candy-2 (Gemini)** | Gemini | `/Users/webkubor/Desktop/skills` | 已完成：scm-ops-skill 与 xhs-manager-skill 的包装推送 | 2026-03-02 18:02 | [ 队长锁 ] 活跃 |
 | **Candy-Prime (0号机/Gemini)** | Gemini | `/Users/webkubor/Desktop/create/cinematic-storyboard-pro` | 待分配任务 | 2026-03-03 11:09 | [ 队长锁 ] 活跃 |
-| **Codex-1 (Codex)** | Codex | `/Users/webkubor/Documents/CortexOS` | 执行历史脱敏清理：移除 å·²ç§»é¤åå°ä»»å¡ 与 å·²ç§»é¤èæ¬ 在历史文档中的痕迹 | 2026-03-03 15:56 | [ 执行中 ] 活跃 |
+| **Codex-1 (Codex)** | Codex | `/Users/webkubor/Documents/CortexOS` | 移除 Gemini 启动时强制 $start 注入，改为长期记忆优先的轻量启动 | 2026-03-03 16:07 | [ 执行中 ] 活跃 |
 | **Candy-4 (Gemini)** | Gemini | `/Users/webkubor/Documents/memory` | 待分配任务 | 2026-03-03 14:33 | [ 执行中 ] 活跃 |
 | **Candy-3 (Codex)** | Codex | `/Users/webkubor/Desktop/skills` | 生成技能候选归档清单，降低维护成本 | 2026-03-03 15:59 | [ 执行中 ] 活跃 |
 | **Codex-5 (Codex)** | Codex | `/Users/webkubor/Desktop/tarspay/spider-web` | 对当前仓库进行代码审查，输出按严重级别排序的问题与风险 | 2026-03-03 16:02 | [ 执行中 ] 活跃 |
-| **Candy-6 (Gemini)** | Gemini | `/Users/webkubor/Desktop/tarspay/spider-api-server` | 待分配任务 | 2026-03-03 16:03 | [ 执行中 ] 活跃 |
+| **Candy-6 (Gemini)** | Gemini | `/Users/webkubor/Desktop/tarspay/spider-api-server` | 初始化并对接 CortexOS 外部大脑 (Start Skill Protocol) | 2026-03-03 16:07 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 ---
 

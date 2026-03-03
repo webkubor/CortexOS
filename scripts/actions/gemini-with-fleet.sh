@@ -86,31 +86,12 @@ NODE_ID="${NODE_ID:-Gemini-unknown}"
 QUEUE_PREFIX="[AI-TEAM][${NODE_ID}][#${MACHINE_NUMBER}]"
 
 echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} task=${TASK}"
-echo "📍 入场前缀: ${QUEUE_PREFIX}"
-
-BOOTSTRAP_PROMPT="$(cat <<EOF
-\$start
-请立即执行 start skill，先只读 router 并按懒加载机制继续。
-
-你正在接入 CortexOS 外部大脑，请先完成以下事项再进入常规任务：
-1. 确认路由文件：/Users/webkubor/Documents/CortexOS/docs/router.md
-2. 确认编排板登记：${NODE_ID}（机号：${MACHINE_NUMBER}）
-3. 如与其他节点存在文件冲突风险，先给出冲突提示再执行
-4. 首次回复必须以此前缀开头：${QUEUE_PREFIX}
-5. 首次回复请报告：已挂载路由 + 当前机号 + 当前工作路径
-6. 若当前任务为“待分配任务”，一旦拿到明确需求，立即回填：
-   node /Users/webkubor/Documents/CortexOS/scripts/actions/fleet-claim.mjs --workspace "${WORKSPACE}" --task "<明确任务>" --agent "Gemini" --alias "Candy"
-7. 用户称呼协议：默认称呼用户为“老爹”；若上一条遗漏称呼，下一条先纠正再继续任务。
-8. 若用户说“移交队长给 XXX / 把0号机交给 XXX / 队长切到 XXX”，直接触发：
-   cd /Users/webkubor/Documents/CortexOS && pnpm run fleet:handover -- --to-node "XXX"
-9. 语言协议：默认且全程使用中文回复；仅在代码、命令、路径、专有名词场景保留英文。
-EOF
-)"
+echo "📍 入场前缀(参考): ${QUEUE_PREFIX}"
+echo "🧠 启动模式: 直接进入 Gemini（不注入 \$start，默认依赖 ~/.gemini/GEMINI.md 长期记忆）"
 
 if [[ "$DRY_RUN" == "1" ]]; then
-  echo
-  echo "=== Bootstrap Prompt Preview ==="
-  echo "$BOOTSTRAP_PROMPT"
+  echo "=== Dry Run ==="
+  echo "gemini 将直接启动，不注入额外启动提示。"
   exit 0
 fi
 
@@ -120,7 +101,7 @@ if [[ ${#PASS_ARGS[@]} -gt 0 ]]; then
       exec gemini "${PASS_ARGS[@]}"
     fi
   done
-  exec gemini "${PASS_ARGS[@]}" "$BOOTSTRAP_PROMPT"
+  exec gemini "${PASS_ARGS[@]}"
 fi
 
-exec gemini "$BOOTSTRAP_PROMPT"
+exec gemini
