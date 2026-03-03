@@ -13,4 +13,3 @@ description: 核心研发、运维与协作规则集，确保 Agent 输出的一
 - [vibe_rules](./vibe_rules)
 - [workflow_retro](../retrospectives/rules/index.md)
 - [interaction](../retrospectives/rules/interaction.md)
-- [figma_mcp_config](./figma_mcp_config)

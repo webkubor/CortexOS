@@ -4,5 +4,5 @@
 
 ## 🛠️ 技能清单
 
-- [GitHub 运营助手](./github.md) - 仓库同步、Issue 管理。
-- [GitLab 管理员](./gitlab.md) - 私有仓库管理、CI/CD 维护。
+- **代码与流水线管理**: SCM-Ops Skill (见 [技能大盘](../index.md))
+- **平台分发**: Omni-Publisher Skill (见 [技能大盘](../index.md))

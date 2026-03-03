@@ -16,6 +16,7 @@
 ## 💡 使用说明
 
 这些片段主要用于：
+
 - 快速查找常用配置
 - 记录临时灵感
 - 保存命令备忘
@@ -24,4 +25,4 @@
 
 ## 🔗 相关技能
 
-- [Snippet Master](../skills/knowledge/snippet_master.md) - 碎片知识管家
+- [Skills Index](../skills/index.md) - 全局技能库

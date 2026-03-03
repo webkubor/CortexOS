@@ -1,4 +1,3 @@
-import os
 import json
 import re
 import fnmatch
@@ -129,7 +128,7 @@ def is_file_safe(file_path, content, scope):
     
     # 2. 内容自检：检测敏感词（遵循 privacy_excludes.md）
     if SENSITIVE_PATTERN.search(content):
-        print(f"🛡️ 隐私拦截: 文件 {os.path.basename(file_path)} 包含敏感信息，已跳过向量化。")
+        print(f"🛡️ 隐私拦截: 文件 {file_path.name} 包含敏感信息，已跳过向量化。")
         return False
     
     return True
