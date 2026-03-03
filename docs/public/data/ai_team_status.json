@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-03T09:20:00.361Z",
+  "generatedAt": "2026-03-03T09:40:00.393Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
   "total": 9,
@@ -124,8 +124,8 @@
       "agent": "Gemini",
       "role": "前端",
       "workspace": "/Users/webkubor/Desktop/omni-chatbot-sdk",
-      "task": "回答关于 Vue 支持的问题并确认项目技术栈",
-      "since": "2026-03-03 17:15",
+      "task": "已完成 SDK 对接 Spider 后端接口（查单、健康检查等增强能力），并更新了 Demo 页面的配置与品牌化。正在验证连接。",
+      "since": "2026-03-03 17:36",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,
