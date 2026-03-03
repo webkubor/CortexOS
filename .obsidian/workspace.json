@@ -185,6 +185,8 @@
   },
   "active": "09103922a3e24976",
   "lastOpenFiles": [
+    "未命名.base",
+    "TODO.md",
     "CortexOS-Secrets/Brain/r2_hosting.env",
     "CortexOS-Secrets/Brain/sina_mail.md",
     "CortexOS-Secrets/Brain/qq.md",
@@ -196,8 +198,6 @@
     "CortexOS-Secrets/Docs/wechat.md",
     "CortexOS-Secrets/Docs",
     "CortexOS-Secrets",
-    "未命名.base",
-    "TODO.md",
     "docs/memory/logs/2026-03-03.md",
     "CLAUDE.md",
     "CHANGELOG.md"
