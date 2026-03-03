@@ -7,7 +7,7 @@
 
 ## 2. 存储策略（外置）
 
-- 默认外置目录：`~/Documents/CortexOS-Secrets`
+- 默认外置目录：`~/Documents/memory/secrets`
 - 可覆盖环境变量：`CORTEXOS_SECRET_HOME=/你的私有路径`
 - 原则：
   - 私钥只存在外置目录，不进入 Git 仓库
@@ -21,7 +21,7 @@
 推荐做法：
 
 1. 主工程 Vault：`/Users/webkubor/Documents/CortexOS`
-2. 私钥 Vault：`/Users/webkubor/Documents/CortexOS-Secrets`
+2. 私钥 Vault：`/Users/webkubor/Documents/memory/secrets`
 3. 在 MCP 客户端为两个 Vault 分别配置独立 server（按需启用）
 
 Codex 示例（`~/.codex/config.toml`）：
@@ -33,7 +33,7 @@ args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "/Users/webkubor/Documents
 
 [mcp_servers.obsidian-secrets]
 command = "npx"
-args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "/Users/webkubor/Documents/CortexOS-Secrets" ]
+args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "/Users/webkubor/Documents/memory/secrets" ]
 ```
 
 ## 4. 模板生成
@@ -41,13 +41,13 @@ args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "/Users/webkubor/Documents
 执行命令自动生成 GitHub / GitLab / WeChat / DeepSeek / Lark 等模板：
 
 ```bash
-pnpm run secrets:init -- --target ~/Documents/CortexOS-Secrets/_templates
+pnpm run secrets:init -- --target ~/Documents/memory/secrets/_templates
 ```
 
 可选覆盖：
 
 ```bash
-pnpm run secrets:init -- --target ~/Documents/CortexOS-Secrets/_templates --force
+pnpm run secrets:init -- --target ~/Documents/memory/secrets/_templates --force
 ```
 
 ## 5. 最低模板要求
