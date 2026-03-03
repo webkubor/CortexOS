@@ -15,7 +15,7 @@
 每次触发会执行：
 
 1. 自动维护：`fleet-cleanup`（清理僵尸节点）+ `fleet-sync`（同步舰队看板）
-2. MCP 监护：`mcp-guard`（检查并修复 Gemini 的 `ai-common-brain` 配置漂移，异常时推送通知）
+2. MCP 监护：`mcp-guard`（检查并修复 Gemini 的 `cortexos-brain` 配置漂移，兼容迁移旧名，异常时推送通知）
 3. 收集 AI Team 态势：在线/排队/离线/僵尸、队长、任务清单、进度
 4. 汇总本轮改动文件（按路由意图分组）
 5. 写入 `docs/memory/logs/YYYY-MM-DD.md`

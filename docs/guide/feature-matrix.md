@@ -44,7 +44,7 @@
 | `pnpm run claude:auto` | Claude 自动接入脚本 | Claude 端快速开工 |
 | `pnpm run codex:auto` | Codex 自动接入脚本 | Codex 端快速开工 |
 | `pnpm run codex:setup` | 安装 Codex 快捷命令 | 新机器初始化 |
-| `node scripts/maintenance/mcp-guard.mjs` | MCP 自愈检查（修复 `ai-common-brain` 配置漂移） | 连接异常排障 |
+| `node scripts/maintenance/mcp-guard.mjs` | MCP 自愈检查（统一使用 `cortexos-brain`，兼容迁移旧名） | 连接异常排障 |
 
 ---
 
