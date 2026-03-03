@@ -19,13 +19,13 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 
 ```bash
 cd /Users/webkubor/Documents/CortexOS
-pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent "Codex" --alias "Codex"
+pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent "Codex" --alias "Codex" --role "后端"
 ```
 
 - **模型参数示例**:
-  - Gemini: `--agent "Gemini" --alias "Candy"`
-  - Claude: `--agent "Claude" --alias "Claude"`
-  - Codex: `--agent "Codex" --alias "Codex"`
+  - Gemini: `--agent "Gemini" --alias "Candy" --role "前端"`
+  - Claude: `--agent "Claude" --alias "Claude" --role "后端"`
+  - Codex: `--agent "Codex" --alias "Codex" --role "后端"`
 - **执行中补报**: 若 Agent 已经在执行任务但尚未登记，允许立即执行同一命令补报入队。
 - **一键看队列**: `pnpm run fleet:status` 可直接查看全体 Agent 状态、模型分布、队长与同路径并行风险。
 - **任务回填**: 初始为“待分配任务”时，拿到明确需求后必须再次执行 `fleet:claim` 回填任务字段。

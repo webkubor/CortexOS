@@ -44,8 +44,8 @@ function normalizeRole(value) {
   const raw = String(value ?? '').trim();
   if (!raw) return '未分配';
   const lower = raw.toLowerCase();
-  if (/(前端|frontend|front-end|fe)\b?/i.test(lower)) return '前端';
-  if (/(后端|backend|back-end|be)\b?/i.test(lower)) return '后端';
+  if (/(前端|frontend|front-end|fe)/i.test(lower)) return '前端';
+  if (/(后端|backend|back-end|be)/i.test(lower)) return '后端';
   return raw;
 }
 

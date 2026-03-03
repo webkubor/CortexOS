@@ -134,6 +134,7 @@ function normalizeTeamSnapshot(raw) {
       : statusToProgress(item.status);
     return {
       member: memberName,
+      role: item.role || '未分配',
       status: item.status || '未知',
       progress,
       task: item.task || '待分配任务',
@@ -175,6 +176,7 @@ function loadTeamSnapshotFromFleetStatus() {
     const members = Array.isArray(payload.nodes)
       ? payload.nodes.map(item => ({
           member: item.node || 'Unknown',
+          role: item.role || '未分配',
           status: item.status || '未知',
           progress: statusToProgress(item.status),
           task: item.task || '待分配任务',
@@ -226,7 +228,7 @@ function buildDetailedLog(buffer, groupedFiles, fileRecords, totalStat, teamSnap
       .sort((a, b) => Number(b.isCaptain) - Number(a.isCaptain) || b.progress - a.progress)
       .slice(0, 8);
     memberRows.forEach(member => {
-      message += `  - ${member.member} | ${member.progress}% | ${member.status} | ${member.task}\n`;
+      message += `  - ${member.member} | ${member.role || '未分配'} | ${member.progress}% | ${member.status} | ${member.task}\n`;
       message += `    ↳ ${member.workspace}\n`;
     });
     if (teamSnapshot.members.length > memberRows.length) {
@@ -278,7 +280,7 @@ function buildLarkSummary(buffer, fileRecords, groupedFiles, totalStat, teamSnap
       .sort((a, b) => Number(b.isCaptain) - Number(a.isCaptain) || b.progress - a.progress)
       .slice(0, 4)
       .forEach((member, idx) => {
-        lines.push(`${idx + 1}. ${member.member} ${member.progress}% | ${member.task}`);
+        lines.push(`${idx + 1}. ${member.member}(${member.role || '未分配'}) ${member.progress}% | ${member.task}`);
       });
     if (teamSnapshot.members.length > 4) {
       lines.push(`… 其余 ${teamSnapshot.members.length - 4} 个节点已省略`);

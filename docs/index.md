@@ -16,7 +16,7 @@ import FleetDashboard from './.vitepress/theme/components/FleetDashboard.vue'
 
 | 意图 | 命令 | 目标 |
 | :--- | :--- | :--- |
-| **新兵入队** | `pnpm run fleet:claim` | 注册任务、物理路径与 Agent 别名 |
+| **新兵入队** | `pnpm run fleet:claim` | 注册任务、物理路径、Agent 别名与角色（前端/后端） |
 | **状态同步** | `pnpm run fleet:sync-dashboard` | 刷新看板动效与客观进度 (TODO.md) |
 | **队长移交** | `pnpm run fleet:handover` | 切换 0 号机指挥权 |
 | **健康门禁** | `pnpm run health:gate` | 扫描大脑结构与索引完整性 |

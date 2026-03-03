@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="/Users/webkubor/Documents/CortexOS"
 TASK="${FLEET_TASK:-待分配任务}"
+ROLE="${FLEET_ROLE:-未分配}"
 WORKSPACE="${PWD}"
 USE_START=1
 DRY_RUN=0
@@ -22,6 +23,14 @@ while [[ $# -gt 0 ]]; do
     --workspace)
       if [[ $# -ge 2 && "${2:-}" != --* ]]; then
         WORKSPACE="$2"
+        shift 2
+      else
+        shift
+      fi
+      ;;
+    --role)
+      if [[ $# -ge 2 && "${2:-}" != --* ]]; then
+        ROLE="$2"
         shift 2
       else
         shift
@@ -71,6 +80,7 @@ CLAIM_ARGS=(
   --task "$TASK"
   --agent "Claude"
   --alias "Claude"
+  --role "$ROLE"
 )
 
 if [[ "$DRY_RUN" == "1" ]]; then
@@ -99,7 +109,7 @@ MACHINE_NUMBER="${MACHINE_NUMBER:-unknown}"
 NODE_ID="${NODE_ID:-Claude-unknown}"
 QUEUE_PREFIX="[AI-TEAM][${NODE_ID}][#${MACHINE_NUMBER}]"
 
-echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} task=${TASK}"
+echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} role=${ROLE} task=${TASK}"
 echo "📍 入场前缀: ${QUEUE_PREFIX}"
 
 if [[ "$USE_START" == "1" ]]; then

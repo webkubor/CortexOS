@@ -127,7 +127,7 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 | `pnpm run dev` | 本地看文档站 |
 | `pnpm run health:core` | 快速体检核心结构 |
 | `pnpm run fleet:status` | 看 AI 队列和冲突风险 |
-| `pnpm run fleet:claim -- --workspace "$PWD" --task "任务名" --agent "Codex" --alias "Codex"` | 开工前打卡 |
+| `pnpm run fleet:claim -- --workspace "$PWD" --task "任务名" --agent "Codex" --alias "Codex" --role "后端"` | 开工前打卡并声明角色 |
 | `pnpm run fleet:sync-dashboard` | 同步舰队看板 |
 | `cp docs/secrets/_templates/github.md <memory-secrets-path>/github.md` | 从项目模板复制一份到外置秘钥目录 |
 

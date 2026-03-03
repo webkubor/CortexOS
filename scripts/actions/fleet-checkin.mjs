@@ -18,6 +18,15 @@ function normalizeAgent(value) {
   return raw;
 }
 
+function normalizeRole(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "未分配";
+  const lower = raw.toLowerCase();
+  if (/(前端|frontend|front-end|fe)/i.test(lower)) return "前端";
+  if (/(后端|backend|back-end|be)/i.test(lower)) return "后端";
+  return raw;
+}
+
 function nowLocal() {
   const now = new Date();
   const year = now.getFullYear();
@@ -32,6 +41,7 @@ function parseArgs(argv) {
   const args = {
     workspace: process.cwd(),
     agent: "Unknown",
+    role: "未分配",
     task: "心跳打卡",
     status: "[ 执行中 ] 活跃",
     nodeId: "",
@@ -43,6 +53,7 @@ function parseArgs(argv) {
     const token = argv[i];
     if (token === "--workspace" && argv[i + 1]) args.workspace = argv[++i];
     else if (token === "--agent" && argv[i + 1]) args.agent = argv[++i];
+    else if (token === "--role" && argv[i + 1]) args.role = argv[++i];
     else if (token === "--task" && argv[i + 1]) args.task = argv[++i];
     else if (token === "--status" && argv[i + 1]) args.status = argv[++i];
     else if (token === "--node-id" && argv[i + 1]) args.nodeId = argv[++i];
@@ -52,6 +63,7 @@ function parseArgs(argv) {
 
   args.workspace = path.resolve(args.workspace);
   args.agent = normalizeAgent(sanitize(args.agent));
+  args.role = normalizeRole(sanitize(args.role));
   args.task = sanitize(args.task);
   args.status = sanitize(args.status);
   args.nodeId = sanitize(args.nodeId);
@@ -61,7 +73,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log("用法:");
-  console.log('  node scripts/actions/fleet-checkin.mjs --workspace <path> --agent <Gemini|Codex|Claude> [--task "心跳打卡"] [--status "[ 执行中 ] 活跃"] [--node-id "节点ID"]');
+  console.log('  node scripts/actions/fleet-checkin.mjs --workspace <path> --agent <Gemini|Codex|Claude> [--role 前端|后端] [--task "心跳打卡"] [--status "[ 执行中 ] 活跃"] [--node-id "节点ID"]');
   console.log("示例:");
   console.log('  node scripts/actions/fleet-checkin.mjs --workspace "$PWD" --agent Codex --task "继续修复"');
 }
@@ -75,6 +87,7 @@ function main() {
 
   const saved = touchFleetMeta({
     agent: args.agent,
+    role: args.role,
     workspace: args.workspace,
     task: args.task,
     status: args.status,
@@ -88,6 +101,7 @@ function main() {
         ok: true,
         action: "checkin",
         agent: args.agent,
+        role: args.role,
         workspace: args.workspace,
         heartbeatAt: args.heartbeatAt,
         firstLoginAt: saved.firstLoginAt,

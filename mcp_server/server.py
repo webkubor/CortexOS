@@ -69,6 +69,7 @@ def fleet_claim(
     task: str,
     agent: str = "Gemini",
     alias: str = "Candy",
+    role: str = "未分配",
 ) -> str:
     """在 AI 舰队中登记当前 Agent 的工作节点与任务描述（打卡挂牌）。
     必须在开始任何实质性工作之前调用，防止多 Agent 抢占同一工作路径造成冲突。
@@ -78,6 +79,7 @@ def fleet_claim(
         task: 本次任务的简短描述（1-2 句话）
         agent: 底层模型名称（Gemini / Claude / Codex）
         alias: 人格名称（Candy / 等）
+        role: 节点角色（前端 / 后端）
     """
     cmd = [
         "pnpm", "run", "fleet:claim", "--",
@@ -85,6 +87,7 @@ def fleet_claim(
         "--task", task,
         "--agent", agent,
         "--alias", alias,
+        "--role", role,
     ]
     try:
         result = subprocess.run(cmd, cwd=str(BRAIN_ROOT), capture_output=True, text=True, timeout=30)

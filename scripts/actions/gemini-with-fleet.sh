@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="/Users/webkubor/Documents/CortexOS"
 TASK="${FLEET_TASK:-待分配任务}"
+ROLE="${FLEET_ROLE:-未分配}"
 WORKSPACE="${PWD}"
 DRY_RUN=0
 FORCE_SWITCH=0
@@ -21,6 +22,14 @@ while [[ $# -gt 0 ]]; do
     --workspace)
       if [[ $# -ge 2 && "${2:-}" != --* ]]; then
         WORKSPACE="$2"
+        shift 2
+      else
+        shift
+      fi
+      ;;
+    --role)
+      if [[ $# -ge 2 && "${2:-}" != --* ]]; then
+        ROLE="$2"
         shift 2
       else
         shift
@@ -57,6 +66,7 @@ CLAIM_ARGS=(
   --workspace "$WORKSPACE"
   --task "$TASK" \
   --agent "Gemini"
+  --role "$ROLE"
 )
 
 if [[ "$DRY_RUN" == "1" ]]; then
@@ -85,7 +95,7 @@ MACHINE_NUMBER="${MACHINE_NUMBER:-unknown}"
 NODE_ID="${NODE_ID:-Gemini-unknown}"
 QUEUE_PREFIX="[AI-TEAM][${NODE_ID}][#${MACHINE_NUMBER}]"
 
-echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} task=${TASK}"
+echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} role=${ROLE} task=${TASK}"
 echo "📍 入场前缀(参考): ${QUEUE_PREFIX}"
 echo "🧠 启动模式: 直接进入 Gemini（不注入 \$start，默认依赖 ~/.gemini/GEMINI.md 长期记忆）"
 

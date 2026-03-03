@@ -51,8 +51,8 @@ function normalizeRole(value) {
   const raw = String(value ?? "").trim();
   if (!raw) return "未分配";
   const lower = raw.toLowerCase();
-  if (/(前端|frontend|front-end|fe)\b?/i.test(lower)) return "前端";
-  if (/(后端|backend|back-end|be)\b?/i.test(lower)) return "后端";
+  if (/(前端|frontend|front-end|fe)/i.test(lower)) return "前端";
+  if (/(后端|backend|back-end|be)/i.test(lower)) return "后端";
   return raw;
 }
 
@@ -180,7 +180,7 @@ function main() {
 
   const payload = {
     generatedAt: new Date().toISOString(),
-    version: "v5.3.0 (客观进度 + 僵尸检测)",
+    version: "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
     source: "docs/memory/fleet_status.md",
     total: rows.length,
     active: rows.filter((r) => r.type === "active").length,

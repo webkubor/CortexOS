@@ -28,7 +28,7 @@
 
 | 命令 | 用途 | 什么时候用 |
 | :--- | :--- | :--- |
-| `pnpm run fleet:claim -- --workspace "$PWD" --task "任务" --agent "Codex" --alias "Codex"` | 入队挂牌、声明任务 | 开工前必须 |
+| `pnpm run fleet:claim -- --workspace "$PWD" --task "任务" --agent "Codex" --alias "Codex" --role "后端"` | 入队挂牌、声明任务与角色（前端/后端） | 开工前必须 |
 | `pnpm run fleet:status` | 查看队列、队长、冲突风险 | 领任务前/冲突排查 |
 | `pnpm run fleet:handover -- --to-node "节点名"` | 队长移交 | 需要切换指挥权 |
 | `pnpm run fleet:cleanup` | 清理离线/超时僵尸节点 | 人工维护或排障 |

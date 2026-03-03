@@ -71,8 +71,8 @@ function normalizeRole(value) {
   const raw = String(value ?? '').trim();
   if (!raw) return '未分配';
   const lower = raw.toLowerCase();
-  if (/(前端|frontend|front-end|fe)\b?/i.test(lower)) return '前端';
-  if (/(后端|backend|back-end|be)\b?/i.test(lower)) return '后端';
+  if (/(前端|frontend|front-end|fe)/i.test(lower)) return '前端';
+  if (/(后端|backend|back-end|be)/i.test(lower)) return '后端';
   return raw;
 }
 
@@ -272,6 +272,7 @@ function main() {
     touchFleetMeta({
       agent: args.agent,
       workspace: args.workspace,
+      role: args.role,
       task: args.task,
       status: number === 0 ? '[ 队长锁 ] 活跃' : args.status,
       heartbeatAt,
