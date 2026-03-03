@@ -21,7 +21,8 @@ const TEAM_STATUS_JSON_PATH = path.join(PROJECT_ROOT, 'docs/public/data/ai_team_
 
 const AUTO_MAINTENANCE_TASKS = [
   { key: 'fleet-cleanup', cmd: 'node scripts/actions/fleet-cleanup.mjs' },
-  { key: 'fleet-sync', cmd: 'node scripts/actions/sync-fleet-dashboard.mjs' }
+  { key: 'fleet-sync', cmd: 'node scripts/actions/sync-fleet-dashboard.mjs' },
+  { key: 'mcp-guard', cmd: 'node scripts/maintenance/mcp-guard.mjs' }
 ];
 
 /**

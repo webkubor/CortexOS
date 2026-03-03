@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-03T08:10:00.233Z",
+  "generatedAt": "2026-03-03T08:15:00.422Z",
   "version": "v5.3.0 (客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
   "total": 7,
@@ -37,8 +37,8 @@
       "member": "Codex-1 (Codex)",
       "agent": "Codex",
       "workspace": "/Users/webkubor/Documents/CortexOS",
-      "task": "移除 Gemini 启动时强制 $start 注入，改为长期记忆优先的轻量启动",
-      "since": "2026-03-03 16:07",
+      "task": "排查并修复 ai-common-brain 掉线后未自动重启与未通知问题",
+      "since": "2026-03-03 16:11",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,
