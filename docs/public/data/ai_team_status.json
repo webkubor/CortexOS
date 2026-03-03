@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-03T09:40:00.393Z",
+  "generatedAt": "2026-03-03T09:50:00.399Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
   "total": 9,
@@ -124,8 +124,8 @@
       "agent": "Gemini",
       "role": "前端",
       "workspace": "/Users/webkubor/Desktop/omni-chatbot-sdk",
-      "task": "已完成 SDK 对接 Spider 后端接口（查单、健康检查等增强能力），并更新了 Demo 页面的配置与品牌化。正在验证连接。",
-      "since": "2026-03-03 17:36",
+      "task": "排查 SDK 到 Spider API Server 的跨域/连接问题，确认 3000 端口服务状态。",
+      "since": "2026-03-03 17:47",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,

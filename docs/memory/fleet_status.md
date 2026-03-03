@@ -19,7 +19,7 @@
 | **Candy-6 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/tarspay/spider-api-server` | 先查看 /Users/webkubor/Documents/memory/plans/projects/2026-03-03-spider-cs-bot-command-center.md；在该入口回报后端进展并完成 Decision Engine 与 LLM/RAG 链路。 | 2026-03-03 16:51 | [ 执行中 ] 活跃 |
 | **Candy-8-7 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/tarspay/spider-web` | 同步项目指挥中心计划，协助 Codex-5 完成前端任务。 | 2026-03-03 17:10 | [ 执行中 ] 活跃 |
 | **Candy-4 (Codex)** | Codex | 后端 | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 执行 start 技能，初始化 AI_Common 路由索引并建立懒加载机制。 | 2026-03-03 16:35 | [ 执行中 ] 活跃 |
-| **Candy-9 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 已完成 SDK 对接 Spider 后端接口（查单、健康检查等增强能力），并更新了 Demo 页面的配置与品牌化。正在验证连接。 | 2026-03-03 17:36 | [ 执行中 ] 活跃 |
+| **Candy-9 (Gemini)** | Gemini | 前端 | `/Users/webkubor/Desktop/omni-chatbot-sdk` | 排查 SDK 到 Spider API Server 的跨域/连接问题，确认 3000 端口服务状态。 | 2026-03-03 17:47 | [ 执行中 ] 活跃 |
 | *(示例节点)* | *(Gemini/Codex/Claude...)* | *(前端/后端)* | `/Users/webkubor/Desktop/some-project` | *(示例任务)* | *YYYY-MM-DD HH:MM* | `[ 等待分配 ]` |
 ---
 
