@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-03T08:55:00.339Z",
+  "generatedAt": "2026-03-03T09:05:00.341Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": "docs/memory/fleet_status.md",
   "total": 8,
@@ -52,10 +52,10 @@
     {
       "member": "Candy-Prime (0号机/Codex)",
       "agent": "Codex",
-      "role": "后端",
+      "role": "未分配",
       "workspace": "/Users/webkubor/Desktop/skills",
-      "task": "生成技能候选归档清单，降低维护成本",
-      "since": "2026-03-03 16:22",
+      "task": "按“-skill优先”规则清理同类非-skill技能",
+      "since": "2026-03-03 17:00",
       "status": "[ 队长锁 ] 活跃",
       "type": "active",
       "progress": 60,

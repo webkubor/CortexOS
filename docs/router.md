@@ -80,6 +80,8 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 | **🧠 大脑操作记录** | `memory/logs/` | 记录 Agent 的主动操作、任务进度、决策轨迹 |
 | **📚 知识总结/复盘** | `memory/knowledge/` | 沉淀深度复盘、避坑指南、架构分析 |
 | **🎭 业务方案/计划** | `memory/plans/` | 存放运营方案、执行策略、策略文档 |
+| **🧭 AI Team 协作入口** | `/Users/webkubor/Documents/memory/plans/projects/*-command-center.md` | 首先定位项目指挥中心，统一查看计划、队友与沟通区 |
+| **🛰 跨目录读取协议** | MCP tools (`read_router`/`get_fleet_status`) | 工作区受限时禁止直接 cat 越界路径，必须优先走 MCP |
 | **⚖️ 核心规则中心** | `rules/` | 加载编码规范、Code Review 规则、SOP、协作协议 |
 | **🛠️ 初始化与工具** | `tech_stack.md`, `scripts/` | 加载技术栈、执行环境初始化 |
 | **📡 通信与推送** | 外置秘钥库 `lark.env` | 配置飞书战报推送 |
@@ -87,6 +89,7 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 ## 4. 🛠 工具协议 (Tooling Protocol)
 
 - **物理访问**: `run_shell_command (cat / ls / grep)`。
+- **跨目录读取**: 当工作目录受沙箱限制时，禁止直接 `cat` 越界路径，必须优先使用 ai-common-brain MCP（`read_router`、`get_fleet_status`）。
 - **语义搜索 (RAG)**: 面对模糊查询时，**Agent 应优先调用** `python3 scripts/ingest/query_brain.py "查询"` 获取上下文。
 - **检索范围控制**: 默认仅索引 `docs/router.md`、`docs/rules/`、`../memory/knowledge/`，并排除 `docs/.vitepress/dist` 与 `memory/logs` 等高噪音目录；统一由 `scripts/ingest/retrieval_scope.json` 配置。
 - **写入**: 遵循“本地生成 + `mv` 迁移”法则。
@@ -97,6 +100,6 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 - **自动同步**: 每 5 分钟执行一次 Git 同步与推送。
 
 ---
-*Last Updated: 2026-03-02*
+*Last Updated: 2026-03-03*
 
-- **版本**: v4.7.0 (Queue Prefix Handshake)
+- **版本**: v4.8.0 (Command Center Routing)
