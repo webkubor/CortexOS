@@ -75,7 +75,7 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 | **🧠 大脑操作记录** | `memory/logs/` | 记录 Agent 的主动操作、任务进度、决策轨迹 |
 | **📚 知识总结/复盘** | `memory/knowledge/` | 沉淀深度复盘、避坑指南、架构分析 |
 | **🎭 业务方案/计划** | `memory/plans/` | 存放运营方案、执行策略、策略文档 |
-| **⚖️ 核心规则中心** | `rules/` | 加载编码规范、SOP、协作协议 |
+| **⚖️ 核心规则中心** | `rules/` | 加载编码规范、Code Review 规则、SOP、协作协议 |
 | **🛠️ 初始化与工具** | `tech_stack.md`, `scripts/` | 加载技术栈、执行环境初始化 |
 | **📡 通信与推送** | 外置秘钥库 `lark.env` | 配置飞书战报推送 |
 

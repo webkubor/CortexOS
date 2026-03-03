@@ -58,18 +58,44 @@ uv sync
 
 ### 3.1 CortexOS MCP（必配）
 
-将以下配置加入你的客户端 MCP 配置文件：
+以下是可直接复制的客户端配置示例。
+
+#### Gemini CLI（`~/.gemini/settings.json`）
 
 ```json
 {
   "mcpServers": {
     "cortexos-brain": {
       "command": "uv",
-      "args": ["run", "/你的路径/CortexOS/mcp_server/server.py"]
+      "args": [
+        "run",
+        "/你的/CortexOS/mcp_server/server.py"
+      ],
+      "trust": true
     }
   }
 }
 ```
+
+#### Codex（`~/.codex/config.toml`）
+
+```toml
+[mcp_servers.cortexos-brain]
+command = "uv"
+args = [
+  "run",
+  "--project",
+  "/你的/CortexOS",
+  "/你的/CortexOS/mcp_server/server.py"
+]
+startup_timeout_sec = 45
+```
+
+说明：
+
+- `Gemini CLI` 用 JSON 配置（`settings.json`）。
+- `Codex` 用 TOML 配置（`config.toml`）。
+- 两边都只需把 `/你的/CortexOS` 换成你本机实际路径。
 
 ### 3.2 Obsidian MCP（强烈建议，连接 memory 仓库）
 
@@ -111,7 +137,7 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 - `memory/*` 表示你的外部记忆仓库（由你自己的环境决定物理位置）。
 
 - `docs/router.md`：总入口，AI 每次启动先看这里。
-- `docs/rules/`：规则库（工程规范、协作协议、隐私协议）。
+- `docs/rules/`：规则库（工程规范、协作协议、隐私协议）。重点看 `coding_rules.md` 与 `review_rules.md`。
 - `docs/memory/logs/`：操作日志（过程记录）。
 - `memory/knowledge/`：长期知识库（复盘、方案、经验）。
 - `memory/secrets/`：高敏凭证区（不进 Git）。

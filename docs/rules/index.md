@@ -5,7 +5,8 @@ description: 核心研发、运维与协作规则集，确保 Agent 输出的一
 
 这里集中放置协作规范、编码规则与流程约束。
 
-- [coding_rules](./coding_rules)
+- [code_style（coding_rules）](./coding_rules)
+- [review_rules](./review_rules)
 - [git_commit_rules](./git_commit_rules)
 - [privacy_secret_protection_protocol](./privacy_secret_protection_protocol)
 - [privacy_excludes](./privacy_excludes)
