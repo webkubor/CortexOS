@@ -45,7 +45,7 @@ printf "${GREEN}🧠 正在检查 Ollama 语义模型 (nomic-embed-text)...${NC}
 ollama pull nomic-embed-text
 
 # 6. 密钥模板引导
-SECRETS_DIR="${CORTEXOS_SECRET_HOME:-${ROOT_DIR}/../memory/secrets}"
+SECRETS_DIR="${CORTEXOS_SECRET_HOME:-$HOME/Documents/memory/secrets}"
 LARK_ENV="$SECRETS_DIR/lark.env"
 LARK_STATUS="${RED}OFFLINE (未配置 Webhook)${NC}"
 if [ ! -f "$LARK_ENV" ]; then

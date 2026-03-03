@@ -9,7 +9,7 @@
 - **GitHub**: 读取外置秘钥库 `github.md`，优先使用 `gh` CLI。
 - **GitLab**: 读取外置秘钥库 `gitlab.md`，优先使用 `glab` CLI。
 - **WeChat**: 读取外置秘钥库 `wechat.md`，调用 `wechat-writer` 技能。
-- **统一路径规则**: 默认相对项目根 `../memory/secrets`，或由 `CORTEXOS_SECRET_HOME` 指定。
+- **统一路径规则**: 默认 `~/Documents/memory/secrets`，或由 `CORTEXOS_SECRET_HOME` 指定。
 
 ## 3. 📦 发布与质量审计 (Release SOP)
 - **NPM**: 发布前强制执行 `npm view <package-name>` 校验唯一性，优先使用 Scoped Package (@webkubor/xxx)。

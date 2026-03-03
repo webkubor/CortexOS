@@ -7,8 +7,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, "../..");
-const secretHome = process.env.CORTEXOS_SECRET_HOME || path.resolve(projectRoot, "../memory/secrets");
+const secretHome = process.env.CORTEXOS_SECRET_HOME || path.join(process.env.HOME || "", "Documents", "memory", "secrets");
 const configPath = path.join(secretHome, "feishu_bot.env");
 
 function loadConfig() {

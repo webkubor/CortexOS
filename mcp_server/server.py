@@ -25,7 +25,7 @@ ROUTER = DOCS / "router.md"
 SECRETS_DIR = Path(
     os.environ.get(
         "CORTEXOS_SECRET_HOME",
-        str((BRAIN_ROOT / ".." / "memory" / "secrets").resolve()),
+        str((Path.home() / "Documents" / "memory" / "secrets").resolve()),
     )
 )
 KNOWLEDGE_DIR = DOCS / "memory" / "knowledge"

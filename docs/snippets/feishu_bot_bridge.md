@@ -4,7 +4,7 @@
 
 ## 1. 本地配置
 
-创建文件：`~/Documents/CortexOS-Secrets/feishu_bot.env`
+创建文件：`~/Documents/memory/secrets/feishu_bot.env`
 
 ```bash
 FEISHU_APP_ID=cli_xxx

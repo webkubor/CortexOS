@@ -64,7 +64,7 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 
 ## 2. 🔑 凭证索引 (Secrets Index)
 
-- **GitHub/GitLab/WeChat/DeepSeek**: 外置秘钥库目录（默认相对项目根 `../memory/secrets`，可由 `CORTEXOS_SECRET_HOME` 覆盖）。
+- **GitHub/GitLab/WeChat/DeepSeek**: 外置秘钥库目录（默认 `~/Documents/memory/secrets`，可由 `CORTEXOS_SECRET_HOME` 覆盖）。
 - **规范入口**: [隐私秘钥保护协议](./rules/privacy_secret_protection_protocol.md)
 - **触发**: 提到 "Token", "Key", "登录", "认证"。
 

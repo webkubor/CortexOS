@@ -7,7 +7,7 @@
 ---
 
 ## 🛑 第一铁律：资产主权与物理锚定 (Physical Sovereignty)
-1. **禁区意识**: 仓库内禁止存放真实私钥。凭证只能放在外置秘钥库（默认相对项目根 `../memory/secrets`，可由 `CORTEXOS_SECRET_HOME` 覆盖）。
+1. **禁区意识**: 仓库内禁止存放真实私钥。凭证只能放在外置秘钥库（默认 `~/Documents/memory/secrets`，可由 `CORTEXOS_SECRET_HOME` 覆盖）。
 2. **确定性路径**: 严禁使用随机临时目录。必须遵循主理人定义的归档路径（如 `~/Documents/juejin/assets/`）。
 3. **因果顺序**: 在内容创作中，必须遵循“素材先行”原则（先生成封面图/CDN 链接，再产出正文）。
 

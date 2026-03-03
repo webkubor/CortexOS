@@ -19,7 +19,7 @@ priority: 1
 - **✅ 路径可达性**
   - [ ] `router.md` 可读取
   - [ ] 核心目录存在：`rules/`, `skills/`, `agents/`
-  - [ ] 外置秘钥库可达（默认相对项目根 `../memory/secrets`）
+  - [ ] 外置秘钥库可达（默认 `~/Documents/memory/secrets`）
 
 - **✅ 配置一致性**
   - [ ] `docs/.vitepress/config.mjs` 语法正确

@@ -5,7 +5,7 @@
 GEMINI_DIR="$HOME/.gemini"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-SECRET_HOME="${CORTEXOS_SECRET_HOME:-$ROOT_DIR/../memory/secrets}"
+SECRET_HOME="${CORTEXOS_SECRET_HOME:-$HOME/Documents/memory/secrets}"
 PROFILE_STORE="$SECRET_HOME/gemini_profiles"
 LOGGER="$ROOT_DIR/docs/scripts/log.sh"
 
