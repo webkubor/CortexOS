@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-04T14:40:00.380Z",
+  "generatedAt": "2026-03-04T15:00:00.405Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 3,
-  "active": 3,
+  "total": 2,
+  "active": 2,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -32,20 +32,6 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "栖月-1 (Gemini)",
-      "agent": "Gemini",
-      "role": "后端",
-      "workspace": "~/Desktop/create/cinematic-storyboard-pro",
-      "task": "存储 OpenRouter API 密钥至高敏凭证库并确认配置状态",
-      "since": "2026-03-04 20:56",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     }
