@@ -85,7 +85,11 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 | **🧩 助手私有调教记忆** | `$CODEX_HOME/.memory` | 仅存助手自我调教与偏好，不写入用户 `memory` |
 | **🛡 Skill 准入门禁** | `rules/skill_vetting_gate.md` + `checklists/skill_vetting_report.md` | 第三方 Skill 安装前先审查，未出报告不得安装 |
 | **🛰 跨目录读取协议** | MCP tools (`read_router`/`get_fleet_status`) | 工作区受限时禁止直接 cat 越界路径，必须优先走 MCP |
-| **⚖️ 核心规则中心** | `rules/` | 加载编码规范、Code Review 规则、SOP、协作协议 |
+| **⚖️ 核心规则中心** | `rules/` | **只含约束/禁令/价值观**（不含 SOP 和操作手册） |
+| **📋 标准作业程序** | `sops/` | GitHub/图像/项目初始化等具体操作步骤 |
+| **🖥 系统运维手册** | `ops/` | 后台任务、健康检查、工作流操作说明 |
+| **🎭 人格与审美参考** | `persona/` | 身份协议、审美宣言（参考资料，不是规则） |
+| **🔧 技术协议文档** | `tech/` | MCP 协议、技术架构文档 |
 | **🛠️ 初始化与工具** | `tech_stack.md`, `scripts/` | 加载技术栈、执行环境初始化 |
 | **📡 通信与推送** | 外置秘钥库 `lark.env` | 配置飞书战报推送 |
 
