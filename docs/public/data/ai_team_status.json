@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-04T09:26:30.061Z",
+  "generatedAt": "2026-03-04T10:20:00.411Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 5,
-  "active": 5,
+  "total": 4,
+  "active": 4,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -47,20 +47,6 @@
       "progress": 100,
       "isCaptain": false,
       "hasTodo": true,
-      "isStale": false
-    },
-    {
-      "member": "Codex-5 (Codex)",
-      "agent": "Codex",
-      "role": "后端",
-      "workspace": "~/Desktop/create",
-      "task": "将TTS角色改为周星驰并更新可运行配置",
-      "since": "2026-03-04 16:19",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
-      "hasTodo": false,
       "isStale": false
     },
     {
