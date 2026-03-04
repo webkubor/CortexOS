@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-04T03:35:00.244Z",
+  "generatedAt": "2026-03-04T03:55:00.427Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 4,
-  "active": 4,
+  "total": 3,
+  "active": 3,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -42,20 +42,6 @@
       "workspace": "/Users/webkubor/Documents/CortexOS",
       "task": "清理老残留：删除 docs/memory 重建痕迹与 .memory/retrospectives 兼容旧文件",
       "since": "2026-03-04 11:30",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 100,
-      "isCaptain": false,
-      "hasTodo": true,
-      "isStale": false
-    },
-    {
-      "member": "Candy-3 (Gemini)",
-      "agent": "Gemini",
-      "role": "未分配",
-      "workspace": "/Users/webkubor/Documents/CortexOS",
-      "task": "待分配任务",
-      "since": "2026-03-04 09:51",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,
