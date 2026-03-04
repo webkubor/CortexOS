@@ -220,7 +220,10 @@ def read_secret(name: str) -> str:
     参数:
         name: 密钥文件名（例如 'github.md'、'lark.env'）
     """
-    secret_path = SECRETS_DIR / name
+    secret_path = (SECRETS_DIR / name).resolve()
+    # 路径穿越防护：确保解析后路径仍在 SECRETS_DIR 内
+    if not str(secret_path).startswith(str(SECRETS_DIR.resolve())):
+        return "错误：非法路径，禁止访问 secrets 目录之外的文件。"
     if not secret_path.exists():
         available = list_secrets()
         return f"错误：密钥文件 '{name}' 不存在。可用文件：{available}"
@@ -291,11 +294,13 @@ def search_knowledge(query: str) -> list[dict]:
     results = []
     if not KNOWLEDGE_DIR.exists():
         return results
-    for file_path in KNOWLEDGE_DIR.iterdir():
+    # 使用 rglob 递归扫描所有子目录
+    for file_path in KNOWLEDGE_DIR.rglob("*"):
         if file_path.is_file() and not file_path.name.startswith("."):
             try:
                 if query.lower() in file_path.read_text(encoding="utf-8").lower():
-                    results.append({"file": file_path.name, "match": True})
+                    relative = str(file_path.relative_to(KNOWLEDGE_DIR))
+                    results.append({"file": relative, "match": True})
             except Exception:
                 continue
     return results
