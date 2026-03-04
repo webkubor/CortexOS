@@ -63,15 +63,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 LAUNCHER=()
-if command -v ccr >/dev/null 2>&1; then
-  # Prefer Claude Code Router when available (OpenRouter path).
-  ccr start >/dev/null 2>&1 || true
-  eval "$(ccr activate)"
-  LAUNCHER=(ccr code)
-elif command -v claude >/dev/null 2>&1; then
+if command -v claude >/dev/null 2>&1; then
   LAUNCHER=(claude)
 else
-  echo "未找到 claude/ccr 命令，请先安装并确保在 PATH 中。"
+  echo "未找到 claude 命令，请先安装并确保在 PATH 中。"
   exit 1
 fi
 
