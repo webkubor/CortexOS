@@ -51,3 +51,4 @@ docs/skills/visual/cinematic-storyboard/assets/*
 .last_notif.json
 .context_buffer.json
 .memory/
+.obsidian/workspace.json

@@ -20,7 +20,8 @@
     "gemini:auto": "scripts/actions/gemini-with-fleet.sh",
     "claude:auto": "scripts/actions/claude-with-fleet.sh",
     "codex:auto": "scripts/actions/codex-with-fleet.sh",
-    "codex:setup": "bash scripts/actions/setup-codex-alias.sh"
+    "codex:setup": "bash scripts/actions/setup-codex-alias.sh",
+    "init:profile": "node scripts/core/init-owner-profile.mjs"
   },
   "devDependencies": {
     "vitepress": "^1.6.4",
