@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-04T12:15:00.409Z",
+  "generatedAt": "2026-03-04T12:30:00.536Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 4,
@@ -40,8 +40,8 @@
       "agent": "Codex",
       "role": "后端",
       "workspace": "~/Documents/CortexOS",
-      "task": "启动并验活 OpenClaw 网关服务与 dashboard 应用",
-      "since": "2026-03-04 20:00",
+      "task": "清理旧 com.clawdbot.gateway.plist 文件与 LaunchAgent 记录",
+      "since": "2026-03-04 20:25",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,

@@ -9,7 +9,7 @@
 
 ### 🚀 新增 (Added)
 
-- **MCP Server 主体** (`mcp_server/server.py`)：基于 FastMCP，将大脑核心操作封装为 8 个原子级 Tool：
+- **MCP Server 主体** (`mcp_server/server.py`)：基于 FastMCP，将大脑核心操作封装为 12 个原子级 Tool：
   - `read_router()` — 读取大脑宪法
   - `get_fleet_status()` — 获取舰队 JSON 状态
   - `fleet_claim()` — Agent 打卡挂牌
@@ -17,6 +17,9 @@
   - `load_rule()` / `list_rules()` — 按需懒加载规则（防上下文污染）
   - `log_task()` — 写入今日操作日志
   - `fleet_sync()` — 触发看板数据同步
+  - `list_secrets()` / `read_secret()` — 外置密钥库访问（含路径穿越防护）
+  - `send_lark_notification()` — 飞书 Webhook 通知
+  - `search_knowledge()` — 知识库全文检索（递归扫描子目录）
 - **Codex MCP 接入**：`~/.codex/config.toml` 新增 `[mcp_servers.cortexos-brain-brain]` 条目，Codex 现可原生调用外脑。
 - **FleetDashboard UI 重设计**：彻底重构 VitePress 看板组件，全面接入 VitePress CSS 变量，支持暗色模式，新增活跃节点呼吸灯、任务摘要、路径代码块等高级视觉元素。
 
