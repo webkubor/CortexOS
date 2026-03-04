@@ -4,7 +4,7 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 # AI Context Index & Router (Universal Protocol)
 
 > **⚠️ 核心入口**: 访问本文件即代表进入 Exocortex 协议。
-> **🔥 最高准则**: 所有行动必须严格遵循 [webkubor 开发与审美准则](./rules/webkubor_vibe_manifesto.md)。
+> **🔥 最高准则**: 所有行动必须严格遵循 [webkubor 开发与审美准则](./persona/webkubor_vibe_manifesto.md)。
 
 ## 1. 🤖 身份与协议 (Identity & Protocol)
 

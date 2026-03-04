@@ -83,12 +83,13 @@ export default defineConfig({
         ],
       },
       {
-        text: "🕒 意识沉淀 (Archive)",
+        text: "🖥 运行与运维 (Ops)",
         collapsed: false,
         items: [
-          { text: "🕒 深度复盘总览", link: "/retrospectives/" },
-          { text: "📚 规则复盘", link: "/retrospectives/rules/" },
-          { text: "🚦 舰队态势板", link: "/retrospectives/fleet-dashboard" },
+          { text: "🚦 舰队态势板", link: "/ops/fleet-dashboard" },
+          { text: "🔁 自动巡航", link: "/ops/auto-pilot" },
+          { text: "🧪 健康检查", link: "/ops/external-health-check" },
+          { text: "🧭 协作工作流", link: "/ops/workflow" },
         ]
       },
       {

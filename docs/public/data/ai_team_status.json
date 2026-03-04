@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-04T03:17:49.165Z",
+  "generatedAt": "2026-03-04T03:25:00.305Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 4,
@@ -40,8 +40,8 @@
       "agent": "Codex",
       "role": "后端",
       "workspace": "/Users/webkubor/Documents/CortexOS",
-      "task": "已完成：memory 资产迁移至 .memory，并清理 docs/memory",
-      "since": "2026-03-04 11:17",
+      "task": "下线 docs/retrospectives，并将助手复盘迁入 .memory、用户总结保留在 ../memory",
+      "since": "2026-03-04 11:21",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,
