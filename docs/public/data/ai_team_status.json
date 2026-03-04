@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-04T12:40:00.488Z",
+  "generatedAt": "2026-03-04T12:45:00.396Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 4,
@@ -40,8 +40,8 @@
       "agent": "Codex",
       "role": "后端",
       "workspace": "~/Documents/CortexOS",
-      "task": "排查 missing_brave_api_key 并给出获取配置步骤",
-      "since": "2026-03-04 20:37",
+      "task": "确认单机环境下 OpenClaw web 配置，并处理 missing_brave_api_key",
+      "since": "2026-03-04 20:40",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,
