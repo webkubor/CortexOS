@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/Users/webkubor/Documents/CortexOS"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TASK="${FLEET_TASK:-待分配任务}"
 ROLE="${FLEET_ROLE:-未分配}"
 WORKSPACE="${PWD}"
@@ -123,16 +123,16 @@ BOOTSTRAP_PROMPT="$(cat <<EOF
 ${START_BLOCK}
 
 你正在接入 CortexOS 外部大脑，请先完成以下事项再进入常规任务：
-1. 确认路由文件：/Users/webkubor/Documents/CortexOS/docs/router.md
+1. 确认路由文件：$ROOT_DIR/docs/router.md
 2. 确认编排板登记：${NODE_ID}（机号：${MACHINE_NUMBER}）
 3. 如与其他节点存在文件冲突风险，先给出冲突提示再执行
 4. 首次回复必须以此前缀开头：${QUEUE_PREFIX}
 5. 首次回复请报告：已挂载路由 + 当前机号 + 当前工作路径
 6. 若当前任务为“待分配任务”或角色为“未分配”，一旦拿到明确需求，立即回填：
-   node /Users/webkubor/Documents/CortexOS/scripts/actions/fleet-claim.mjs --workspace "${WORKSPACE}" --task "<明确任务>" --agent "Claude" --alias "Claude" --role "<前端|后端>"
+   node "$ROOT_DIR/scripts/actions/fleet-claim.mjs" --workspace "${WORKSPACE}" --task "<明确任务>" --agent "Claude" --alias "Claude" --role "<前端|后端>"
 7. 用户称呼协议：默认称呼用户为“老爹”；若上一条遗漏称呼，下一条先纠正再继续任务。
 8. 若用户说“移交队长给 XXX / 把0号机交给 XXX / 队长切到 XXX”，直接触发：
-   cd /Users/webkubor/Documents/CortexOS && pnpm run fleet:handover -- --to-node "XXX"
+   cd "$ROOT_DIR" && pnpm run fleet:handover -- --to-node "XXX"
 9. 语言协议：默认且全程使用中文回复；仅在代码、命令、路径、专有名词场景保留英文。
 EOF
 )"

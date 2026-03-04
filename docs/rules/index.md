@@ -31,5 +31,5 @@ description: 核心研发、运维与协作规则集，确保 Agent 输出的一
 | `image_ops_sop.md` | `docs/sops/` | 图像生成 SOP |
 | `project_initialization_sop.md` | `docs/sops/` | 项目初始化 SOP |
 | `identity.md` | `docs/persona/` | Agent 身份协议 |
-| `webkubor_vibe_manifesto.md` | `docs/persona/` | 审美宣言参考 |
+| `webkubor_vibe_manifesto.md` | `~/Documents/memory/persona/`（私有，已迁出仓库） | 审美宣言参考 |
 | `webmcp_protocol_v2.md` | `docs/tech/` | 技术协议文档 |

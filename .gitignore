@@ -51,4 +51,5 @@ docs/skills/visual/cinematic-storyboard/assets/*
 .last_notif.json
 .context_buffer.json
 .memory/
-.obsidian/workspace.json
+# .obsidian/ 已在上方第 12 行整体忽略，无需单独列举
+mcp_server/mcp_config.json

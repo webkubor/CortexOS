@@ -66,7 +66,7 @@ export default defineConfig({
       {
         text: "📏 核心准则 (Rules)",
         items: [
-          { text: "🎨 webkubor 审美准则", link: "/persona/webkubor_vibe_manifesto" },
+          
           { text: "📝 编码规范", link: "/rules/coding_rules" },
           { text: "🛡 Skill 准入门禁", link: "/rules/skill_vetting_gate" },
           { text: "🔒 隐私排除规范", link: "/rules/privacy_excludes" },

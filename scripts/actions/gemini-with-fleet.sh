@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/Users/webkubor/Documents/CortexOS"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TASK="${FLEET_TASK:-待分配任务}"
 ROLE="${FLEET_ROLE:-未分配}"
 WORKSPACE="${PWD}"
@@ -99,7 +99,7 @@ echo "✅ 已入队: ${QUEUE_PREFIX} workspace=${WORKSPACE} role=${ROLE} task=${
 echo "📍 入场前缀(参考): ${QUEUE_PREFIX}"
 echo "🧠 启动模式: 直接进入 Gemini（不注入 \$start，默认依赖 ~/.gemini/GEMINI.md 长期记忆）"
 if [[ "$TASK" == "待分配任务" || "$ROLE" == "未分配" ]]; then
-  echo "⚠️  请在拿到明确需求后立即回填：node /Users/webkubor/Documents/CortexOS/scripts/actions/fleet-claim.mjs --workspace \"${WORKSPACE}\" --task \"<明确任务>\" --agent \"Gemini\" --alias \"Candy\" --role \"<前端|后端>\""
+  echo "⚠️  请在拿到明确需求后立即回填：node \"$ROOT_DIR/scripts/actions/fleet-claim.mjs\" --workspace \"${WORKSPACE}\" --task \"<明确任务>\" --agent \"Gemini\" --alias \"Candy\" --role \"<前端|后端>\""
 fi
 
 if [[ "$DRY_RUN" == "1" ]]; then

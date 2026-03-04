@@ -7,8 +7,9 @@ if [ $# -lt 1 ]; then
 fi
 
 query="$1"
-root="${2:-/Users/webkubor/Documents/CortexOS}"
-log_dir="${RAG_LOG_DIR:-/Users/webkubor/Documents/AI_Plan/rag_logs}"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+root="${2:-$ROOT_DIR}"
+log_dir="${RAG_LOG_DIR:-$ROOT_DIR/.memory/rag_logs}"
 
 ts_file_stamp="$(date '+%Y-%m-%d_%H-%M-%S')"
 log_file="$log_dir/${ts_file_stamp}_rag_probe.md"

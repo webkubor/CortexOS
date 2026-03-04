@@ -6,7 +6,7 @@
 ### A. IP 角色与电影分镜 (IP & Cinematic)
 - **工具**: `edit_image` (nanobanana)
 - **前置条件**: 必须指定并加载角色参考图（存放于私有素材目录，不入仓）。
-- **执行规范**: **强制遵循** [身份协议](../persona/identity.md) 与 [审美准则](../persona/webkubor_vibe_manifesto.md)（包含 POV、RAW 质感、锁相协议）。
+- **执行规范**: **强制遵循** [身份协议](../persona/identity.md) （包含 POV、RAW 质感、锁相协议）。
 - **归档**: 私有素材目录（由本机环境决定）。
 
 ### B. 纯技术/工程化封面 (Technical Covers)
