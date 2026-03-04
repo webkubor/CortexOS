@@ -10,6 +10,7 @@ description: 核心研发、运维与协作规则集，确保 Agent 输出的一
 - [git_commit_rules](./git_commit_rules)
 - [privacy_secret_protection_protocol](./privacy_secret_protection_protocol)
 - [soul_contract_standard](./soul_contract_standard)
+- [skill_vetting_gate](./skill_vetting_gate)
 - [privacy_excludes](./privacy_excludes)
 - [standard_workflow](./workflow.md)
 - [vibe_rules](./vibe_rules)

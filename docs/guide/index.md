@@ -235,9 +235,19 @@ pm2 save
 
 适合：沉淀可复用工作流（例如发版、运维、内容生成）。
 
-1. 在本地 `skills` 目录创建技能文档（`SKILL.md`）。  
-2. 在对应 Agent 技能索引里登记。  
-3. 给出触发语句和输入输出格式。  
+1. 先走门禁：按 `docs/rules/skill_vetting_gate.md` 进行安装前审查。  
+2. 填写审查单：`docs/checklists/skill_vetting_report.md`。  
+3. 审查通过后，再在本地 `skills` 目录创建或安装技能。  
+4. 在对应 Agent 技能索引里登记。  
+5. 给出触发语句和输入输出格式。  
+
+最小审查命令：
+
+```bash
+npx -y clawhub@latest inspect <slug> --json --no-input
+npx -y clawhub@latest inspect <slug> --files --no-input
+npx -y clawhub@latest inspect <slug> --file SKILL.md --no-input
+```
 
 ### 6.4 扩展 MCP 能力
 

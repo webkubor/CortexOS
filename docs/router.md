@@ -83,6 +83,7 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 | **🎭 业务方案/计划** | `memory/plans/` | 存放运营方案、执行策略、策略文档 |
 | **🧭 AI Team 协作入口** | `/Users/webkubor/Documents/memory/plans/projects/*-command-center.md` | 首先定位项目指挥中心，统一查看计划、队友与沟通区 |
 | **🧩 助手私有调教记忆** | `$CODEX_HOME/.memory` | 仅存助手自我调教与偏好，不写入用户 `memory` |
+| **🛡 Skill 准入门禁** | `rules/skill_vetting_gate.md` + `checklists/skill_vetting_report.md` | 第三方 Skill 安装前先审查，未出报告不得安装 |
 | **🛰 跨目录读取协议** | MCP tools (`read_router`/`get_fleet_status`) | 工作区受限时禁止直接 cat 越界路径，必须优先走 MCP |
 | **⚖️ 核心规则中心** | `rules/` | 加载编码规范、Code Review 规则、SOP、协作协议 |
 | **🛠️ 初始化与工具** | `tech_stack.md`, `scripts/` | 加载技术栈、执行环境初始化 |
@@ -95,6 +96,7 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 - **语义搜索 (RAG)**: 面对模糊查询时，**Agent 应优先调用** `python3 scripts/ingest/query_brain.py "查询"` 获取上下文。
 - **检索范围控制**: 默认仅索引 `docs/router.md`、`docs/rules/`、`../memory/knowledge/`，并排除 `docs/.vitepress/dist` 与 `memory/logs` 等高噪音目录；统一由 `scripts/ingest/retrieval_scope.json` 配置。
 - **写入**: 遵循“本地生成 + `mv` 迁移”法则。
+- **Skill 安装前置**: 准备安装第三方 Skill 时，先执行 `inspect` 与门禁审查，必须先填 `skill_vetting_report` 再进入安装动作。
 
 ## 5. 🧠 记忆哨兵机制 (Memory Sentinel)
 
@@ -104,4 +106,4 @@ pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
 ---
 *Last Updated: 2026-03-04*
 
-- **版本**: v4.9.0 (SOUL Contract + Private Memory Routing)
+- **版本**: v5.0.0 (SOUL + Skill Vetting Gate)
