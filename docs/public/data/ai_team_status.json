@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-04T11:00:00.451Z",
+  "generatedAt": "2026-03-04T11:05:00.491Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 3,
-  "active": 3,
+  "total": 4,
+  "active": 4,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -47,6 +47,20 @@
       "progress": 100,
       "isCaptain": false,
       "hasTodo": true,
+      "isStale": false
+    },
+    {
+      "member": "Candy-1 (Gemini)",
+      "agent": "Gemini",
+      "role": "未分配",
+      "workspace": "~/Desktop/create/cinematic-storyboard-pro",
+      "task": "待分配任务",
+      "since": "2026-03-04 19:00",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false,
+      "hasTodo": false,
       "isStale": false
     }
   ]
