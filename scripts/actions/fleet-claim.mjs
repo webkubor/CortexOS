@@ -4,11 +4,12 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { touchFleetMeta } from './fleet-meta.mjs';
+import { ensureFleetPaths } from './fleet-paths.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, '../../');
-const fleetFile = path.join(projectRoot, 'docs/memory/fleet_status.md');
+const { fleetFile } = ensureFleetPaths(projectRoot);
 
 function parseArgs(argv) {
   const args = {

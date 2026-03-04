@@ -16,7 +16,6 @@ from fastmcp import FastMCP
 # ===== 全局路径常量 =====
 BRAIN_ROOT = Path(__file__).resolve().parents[1]
 DOCS = BRAIN_ROOT / "docs"
-FLEET_STATUS = DOCS / "memory" / "fleet_status.md"
 FLEET_JSON = BRAIN_ROOT / "docs" / "public" / "data" / "ai_team_status.json"
 RULES_DIR = DOCS / "rules"
 DEFAULT_CODEX_HOME = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))).expanduser()
@@ -27,6 +26,7 @@ ASSISTANT_MEMORY_HOME = Path(
     )
 ).expanduser()
 MEMORY_LOGS = ASSISTANT_MEMORY_HOME / "logs"
+FLEET_STATUS = ASSISTANT_MEMORY_HOME / "fleet" / "fleet_status.md"
 ROUTER = DOCS / "router.md"
 SECRETS_DIR = Path(
     os.environ.get(
@@ -34,7 +34,7 @@ SECRETS_DIR = Path(
         str((Path.home() / "Documents" / "memory" / "secrets").resolve()),
     )
 )
-KNOWLEDGE_DIR = DOCS / "memory" / "knowledge"
+KNOWLEDGE_DIR = Path(os.environ.get("CORTEXOS_KNOWLEDGE_HOME", str((BRAIN_ROOT.parent / "memory" / "knowledge").resolve())))
 
 mcp = FastMCP(name="CortexOS Brain")
 
@@ -284,7 +284,7 @@ def send_lark_notification(title: str, body: str) -> str:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def search_knowledge(query: str) -> list[dict]:
-    """在 docs/memory/knowledge/ 目录下全文检索包含指定关键词的知识文件。
+    """在外部知识库目录（默认 ../memory/knowledge）下全文检索包含指定关键词的知识文件。
 
     参数:
         query: 要检索的关键词或短语

@@ -1,11 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { ensureFleetPaths } from "./fleet-paths.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, "../../");
-const metaFile = path.join(projectRoot, "docs/memory/fleet_meta.json");
+const { fleetMetaFile: metaFile } = ensureFleetPaths(projectRoot);
 
 function safeReadJSON(file) {
   try {

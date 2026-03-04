@@ -51,9 +51,4 @@ docs/skills/visual/cinematic-storyboard/assets/*
 /chroma_db/
 .last_notif.json
 .context_buffer.json
-docs/memory/logs/
-docs/memory/plans/
-docs/memory/*
-!docs/memory/fleet_status.md
-!docs/memory/knowledge/
-!docs/memory/knowledge/**
+.memory/

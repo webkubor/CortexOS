@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/router.md",
+                "file": "docs/retrospectives/rules/index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "router"
+              "title": "index"
             }
           }
         ]
@@ -74,8 +74,7 @@
               "title": "书签"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -184,20 +183,34 @@
       "bases:新建数据库": false
     }
   },
-  "active": "c0955947b51e872e",
+  "active": "0cce9b774f045b18",
   "lastOpenFiles": [
-    "AGENTS.md",
     "docs/memory/logs/2026-03-04.md",
     "docs/memory/logs",
+    "scripts/actions/fleet-paths.mjs",
+    "docs/retrospectives/rules/interaction.md",
+    "docs/retrospectives/index.md",
+    "docs/retrospectives/rules/index.md",
+    "docs/rules/external-health-check.md",
+    "docs/rules/coding_rules.md",
+    "docs/rules/auto-pilot.md",
+    "docs/rules/workflow.md",
+    "docs/rules/webmcp_protocol_v2.md",
+    "docs/rules/webkubor_vibe_manifesto.md",
+    "docs/rules/vibe_rules.md",
     "chroma_db/chroma.sqlite3-journal",
+    "docs/rules/review_rules.md",
+    "docs/rules/org_protocol.md",
+    "docs/rules/privacy_excludes.md",
+    "docs/router.md",
+    "chroma_db/90dfcc72-4014-4803-ab7d-8b838355af14/link_lists.bin",
+    "chroma_db/90dfcc72-4014-4803-ab7d-8b838355af14/length.bin",
+    "chroma_db/90dfcc72-4014-4803-ab7d-8b838355af14/header.bin",
+    "chroma_db/90dfcc72-4014-4803-ab7d-8b838355af14/data_level0.bin",
+    "chroma_db/90dfcc72-4014-4803-ab7d-8b838355af14",
+    "AGENTS.md",
     "chroma_db/9196158a-1dd3-4dec-a09f-45c9a1dedf62/link_lists.bin",
     "chroma_db/9196158a-1dd3-4dec-a09f-45c9a1dedf62/length.bin",
-    "chroma_db/9196158a-1dd3-4dec-a09f-45c9a1dedf62/header.bin",
-    "chroma_db/9196158a-1dd3-4dec-a09f-45c9a1dedf62/data_level0.bin",
-    "chroma_db/9196158a-1dd3-4dec-a09f-45c9a1dedf62",
-    "chroma_db/5af8d403-4aee-49a6-8a5a-32407678d5c8/link_lists.bin",
-    "chroma_db/5af8d403-4aee-49a6-8a5a-32407678d5c8/length.bin",
-    "chroma_db/5af8d403-4aee-49a6-8a5a-32407678d5c8/header.bin",
     "docs/checklists/skill_vetting_report_tavily_2026-03-04.md",
     "CHANGELOG.md",
     "README.md",
@@ -206,21 +219,6 @@
     "docs/rules/skill_vetting_gate.md",
     "docs/rules/soul_contract_standard.md",
     "docs/memory/plans/ai_customer_service_upgrade_20260303.md",
-    "docs/secrets/gitlab.md",
-    "docs/secrets/github.md",
-    "docs/secrets/wechat.md",
-    "docs/secrets/feitengzhixue_wechat.md",
-    "docs/secrets/_templates/wechat.md",
-    "docs/secrets/_templates/openrouter_token.md",
-    "docs/secrets/_templates/hosting_credentials.md",
-    "docs/secrets/_templates/gitlab.md",
-    "docs/secrets/_templates/github.md",
-    "docs/secrets/_templates/deepseek.md",
-    "CortexOS-Secrets/Brain/sina_mail.md",
-    "CortexOS-Secrets/Brain/qq.md",
-    "CortexOS-Secrets/Brain/gmail.md",
-    "CortexOS-Secrets/Brain/openrouter_token.md",
-    "CortexOS-Secrets/Brain/github.md",
-    "CortexOS-Secrets/Docs/wechat.md"
+    "docs/secrets/gitlab.md"
   ]
 }

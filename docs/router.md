@@ -10,7 +10,7 @@ description: 大脑的真理来源与动态路由入口，定义了所有 Agent 
 
 - **核心身份**: [小烛 (Candy) 人格档案](./persona/candy_manifest.md) (所有 Agent 默认继承此身份)
 - **组织架构**: [职能部门协作协议](./rules/org_protocol.md) (定义了 Core, Writers, Ops 等六大部)
-- **多开与防撞车并线 (Multi-Agent Sync)**: [🚦星际舰队编排板](./memory/fleet_status.md)。任何在其他目录唤醒的外派 Agent (如 Codex 等) **必须在开工前到此完成挂牌登记与环视，以防跨项目修改冲突。**
+- **多开与防撞车并线 (Multi-Agent Sync)**: 🚦星际舰队编排板位于 `$CODEX_HOME/.memory/fleet/fleet_status.md`（可由 `CORTEXOS_ASSISTANT_MEMORY_HOME` 覆盖）。任何在其他目录唤醒的外派 Agent (如 Codex 等) **必须在开工前完成挂牌登记与环视，以防跨项目修改冲突。**
 - **冷启动**: 1.确认身份 -> 2.继承部门规范 -> 3.到编排板挂牌并检查碰撞 -> 4.启动执行。
 
 ### 1.1 🚦 Agent Team 入队机制（零配置可用）

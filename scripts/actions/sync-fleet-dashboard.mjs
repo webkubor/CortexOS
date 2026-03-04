@@ -3,11 +3,12 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { ensureFleetPaths } from "./fleet-paths.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, "../../");
-const sourceFile = path.join(projectRoot, "docs/memory/fleet_status.md");
+const { fleetFile: sourceFile } = ensureFleetPaths(projectRoot);
 const outputFile = path.join(projectRoot, "docs/public/data/ai_team_status.json");
 
 const STALE_HOURS = 4;
@@ -181,7 +182,7 @@ function main() {
   const payload = {
     generatedAt: new Date().toISOString(),
     version: "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
-    source: "docs/memory/fleet_status.md",
+    source: ".memory/fleet/fleet_status.md",
     total: rows.length,
     active: rows.filter((r) => r.type === "active").length,
     offline: rows.filter((r) => r.type === "offline").length,
