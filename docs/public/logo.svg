@@ -2,9 +2,9 @@
   <defs>
     <!-- 烛光渐变：生命力与温暖 -->
     <linearGradient id="candleGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" /> <!-- Amber 500 -->
-      <stop offset="50%" style="stop-color:#F97316;stop-opacity:1" /> <!-- Orange 500 -->
-      <stop offset="100%" style="stop-color:#F43F5E;stop-opacity:1" /> <!-- Rose 500 -->
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" /> <!-- Aurora Cyan -->
+      <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" /> <!-- Aurora Purple -->
+      <stop offset="100%" style="stop-color:#e879f9;stop-opacity:1" /> <!-- Cosmic Pink -->
     </linearGradient>
 
     <!-- 内部辉光 -->
