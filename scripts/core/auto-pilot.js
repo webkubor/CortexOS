@@ -15,9 +15,10 @@ import { sendToLark } from '../services/lark-service.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.join(__dirname, '../../');
-const CODEX_HOME = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
-const ASSISTANT_MEMORY_HOME = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(CODEX_HOME, '.memory');
+const ASSISTANT_MEMORY_HOME = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(PROJECT_ROOT, '.memory');
 const ASSISTANT_LOGS_DIR = path.join(ASSISTANT_MEMORY_HOME, 'logs');
+const ASSISTANT_META_DIR = path.join(ASSISTANT_MEMORY_HOME, 'meta');
+const LARK_SKIP_MARKER = path.join(ASSISTANT_META_DIR, 'lark-missing-env-last-date.txt');
 const UV_PATH = (() => {
   try {
     return execSync('which uv', { encoding: 'utf-8' }).trim();
@@ -36,10 +37,28 @@ const ROUTER_PATH = path.join(PROJECT_ROOT, 'docs/router.md');
 const HISTORY_PATH = path.join(PROJECT_ROOT, 'docs/BRAIN_HISTORY.md');
 const TEAM_STATUS_JSON_PATH = path.join(PROJECT_ROOT, 'docs/public/data/ai_team_status.json');
 
+function shouldPrintLarkSkip(reason) {
+  if (reason !== 'missing_lark_env') return true;
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    if (fs.existsSync(LARK_SKIP_MARKER)) {
+      const prev = fs.readFileSync(LARK_SKIP_MARKER, 'utf-8').trim();
+      if (prev === today) return false;
+    }
+    fs.mkdirSync(ASSISTANT_META_DIR, { recursive: true });
+    fs.writeFileSync(LARK_SKIP_MARKER, `${today}\n`, 'utf-8');
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 const AUTO_MAINTENANCE_TASKS = [
   { key: 'fleet-cleanup', cmd: 'node scripts/actions/fleet-cleanup.mjs' },
   { key: 'fleet-sync', cmd: 'node scripts/actions/sync-fleet-dashboard.mjs' },
-  { key: 'mcp-guard', cmd: 'node scripts/maintenance/mcp-guard.mjs' }
+  { key: 'mcp-guard', cmd: 'node scripts/maintenance/mcp-guard.mjs' },
+  { key: 'memory-index', cmd: 'python3 scripts/ingest/build_memory_index.py' },
+  { key: 'error-retro', cmd: 'node scripts/maintenance/error-retro.mjs' }
 ];
 
 /**
@@ -407,7 +426,7 @@ async function autoPilot() {
       });
 
       const totalStat = buildTotalStat(uniqueFiles, stats);
-      const detailedMessage = buildDetailedLog(
+      let detailedMessage = buildDetailedLog(
         buffer,
         groupedFiles,
         fileRecords,
@@ -415,7 +434,7 @@ async function autoPilot() {
         teamSnapshot,
         maintenanceResults
       );
-      const larkMessage = buildLarkSummary(
+      let larkMessage = buildLarkSummary(
         buffer,
         fileRecords,
         groupedFiles,
@@ -425,24 +444,42 @@ async function autoPilot() {
       );
 
       let modeLabel = '记录模式';
+      let commitError = '';
       if (hasFileChanges) {
         // 执行提交
         const intents = Object.keys(groupedFiles).join(' & ');
-        execSync(`git add . && git commit -m "auto: ${intents || 'sync'} at ${startTime}"`, { cwd: PROJECT_ROOT });
-
-        // 模式判定
-        modeLabel = '语义模式';
         try {
-          await runNativeIngestion();
-        } catch (e) { modeLabel = '物理模式'; }
+          execSync(`git add . && git commit -m "auto: ${intents || 'sync'} at ${startTime}"`, { cwd: PROJECT_ROOT });
+          modeLabel = '语义模式';
+          try {
+            await runNativeIngestion();
+          } catch (e) {
+            modeLabel = '物理模式';
+          }
+        } catch (e) {
+          commitError = String(e.message || e).split('\n')[0];
+          modeLabel = '物理模式';
+        }
+      }
+
+      if (commitError) {
+        detailedMessage += `\n[ 自动提交 ]\n  - 状态: 失败\n  - 原因: ${commitError}\n`;
+        larkMessage += `\n⚠️ 自动提交失败: ${commitError}\n`;
       }
 
       // 推送 (标题带关键词和核心状态)
-      sendToLark(`${brainVersion} | ${modeLabel}`, larkMessage);
+      const larkResult = await sendToLark(`${brainVersion} | ${modeLabel}`, larkMessage);
       sendNativeNotification(`大脑同步完成: ${modeLabel}`, `数据汇总: ${totalStat || '仅任务/态势刷新'}`);
 
       addToLog({ title: '大脑同步', body: detailedMessage });
-      console.log(`🚀 飞书定制版战报已送达！`);
+      if (larkResult?.ok) {
+        console.log('🚀 飞书定制版战报已送达！');
+      } else {
+        const reason = larkResult?.reason || 'unknown';
+        if (shouldPrintLarkSkip(reason)) {
+          console.log(`ℹ️ 飞书推送未发送: ${reason}`);
+        }
+      }
     }
   } catch (e) {
     console.error('⚠️ 运行异常:', e.message);

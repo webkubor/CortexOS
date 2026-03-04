@@ -1,13 +1,13 @@
 #!/bin/bash
 # Gemini Profile Manager & Failover Helper
-# Path: /Users/webkubor/Documents/CortexOS/docs/scripts/gemini_manager.sh
+# Path: scripts/gemini_manager.sh
 
 GEMINI_DIR="$HOME/.gemini"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SECRET_HOME="${CORTEXOS_SECRET_HOME:-$HOME/Documents/memory/secrets}"
 PROFILE_STORE="$SECRET_HOME/gemini_profiles"
-LOGGER="$ROOT_DIR/docs/scripts/log.sh"
+LOGGER="$ROOT_DIR/scripts/log.sh"
 
 # Ensure profile store exists
 mkdir -p "$PROFILE_STORE"

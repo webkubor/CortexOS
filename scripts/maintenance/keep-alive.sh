@@ -2,8 +2,9 @@
 # CortexOS Daemon Keep-Alive
 # Author: Candle (Xiao Zhu)
 
-CODEX_HOME_PATH="${CODEX_HOME:-$HOME/.codex}"
-ASSISTANT_MEMORY_HOME="${CORTEXOS_ASSISTANT_MEMORY_HOME:-$CODEX_HOME_PATH/.memory}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ASSISTANT_MEMORY_HOME="${CORTEXOS_ASSISTANT_MEMORY_HOME:-$PROJECT_ROOT/.memory}"
 LOG_FILE="$ASSISTANT_MEMORY_HOME/logs/daemon-status.log"
 mkdir -p "$(dirname "$LOG_FILE")"
 
@@ -25,4 +26,4 @@ check_process() {
 # 1. Auto-Pilot (Brain Sync)
 # Note: auto-pilot.js is usually long-running or interval-based. 
 # Current check focuses on its presence in ps.
-check_process "Auto-Pilot" "scripts/core/auto-pilot.js" "node /Users/webkubor/Documents/CortexOS/scripts/core/auto-pilot.js"
+check_process "Auto-Pilot" "scripts/core/auto-pilot.js" "node $PROJECT_ROOT/scripts/core/auto-pilot.js"

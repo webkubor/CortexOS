@@ -23,7 +23,7 @@ SOUL 不是人格宣言，而是 **Agent 与用户之间的行为合同**。
    - 路径：`../memory/knowledge`、`../memory/secrets`
    - 内容：用户项目知识、复盘、凭证模板与索引
 2. 助手私有调教记忆（Assistant Private Memory）：
-   - 路径：`$CODEX_HOME/.memory`
+   - 路径：`.memory`
    - 内容：助手偏好、提示策略、思维习惯、调参备忘、失败重试模式、运行日志
 3. 红线：
    - 禁止把助手私有调教记忆写入用户 `memory`
@@ -34,8 +34,8 @@ SOUL 不是人格宣言，而是 **Agent 与用户之间的行为合同**。
 1. 写入用户 `memory` 需满足以下之一：
    - 用户明确要求沉淀
    - 属于项目公共知识（对多 Agent 协作有价值）
-2. 系统操作审计（如 `log_task`）与助手运行日志，默认仅写 `$CODEX_HOME/.memory/logs`。
-3. 助手个人偏好、语气调教、元提示实验记录，默认仅写 `$CODEX_HOME/.memory`。
+2. 系统操作审计（如 `log_task`）与助手运行日志，默认仅写 `.memory/logs`。
+3. 助手个人偏好、语气调教、元提示实验记录，默认仅写 `.memory`。
 4. 不确定是否应写入用户 `memory` 时，先询问用户。
 
 ## 5. 最小模板（建议）
@@ -54,7 +54,7 @@ SOUL 不是人格宣言，而是 **Agent 与用户之间的行为合同**。
 ## memory_routing
 - user_memory_roots:
   - ../memory/knowledge
-- assistant_private_root: $CODEX_HOME/.memory
+- assistant_private_root: .memory
 
 ## conflict_resolution_order
 1. safety_and_compliance

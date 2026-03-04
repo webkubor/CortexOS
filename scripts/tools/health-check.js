@@ -18,8 +18,7 @@ const PROJECT_ROOT = path.join(__dirname, '../../');
 const DOCS_DIR = path.join(PROJECT_ROOT, 'docs');
 const SCRIPTS_DIR = path.join(PROJECT_ROOT, 'scripts');
 const EXTERNAL_SECRETS_DIR = process.env.CORTEXOS_SECRET_HOME || path.join(os.homedir(), 'Documents', 'memory', 'secrets');
-const CODEX_HOME = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
-const ASSISTANT_MEMORY_HOME = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(CODEX_HOME, '.memory');
+const ASSISTANT_MEMORY_HOME = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(PROJECT_ROOT, '.memory');
 const ASSISTANT_LOGS_DIR = path.join(ASSISTANT_MEMORY_HOME, 'logs');
 
 // 颜色输出

@@ -2,7 +2,7 @@
 CortexOS 外部大脑 MCP Server（统一版 v2）
 基于 FastMCP，暴露大脑的 11 个核心操作 Tool。
 启动方式：uv run server.py
-接入配置：{ "command": "uv", "args": ["run", "/Users/webkubor/Documents/CortexOS/mcp_server/server.py"] }
+接入配置：{ "command": "uv", "args": ["run", "/path/to/CortexOS/mcp_server/server.py"] }
 """
 
 import json
@@ -18,11 +18,10 @@ BRAIN_ROOT = Path(__file__).resolve().parents[1]
 DOCS = BRAIN_ROOT / "docs"
 FLEET_JSON = BRAIN_ROOT / "docs" / "public" / "data" / "ai_team_status.json"
 RULES_DIR = DOCS / "rules"
-DEFAULT_CODEX_HOME = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))).expanduser()
 ASSISTANT_MEMORY_HOME = Path(
     os.environ.get(
         "CORTEXOS_ASSISTANT_MEMORY_HOME",
-        str((DEFAULT_CODEX_HOME / ".memory").expanduser()),
+        str((BRAIN_ROOT / ".memory").resolve()),
     )
 ).expanduser()
 MEMORY_LOGS = ASSISTANT_MEMORY_HOME / "logs"

@@ -2,8 +2,8 @@
 
 舰队实时状态不再存放在 `docs/memory`，统一存放到助手私有目录：
 
-- `$CODEX_HOME/.memory/fleet/fleet_status.md`
-- `$CODEX_HOME/.memory/fleet/fleet_meta.json`
+- `.memory/fleet/fleet_status.md`
+- `.memory/fleet/fleet_meta.json`
 
 可通过环境变量覆盖：
 

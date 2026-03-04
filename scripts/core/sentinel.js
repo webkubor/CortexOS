@@ -6,7 +6,6 @@
  */
 
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -14,10 +13,10 @@ import { sendToLark } from '../services/lark-service.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.join(__dirname, '../../');
 
 const BUFFER_PATH = path.join(__dirname, '../../.context_buffer.json');
-const CODEX_HOME = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
-const ASSISTANT_MEMORY_HOME = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(CODEX_HOME, '.memory');
+const ASSISTANT_MEMORY_HOME = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(PROJECT_ROOT, '.memory');
 const LOGS_DIR = path.join(ASSISTANT_MEMORY_HOME, 'logs');
 
 /**

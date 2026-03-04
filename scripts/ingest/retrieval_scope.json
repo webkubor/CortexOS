@@ -2,6 +2,12 @@
   "include": [
     "docs/router.md",
     "docs/rules",
+    "docs/sops",
+    "docs/ops",
+    "docs/skills",
+    "docs/guide",
+    "docs/mcp-console.md",
+    "docs/agents",
     "../memory/knowledge",
     "../memory/projects",
     "../memory/skills"

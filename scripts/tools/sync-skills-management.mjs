@@ -12,7 +12,7 @@ const projectRoot = path.join(__dirname, '../../')
 const skillsReposFile = path.join(projectRoot, 'docs/skills/github_repos.md')
 const outMarkdownFile = path.join(projectRoot, 'docs/skills/management.md')
 const outJsonFile = path.join(projectRoot, 'docs/public/data/skills_inventory.json')
-const localSkillsRoot = '/Users/webkubor/Desktop/skills'
+const localSkillsRoot = path.join(os.homedir(), 'Desktop/skills')
 
 function nowLocal () {
   const d = new Date()
@@ -227,7 +227,7 @@ ls -la "$HOME/.codex/skills" | rg "xhs-manager|omni-publisher|scm-ops"
 
 - 原生拆分 skills 以 \`docs/skills/github_repos.md\` 为 SSOT。
 - 用户本机安装态以本页扫描结果为准。
-- 新增私有 skill：放到 \`${localSkillsRoot}\`，并同步更新 \`/Users/webkubor/Documents/memory/skills/index.md\`。
+- 新增私有 skill：放到 \`${localSkillsRoot}\`，并同步更新 \`~/Documents/memory/skills/index.md\`。
 `
 }
 

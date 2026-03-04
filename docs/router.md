@@ -1,117 +1,106 @@
 ---
-description: 大脑的真理来源与动态路由入口，定义了所有 Agent 的接入协议。
+description: 大脑最高入口与动态路由。先看这里，再做任何任务。
 ---
 # AI Context Index & Router (Universal Protocol)
 
-> **⚠️ 核心入口**: 访问本文件即代表进入 Exocortex 协议。
-> **🔥 最高准则**: 所有行动必须遵循运行者的开发与审美准则。路径约定：`~/Documents/memory/persona/webkubor_vibe_manifesto.md`（私有，不在此仓库）。
+> ⚠️ 本文件是 CortexOS 的总入口。任何 Agent 开工前先读此页。
 
-## 1. 🤖 身份与协议 (Identity & Protocol)
+## 0. 30 秒上手
 
-- **核心身份**: 小烛 (Candy) 人格档案为大脑自带资产，路径：`$CODEX_HOME/.memory/persona/candy_manifest.md`（所有 Agent 默认继承此身份）
-- **组织架构**: [职能部门协作协议](./rules/org_protocol.md) (定义了 Core, Writers, Ops 等六大部)
-- **多开与防撞车并线 (Multi-Agent Sync)**: 🚦星际舰队编排板位于 `$CODEX_HOME/.memory/fleet/fleet_status.md`（可由 `CORTEXOS_ASSISTANT_MEMORY_HOME` 覆盖）。任何在其他目录唤醒的外派 Agent (如 Codex 等) **必须在开工前完成挂牌登记与环视，以防跨项目修改冲突。**
-- **冷启动**: 1.确认身份 -> 2.继承部门规范 -> 3.到编排板挂牌并检查碰撞 -> 4.启动执行。
+1. 读取路由：`read_router()`
+2. 查看队列：`get_fleet_status()`
+3. 挂牌开工：`fleet_claim(workspace="$PWD", task="你的任务", agent="Codex", alias="Codex", role="后端")`
 
-### 1.1 🚦 Agent Team 入队机制（零配置可用）
+首次回复必须带前缀：`[AI-TEAM][<nodeId>][#<machineNumber>]`
 
-- **无需别名/无需启动脚本**: 任何 Agent 仅凭文档即可入队，直接执行：
+## 1. 冷启动协议（必做）
+
+- **核心身份**: 小烛 (Candy) 人格档案为大脑自带资产，路径：`.memory/persona/candy_manifest.md`（所有 Agent 默认继承此身份）
+- 私有记忆法则：`.memory/memory_formula.md`
+- 组织规则：[org_protocol](./rules/org_protocol)
+
+### 入队命令（示例）
 
 ```bash
-cd /Users/webkubor/Documents/CortexOS
+cd ~/Documents/CortexOS
 pnpm run fleet:claim -- --workspace "$PWD" --task "你的当前任务" --agent "Codex" --alias "Codex" --role "后端"
 ```
 
-- **模型参数示例**:
-  - Gemini: `--agent "Gemini" --alias "Candy" --role "前端"`
-  - Claude: `--agent "Claude" --alias "Claude" --role "后端"`
-  - Codex: `--agent "Codex" --alias "Codex" --role "后端"`
-- **执行中补报**: 若 Agent 已经在执行任务但尚未登记，允许立即执行同一命令补报入队。
-- **一键看队列**: `pnpm run fleet:status` 可直接查看全体 Agent 状态、模型分布、队长与同路径并行风险。
-- **任务回填**: 初始为“待分配任务”时，拿到明确需求后必须再次执行 `fleet:claim` 同步回填任务字段 + 角色字段（`--role 前端|后端`）。
-- **同路径并行提示**: 同一路径若已登记其他模型，系统会给出冲突告警（终端 + 系统通知），但不拦截启动与登记。
-- **入队回执前缀（强制）**: 完成 `fleet:claim` 后，Agent 第一条回复必须显式带前缀：
-  - 格式：`[AI-TEAM][<nodeId>][#<machineNumber>]`
-  - 示例：`[AI-TEAM][Codex-3 (Codex)][#3]`
-  - 目标：用户无需追问“是否排队/几号机”，开场即见机号与身份。
-- **公共看板协作流程（强制）**:
-  1. 先 `fleet:claim` 入队（含 `--task` + `--role`）。
-  2. 任务变更后再次 `fleet:claim` 回填最新任务与角色。
-  3. 执行中通过 `fleet:status` 检查冲突与角色分布。
-  4. 完工后 `log_task` 留档，确保看板与日志一致。
-- **队长移交触发**: 需要把 0 号机队长移交给其他正在执行的 Agent 时，执行：
+### 常用协作命令
 
 ```bash
-cd /Users/webkubor/Documents/CortexOS
+pnpm run fleet:status
 pnpm run fleet:handover -- --to-node "Codex-3 (Codex)"
+pnpm run fleet:handover -- --to-workspace "<路径>" --to-agent "Claude"
 ```
 
-或按路径移交：
+## 2. 口令触发（免手打）
+
+以下口令可直接触发队长移交：
+
+- `移交队长给 <节点>`
+- `把 0 号机交给 <节点>`
+- `队长切到 <节点>`
+
+执行规则：
+
+1. 优先 `--to-node`
+2. 不唯一时，先让用户补充目标
+3. 完成后回报 `from -> to`、路径、时间
+
+## 3. 动态路由（按需读，不全量读）
+
+### 核心路由
+
+| 场景 | 路径 | 用途 |
+| :--- | :--- | :--- |
+| 助手运行日志 | `.memory/logs/` | 仅助手轨迹，不进用户记忆 |
+| 助手私有记忆 | `.memory/` | 调教、偏好、重试模式 |
+| 记忆法则 | `.memory/memory_formula.md` | 规定“何时读写” |
+| 用户知识库 | `~/Documents/memory/knowledge/` | 复盘、经验、方案 |
+| 用户项目索引 | `~/Documents/memory/projects/index.md` | 项目档案入口 |
+| 用户技能索引 | `~/Documents/memory/skills/index.md` | 本地 skills 目录资产 |
+| 协作指挥中心 | `~/Documents/memory/plans/projects/*-command-center.md` | 多 Agent 项目沟通中枢 |
+| 高敏凭证 | `~/Documents/memory/secrets/` | 私钥/Token（不进 Git） |
+
+### 项目文档路由
+
+| 类型 | 路径 |
+| :--- | :--- |
+| 规则（约束） | `docs/rules/` |
+| SOP（操作步骤） | `docs/sops/` |
+| 运维手册 | `docs/ops/` |
+| 技能文档 | `docs/skills/` |
+| 技术协议 | `docs/tech/` |
+
+## 4. 工具协议
+
+- 物理读取：`cat / ls / rg`
+- 越界读取：优先 MCP（`read_router` / `get_fleet_status`）
+- 语义检索：
 
 ```bash
-pnpm run fleet:handover -- --to-workspace "/绝对路径" --to-agent "Claude"
+python3 scripts/ingest/query_brain.py "查询" --mode lite
+python3 scripts/ingest/query_brain.py "查询" --mode balanced
+python3 scripts/ingest/query_brain.py "查询" --mode deep --budget 3200
 ```
 
-### 1.2 🗣 AI 口令触发（免手打命令）
+- 检索范围配置：`scripts/ingest/retrieval_scope.json`
+- 分级注入配置：`scripts/ingest/injection_policy.json`
 
-当用户在对话里发出以下口令时，Agent 应直接执行队长移交，不要求用户再手打命令：
+## 5. 安全与边界
 
-1. `移交队长给 <节点>`（例：`移交队长给 Codex-3 (Codex)`）
-2. `把 0 号机交给 <节点>`
-3. `队长切到 <节点>`
+- 凭证协议：[privacy_secret_protection_protocol](./rules/privacy_secret_protection_protocol)
+- SOUL 合同：[soul_contract_standard](./rules/soul_contract_standard)
+- Skill 门禁：[skill_vetting_gate](./rules/skill_vetting_gate)
 
-执行规范：
+## 6. 运行要求
 
-1. 优先按节点名执行：`pnpm run fleet:handover -- --to-node "<节点>"`
-2. 若用户给的是路径/模型，则执行：`pnpm run fleet:handover -- --to-workspace "<路径>" --to-agent "<模型>"`
-3. 若目标不唯一（同名或信息不全），先让用户补充一次目标，再执行。
-4. 执行完成后必须回报：`from -> to`、目标路径、时间戳。
-
-## 2. 🔑 凭证索引 (Secrets Index)
-
-- **GitHub/GitLab/WeChat/DeepSeek**: 外置秘钥库目录（默认 `~/Documents/memory/secrets`，可由 `CORTEXOS_SECRET_HOME` 覆盖）。
-- **规范入口**: [隐私秘钥保护协议](./rules/privacy_secret_protection_protocol.md)
-- **SOUL 合同入口**: [SOUL 行为合同标准](./rules/soul_contract_standard.md)
-- **触发**: 提到 "Token", "Key", "登录", "认证"。
-
-## 3. 🔍 动态路由 (Dynamic Routing)
-
-| 意图 | 目标路径 (docs/) | 执行动作 |
-| :--- | :--- | :--- |
-| **🧠 助手操作记录** | `$CODEX_HOME/.memory/logs/` | 记录 Agent 的运行轨迹（私有，不进入用户记忆） |
-| **📚 知识总结/复盘** | `memory/knowledge/` | 沉淀深度复盘、避坑指南、架构分析 |
-| **🗂 个人项目索引** | `/Users/webkubor/Documents/memory/projects/index.md` | 查询你的项目档案、仓库路径与项目上下文 |
-| **🎭 业务方案/计划** | `memory/plans/` | 存放运营方案、执行策略、策略文档 |
-| **🧭 AI Team 协作入口** | `/Users/webkubor/Documents/memory/plans/projects/*-command-center.md` | 首先定位项目指挥中心，统一查看计划、队友与沟通区 |
-| **🎮 技能指挥部 (Skills)** | `docs/skills.md` | **全景指挥中心：实时查看已装载的 21 个技能与 5 个基础设施。** |
-| **🧰 Skills 资产索引** | `/Users/webkubor/Documents/memory/skills/index.md` | 查询你的本地 skills 根目录与维护约定 |
-| **🧩 助手私有调教记忆** | `$CODEX_HOME/.memory` | 仅存助手自我调教与偏好，不写入用户 `memory` |
-| **📖 记忆公式与归档法则** | `$CODEX_HOME/.memory/memory_formula.md` | Agent 必须遵循此法则处理自动复盘与项目归档（含路径与命名规范） |
-| **🛡 Skill 准入门禁** | `rules/skill_vetting_gate.md` + `checklists/skill_vetting_report.md` | 第三方 Skill 安装前先审查，未出报告不得安装 |
-| **🛰 跨目录读取协议** | MCP tools (`read_router`/`get_fleet_status`) | 工作区受限时禁止直接 cat 越界路径，必须优先走 MCP |
-| **⚖️ 核心规则中心** | `rules/` | **只含约束/禁令/价值观**（不含 SOP 和操作手册） |
-| **📋 标准作业程序** | `sops/` | GitHub/图像/项目初始化等具体操作步骤 |
-| **🖥 系统运维手册** | `ops/` | 后台任务、健康检查、工作流操作说明 |
-| **🎭 人格与审美参考** | `persona/` | 身份协议、审美宣言（参考资料，不是规则） |
-| **🔧 技术协议文档** | `tech/` | MCP 协议、技术架构文档 |
-| **🛠️ 初始化与工具** | `tech_stack.md`, `scripts/` | 加载技术栈、执行环境初始化 |
-| **📡 通信与推送** | 外置秘钥库 `lark.env` | 配置飞书战报推送 |
-
-## 4. 🛠 工具协议 (Tooling Protocol)
-
-- **物理访问**: `run_shell_command (cat / ls / grep)`。
-- **跨目录读取**: 当工作目录受沙箱限制时，禁止直接 `cat` 越界路径，必须优先使用 ai-common-brain MCP（`read_router`、`get_fleet_status`）。
-- **语义搜索 (RAG)**: 面对模糊查询时，**Agent 应优先调用** `python3 scripts/ingest/query_brain.py "查询"` 获取上下文。
-- **检索范围控制**: 默认仅索引 `docs/router.md`、`docs/rules/`、`../memory/knowledge/`，并排除 `docs/.vitepress/dist` 与 `.memory/logs` 等高噪音目录；统一由 `scripts/ingest/retrieval_scope.json` 配置。
-- **写入**: 遵循“本地生成 + `mv` 迁移”法则。
-- **Skill 安装前置**: 准备安装第三方 Skill 时，先执行 `inspect` 与门禁审查，必须先填 `skill_vetting_report` 再进入安装动作。
-
-## 5. 🧠 记忆哨兵机制 (Memory Sentinel)
-
-- **自动记录**: Agent 的每一个主动 Task 必须记入 `$CODEX_HOME/.memory/logs/YYYY-MM-DD.md`。
-- **自动同步**: 每 5 分钟执行一次 Git 同步与推送。
+- 每次任务完成后写留痕（`log_task`）
+- 拿到明确任务后，不允许长期保留“待分配任务/未分配角色”
+- 同路径并行目前是“告警不拦截”，执行前先看 `fleet:status`
 
 ---
 *Last Updated: 2026-03-04*
 
-- **版本**: v5.0.0 (SOUL + Skill Vetting Gate)
+- 版本：v5.4.1（Router Density Refactor）

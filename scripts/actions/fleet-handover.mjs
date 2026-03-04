@@ -178,7 +178,7 @@ function printHelp() {
   console.log('  node scripts/actions/fleet-handover.mjs --to-workspace "<绝对路径>" [--to-agent Codex] [--dry-run]');
   console.log('示例:');
   console.log('  node scripts/actions/fleet-handover.mjs --to-node "Codex-3 (Codex)"');
-  console.log('  node scripts/actions/fleet-handover.mjs --to-workspace "/Users/webkubor/Desktop/create" --to-agent Codex');
+  console.log('  node scripts/actions/fleet-handover.mjs --to-workspace "~/Desktop/create" --to-agent Codex');
 }
 
 function findTargetRow(rows, args) {

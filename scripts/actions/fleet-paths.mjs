@@ -9,11 +9,9 @@ function expandHomePath (input, homeDir) {
   return input
 }
 
-function resolveAssistantMemoryHome () {
+function resolveAssistantMemoryHome (projectRoot) {
   const homeDir = process.env.HOME || os.homedir()
-  const codexHomeRaw = process.env.CODEX_HOME || path.join(homeDir, '.codex')
-  const codexHome = path.resolve(expandHomePath(codexHomeRaw, homeDir))
-  const assistantMemoryRaw = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(codexHome, '.memory')
+  const assistantMemoryRaw = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(projectRoot, '.memory')
   return path.resolve(expandHomePath(assistantMemoryRaw, homeDir))
 }
 
@@ -26,7 +24,7 @@ function writeDefaultFleetFile (fleetFile) {
 
 | 节点 ID (模型/别名) | 模型标签 (Agent) | 角色 (Role) | 物理坐标 (绝对工作路径) | 当前执行的核心任务 (含目标) | 领命时间 | 状态与锁 (Status & Locks) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| *(示例节点)* | *(Gemini/Codex/Claude...)* | *(前端/后端)* | \`/Users/you/Desktop/some-project\` | *(示例任务)* | *YYYY-MM-DD HH:MM* | \`[ 等待分配 ]\` |
+| *(示例节点)* | *(Gemini/Codex/Claude...)* | *(前端/后端)* | \`~/Desktop/some-project\` | *(示例任务)* | *YYYY-MM-DD HH:MM* | \`[ 等待分配 ]\` |
 `
   fs.writeFileSync(fleetFile, template, 'utf8')
 }
@@ -37,7 +35,7 @@ function copyIfMissing (targetFile, legacyFile) {
 }
 
 export function ensureFleetPaths (projectRoot) {
-  const assistantMemoryHome = resolveAssistantMemoryHome()
+  const assistantMemoryHome = resolveAssistantMemoryHome(projectRoot)
   const fleetDir = path.join(assistantMemoryHome, 'fleet')
   const fleetFile = path.join(fleetDir, 'fleet_status.md')
   const fleetMetaFile = path.join(fleetDir, 'fleet_meta.json')

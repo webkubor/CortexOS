@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ensureFleetPaths } from "./fleet-paths.mjs";
@@ -12,6 +13,7 @@ const { fleetFile: sourceFile } = ensureFleetPaths(projectRoot);
 const outputFile = path.join(projectRoot, "docs/public/data/ai_team_status.json");
 
 const STALE_HOURS = 4;
+const HOME_DIR = os.homedir();
 
 function stripMarkdown(value) {
   return String(value ?? "")
@@ -55,6 +57,18 @@ function normalizeRole(value) {
   if (/(前端|frontend|front-end|fe)/i.test(lower)) return "前端";
   if (/(后端|backend|back-end|be)/i.test(lower)) return "后端";
   return raw;
+}
+
+function sanitizeWorkspaceForOutput(workspacePath) {
+  const raw = String(workspacePath ?? "").trim();
+  if (!raw) return raw;
+  const normalized = path.normalize(raw);
+  const homePrefix = `${path.normalize(HOME_DIR)}${path.sep}`;
+  if (normalized === path.normalize(HOME_DIR)) return "~";
+  if (normalized.startsWith(homePrefix)) {
+    return `~/${path.relative(HOME_DIR, normalized)}`;
+  }
+  return normalized;
 }
 
 function getProgressFromTodo(workspacePath) {
@@ -158,7 +172,8 @@ function main() {
     const row = parseTableRow(line);
     if (!row) continue;
 
-    const todoProgress = getProgressFromTodo(row.workspace);
+    const workspaceRaw = row.workspace;
+    const todoProgress = getProgressFromTodo(workspaceRaw);
     const finalProgress = todoProgress !== null ? todoProgress : statusToProgress(row.status);
     
     // 检查是否为僵尸节点 (stale)
@@ -171,6 +186,7 @@ function main() {
 
     rows.push({
       ...row,
+      workspace: sanitizeWorkspaceForOutput(workspaceRaw),
       type: statusType(row.status),
       progress: finalProgress,
       isCaptain: row.member.includes("Prime") || row.status.includes("队长锁"),

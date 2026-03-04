@@ -1,6 +1,6 @@
 #!/bin/bash
 # Universal Logger for AI Agent Operations
-# Path: /Users/webkubor/Documents/CortexOS/docs/scripts/log.sh
+# Path: scripts/log.sh
 
 LOG_DIR="$HOME/Documents/CortexOS/docs/operation-logs"
 DATE=$(date +%Y-%m-%d)

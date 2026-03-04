@@ -1,0 +1,36 @@
+{
+  "summary_chars": 180,
+  "tier_rules": [
+    { "pattern": "docs/router.md", "tier": "L0" },
+    { "pattern": "docs/rules/*.md", "tier": "L1" },
+    { "pattern": "docs/sops/*.md", "tier": "L1" },
+    { "pattern": "docs/ops/*.md", "tier": "L2" },
+    { "pattern": "docs/skills/*.md", "tier": "L2" },
+    { "pattern": "docs/guide/*.md", "tier": "L2" },
+    { "pattern": "docs/mcp-console.md", "tier": "L2" },
+    { "pattern": "docs/agents/*/mcp.md", "tier": "L2" },
+    { "pattern": "../memory/projects/*.md", "tier": "L2" },
+    { "pattern": "../memory/skills/*.md", "tier": "L2" },
+    { "pattern": "../memory/knowledge/*.md", "tier": "L3" }
+  ],
+  "modes": {
+    "lite": {
+      "tiers": ["L0", "L1"],
+      "index_k": 4,
+      "vector_k": 1,
+      "token_budget": 900
+    },
+    "balanced": {
+      "tiers": ["L0", "L1", "L2"],
+      "index_k": 6,
+      "vector_k": 3,
+      "token_budget": 1800
+    },
+    "deep": {
+      "tiers": ["L0", "L1", "L2", "L3"],
+      "index_k": 10,
+      "vector_k": 5,
+      "token_budget": 3200
+    }
+  }
+}
