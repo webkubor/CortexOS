@@ -56,3 +56,17 @@ $CODEX_HOME/.memory/
 - 禁止把助手运行日志写进 `~/Documents/memory/`。
 - 禁止在 `.memory` 根目录散落临时碎片文件。
 - 任何密钥一律只进 `~/Documents/memory/secrets/`。
+
+## 6. 全舰队记忆访问规则（2026-03-05 新增）
+
+| 记忆类型 | 路径 | 所有 Agent 可读 | 只有 CortexOS 写 |
+| :--- | :--- | :--- | :--- |
+| 王爷知识/项目/复盘 | `~/Documents/memory/` | ✅ | — |
+| 小烛运行日志 | `.memory/logs/` | — | ✅ |
+| 小烛舰队状态 | `.memory/fleet/` | — | ✅ |
+| 小烛人格/策略 | `.memory/persona/` | — | ✅ |
+
+**obsidian MCP 统一指向 `~/Documents/memory/`**：
+- Gemini CLI: `~/.gemini/settings.json` obsidian → `~/Documents/memory/`
+- Codex: `~/.codex/config.toml` obsidian → `~/Documents/memory/`
+- Claude Code: `~/.claude/settings.json` obsidian → `~/Documents/memory/`

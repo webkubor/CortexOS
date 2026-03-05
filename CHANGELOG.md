@@ -5,6 +5,24 @@
 
 ---
 
+## [v5.6.0] — 2026-03-05 「舰队协同成熟 · 记忆统一 · 生态扩张」
+
+### 🚀 新增 (Added)
+
+- **栖月档案上线**：`docs/agents/qiyue/` 目录（README.md + mcp.md），栖月正式进入大脑文档体系，身份、职责、协作协议完整记录。
+- **舰队能力速查表**：`docs/agents/index.md` 全面升级，新增每个 Agent 的独家能力、花费标注与派单规则。
+- **nanobanana-plus 发布**：Fork nanobanana，新增 per-call 模型切换 + 宽高比控制 + OAuth fallback + setup.sh 一键配置。GitHub: https://github.com/webkubor/nanobanana-plus
+- **Task Handoff 机制**：Codex 新增 Tool 14 `task_handoff_check()`，任务完工自动标记与未认领扫描。
+
+### 🔧 变更 (Changed)
+
+- **记忆统一**：确立两层分离原则，`~/Documents/memory/` 为王爷知识资产（所有 Agent 可读），`CortexOS/.memory/` 为小烛私有。统一修正各 Agent obsidian MCP 指向 `~/Documents/memory/`。
+- **`router.md` §3**：新增记忆分层原则表，明确各层归属与访问权限。
+- **`memory_formula.md` §6**：新增全舰队记忆访问规则，固化为大脑宪法。
+- **`docs/agents/index.md`**：从"配置在哪里"升级为"舰队能力速查表"。
+
+---
+
 ## [v5.5.0] — 2026-03-05 「指挥官升级 · Token 效率治理 · 语义引擎激活」
 
 ### 🚀 新增 (Added)

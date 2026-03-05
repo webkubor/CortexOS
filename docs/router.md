@@ -65,6 +65,17 @@ pnpm run fleet:handover -- --to-workspace "<路径>" --to-agent "Claude"
 
 ## 3. 动态路由（按需读，不全量读）
 
+### ⚡ 记忆分层原则（所有 Agent 必须遵守）
+
+| 层级 | 路径 | 归属 | 谁可以读写 |
+| :--- | :--- | :--- | :--- |
+| **王爷知识资产** | `~/Documents/memory/` | 王爷所有 | ✅ 所有 Agent 均可读取 |
+| **小烛私有记忆** | `CortexOS/.memory/` | CortexOS 专属 | ⚠️ 仅 CortexOS Agent 写入 |
+| **高敏凭证** | `~/Documents/memory/secrets/` | 王爷所有 | 🔒 仅通过 `read_secret()` 访问 |
+
+**通过 obsidian MCP 读取王爷知识库：**
+所有 Agent 的 obsidian MCP 均已指向 `~/Documents/memory/`，可直接语义搜索王爷的知识、项目、复盘内容。
+
 ### 核心路由
 
 | 场景 | 路径 | 用途 |

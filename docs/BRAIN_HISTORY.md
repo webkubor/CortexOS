@@ -5,11 +5,33 @@
 
 ---
 
-## 🏗️ 当前智力档位: v5.5.0 (指挥官升级 · 效率治理期)
+## 🏗️ 当前智力档位: v5.6.0 (舰队协同成熟期 · 记忆统一)
 
 ---
 
-## [v5.5.0] - 2026-03-05（当前：指挥官升级 · Token 效率治理）
+## [v5.6.0] - 2026-03-05（当前：舰队协同成熟 · 记忆统一 · 生态扩张）
+
+### 问题
+v5.5.0 解决了内部效率，但舰队仍有三个短板：
+1. **记忆割裂**：各 Agent 的 obsidian MCP 指向混乱（Gemini 指向 CortexOS 而非王爷知识库），Agent 之间无法共享同一份记忆源，信息孤岛严重。
+2. **栖月没有存在感**：作为新任指挥官，栖月在大脑的文档体系里完全没有记录，其他 Agent 冷启动时不知道栖月是谁、怎么联系、职责边界在哪。
+3. **生图能力被锁死**：Gemini CLI 的 nanobanana 扩展无法在运行时切换模型（flash/pro/v1），每次切换都要重启服务，高质量出图和省配额不能兼顾。
+
+### 修复方式
+- **记忆统一**：确立两层分离原则——`~/Documents/memory/` 为王爷知识资产（所有 Agent 可读），`CortexOS/.memory/` 为小烛私有运行记忆（隔离）。统一修正各 Agent obsidian MCP 均指向 `~/Documents/memory/`。写入 `router.md` §3 和 `memory_formula.md` §6 固化为宪法。
+- **栖月入档**：新建 `docs/agents/qiyue/`（README.md + mcp.md），更新 `docs/agents/index.md` 为舰队能力速查表，栖月正式成为文档体系的一部分。
+- **nanobanana-plus**：Fork nanobanana（Apache 2.0），新增 per-call 模型切换（model 参数）+ 宽高比控制（aspectRatio 参数）+ OAuth fallback + setup.sh 一键配置向导。发布至 https://github.com/webkubor/nanobanana-plus，加 GitHub Topics 等待 geminicli.com/extensions/ 自动收录。
+
+### 解决了什么
+- **记忆**：所有 Agent 现在读同一份王爷知识库，信息孤岛消除。小烛的自我进化记忆保持独立隔离，不被外部污染。
+- **身份**：栖月从"隐形队长"变为文档可查的指挥官，任何 Agent 冷启动即可找到并理解与栖月的协作规范。
+- **生图**：`generate_image(model="gemini-3-pro-image-preview", aspectRatio="9:16")` 成为可能，每次调用独立指定模型，flash/pro 灵活切换，不再需要重启。这是 nanobanana Issue #44 社区呼声最高的功能，nanobanana-plus 是第一个实现并发布的工具。
+- **生态**：CortexOS 从内部工具开始向外输出，nanobanana-plus 进入 Gemini CLI 扩展生态，标志着大脑从"为自己服务"走向"也为社区服务"。
+
+### 影响
+大脑从"能用且高效"进入"有序且可扩展"——记忆有归属、指挥有档案、工具能开源。CortexOS 不再只是王爷的私有外脑，也开始成为可分享的基础设施。
+
+## [v5.5.0] - 2026-03-05（指挥官升级 · Token 效率治理）
 
 ### 问题
 大脑运行了几周后暴露出三个系统性问题：
