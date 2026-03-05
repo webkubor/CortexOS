@@ -14,7 +14,13 @@ const RETRO_DIR = path.join(ASSISTANT_MEMORY_HOME, 'retros')
 const SEEN_FILE = path.join(META_DIR, 'error-retro-seen.json')
 const RETRY_FILE = path.join(ASSISTANT_MEMORY_HOME, 'persona', 'retry_patterns.md')
 
-const ERROR_REGEX = /❌|失败|error|exception|traceback|超时|spawn_error|early_exit|connection closed/i
+const ERROR_REGEX = /❌|失败|exception|traceback|超时|spawn_error|early_exit|connection closed|permission denied|denied|enoent|not found|fatal|panic/i
+const IGNORE_LINE_REGEXES = [
+  /error-retro:\s*✅/i,
+  /无新增错误事件/i,
+  /^-?\s*scripts\/maintenance\/error-retro\.mjs/i,
+  /^-?\s*状态:\s*失败$/i
+]
 
 const PATTERNS = [
   {
@@ -84,9 +90,10 @@ function collectNewErrorEvents(seenSet) {
     const content = fs.readFileSync(file, 'utf-8')
     const lines = content.split('\n')
     lines.forEach((line, idx) => {
-      if (!ERROR_REGEX.test(line)) return
       const snippet = line.trim().slice(0, 180)
       if (!snippet) return
+      if (IGNORE_LINE_REGEXES.some(regex => regex.test(snippet))) return
+      if (!ERROR_REGEX.test(snippet)) return
       const kind = classify(snippet)
       const signature = `${path.basename(file)}:${idx + 1}:${kind.key}:${snippet}`
       if (seenSet.has(signature)) return
