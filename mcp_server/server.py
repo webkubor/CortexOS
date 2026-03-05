@@ -64,7 +64,54 @@ if chromadb and embedding_functions:
 # Helpers
 # ─────────────────────────────────────────────
 def _task_id_pattern() -> re.Pattern[str]:
-    return re.compile(r"task-\d{3}-[a-z0-9-]+", re.IGNORECASE)
+    # 兼容历史命名(task-001-xxx)与新命名(TASK-20260305-005)
+    return re.compile(r"(?:task-\d{3}-[a-z0-9-]+|task-\d{8}-\d{3})", re.IGNORECASE)
+
+
+def _task_file_name_pattern() -> re.Pattern[str]:
+    # 文件名层面的兜底匹配（大小写不敏感）
+    return re.compile(r"^task-(?:\d{3}-[a-z0-9-]+|\d{8}-\d{3})\.md$", re.IGNORECASE)
+
+
+def _iter_task_files(tasks_dir: Path) -> list[Path]:
+    if not tasks_dir.exists():
+        return []
+    seen: set[Path] = set()
+    files: list[Path] = []
+    pattern = _task_file_name_pattern()
+    for file_path in sorted(tasks_dir.glob("*.md")):
+        if pattern.match(file_path.name):
+            resolved = file_path.resolve()
+            if resolved not in seen:
+                seen.add(resolved)
+                files.append(file_path)
+    return files
+
+
+def _extract_task_code(task_ref: str) -> str:
+    raw = (task_ref or "").strip().lower().removesuffix(".md")
+    if not raw:
+        return ""
+    if raw.isdigit():
+        return raw.zfill(3)
+    m = re.search(r"task[#-]?(\d{1,3})", raw, flags=re.IGNORECASE)
+    if m:
+        return m.group(1).zfill(3)
+    m = re.search(r"-(\d{3})$", raw)
+    if m:
+        return m.group(1)
+    return ""
+
+
+def _priority_rank(priority: str) -> int:
+    text = (priority or "").lower()
+    if any(token in text for token in ["high", "紧急", "高", "🔴"]):
+        return 0
+    if any(token in text for token in ["medium", "重要", "中", "🟡"]):
+        return 1
+    if any(token in text for token in ["low", "低", "🟢"]):
+        return 2
+    return 3
 
 def _strip_md(text: str) -> str:
     cleaned = re.sub(r"\*\*|`", "", text or "")
@@ -489,14 +536,13 @@ def get_context_brief() -> str:
             captain = ""
             strategy = ""
 
-    tasks_dir = ASSISTANT_MEMORY_HOME / "tasks"
     try:
-        if tasks_dir.exists():
-            pending = sorted(f.stem for f in tasks_dir.glob("task-*.md"))
-            if pending:
-                tasks_preview = "、".join(pending[:3])
-                if len(pending) > 3:
-                    tasks_preview += f" 等{len(pending)}项"
+        queue = _collect_task_queue()
+        pending = [item["task_id"] for item in queue if not item["completed"]]
+        if pending:
+            tasks_preview = "、".join(pending[:3])
+            if len(pending) > 3:
+                tasks_preview += f" 等{len(pending)}项"
     except Exception:
         tasks_preview = "未知"
 
@@ -555,12 +601,15 @@ def _resolve_task_file(task_id: str) -> Path | None:
     if not normalized:
         return None
     normalized = normalized.removesuffix(".md")
+    task_code = _extract_task_code(normalized)
 
-    for file_path in sorted(tasks_dir.glob("task-*.md")):
+    for file_path in _iter_task_files(tasks_dir):
         stem = file_path.stem.lower()
         if normalized == stem:
             return file_path
-        if normalized.isdigit() and stem.startswith(f"task-{normalized}-"):
+        if normalized.isdigit() and stem.startswith(f"task-{normalized.zfill(3)}-"):
+            return file_path
+        if task_code and (stem.startswith(f"task-{task_code}-") or stem.endswith(f"-{task_code}")):
             return file_path
         if normalized in stem:
             return file_path
@@ -568,7 +617,32 @@ def _resolve_task_file(task_id: str) -> Path | None:
 
 
 def _task_is_completed(content: str) -> bool:
-    return bool(re.search(r"^>\s*状态[:：]\s*✅\s*已完成", content, flags=re.MULTILINE))
+    return bool(re.search(r"^>\s*状态[:：].*(?:✅\s*)?已完成", content, flags=re.MULTILINE))
+
+
+def _extract_task_status(content: str) -> str:
+    status_match = re.search(r"^>\s*状态[:：]\s*(.+)$", content, flags=re.MULTILINE)
+    if not status_match:
+        return "未知"
+    status_text = _strip_md(status_match.group(1))
+    if "已完成" in status_text:
+        return "已完成"
+    if any(token in status_text for token in ["执行中", "进行中"]):
+        return "执行中"
+    if any(token in status_text for token in ["待启动", "待处理", "待办", "待分配"]):
+        return "待启动"
+    return status_text
+
+
+def _extract_task_priority(content: str) -> str:
+    # 优先读取带“优先级”字段的头信息
+    inline_match = re.search(r"^\s*>\s*执行人[:：].*?\|\s*优先级[:：]\s*([^|\n]+)", content, flags=re.MULTILINE)
+    if inline_match:
+        return _strip_md(inline_match.group(1))
+    block_match = re.search(r"^##\s*优先级\s*$\n([^\n]+)", content, flags=re.MULTILINE)
+    if block_match:
+        return _strip_md(block_match.group(1))
+    return "未标注"
 
 
 def _upsert_task_completed(task_file: Path, agent: str, summary: str) -> dict:
@@ -610,7 +684,7 @@ def _collect_task_queue() -> list[dict]:
         return []
 
     queue: list[dict] = []
-    for file_path in sorted(tasks_dir.glob("task-*.md")):
+    for file_path in _iter_task_files(tasks_dir):
         try:
             content = file_path.read_text(encoding="utf-8")
         except Exception:
@@ -625,14 +699,22 @@ def _collect_task_queue() -> list[dict]:
         if assignee_match:
             assignee = _strip_md(assignee_match.group(1)).split("|", 1)[0].strip()
 
+        priority = _extract_task_priority(content)
+        status = _extract_task_status(content)
+
         queue.append(
             {
                 "task_id": file_path.stem.lower(),
                 "title": title,
                 "assignee": assignee,
                 "completed": _task_is_completed(content),
+                "status": status,
+                "priority": priority,
+                "priority_rank": _priority_rank(priority),
             }
         )
+    # 调度视图：未完成优先，其次高优先级优先
+    queue.sort(key=lambda item: (item["completed"], item["priority_rank"], item["task_id"]))
     return queue
 
 
@@ -662,15 +744,27 @@ def task_handoff_check(task_id: str = "", agent: str = "Codex", summary: str = "
     claimed_ids = _extract_active_claimed_task_ids()
     pending = [item for item in queue if not item["completed"]]
     unclaimed = [item for item in pending if item["task_id"] not in claimed_ids]
+    high_pending = [item for item in pending if item["priority_rank"] == 0]
 
-    messages.append(f"任务池: 总计{len(queue)} | 待完成{len(pending)} | 未认领{len(unclaimed)}")
+    messages.append(
+        f"任务池: 总计{len(queue)} | 待完成{len(pending)} | 高优待完成{len(high_pending)} | 未认领{len(unclaimed)}"
+    )
     if unclaimed:
-        preview = "；".join(f"{item['task_id']}（{item['assignee'] or '未指定执行人'}）" for item in unclaimed[:5])
+        preview = "；".join(
+            f"{item['task_id']}（{item['priority']}｜{item['assignee'] or '未指定执行人'}）"
+            for item in unclaimed[:5]
+        )
         if len(unclaimed) > 5:
             preview += f"；...共{len(unclaimed)}项"
         messages.append(f"未认领待办: {preview}")
     else:
         messages.append("未认领待办: 无")
+
+    if high_pending:
+        high_preview = "；".join(item["task_id"] for item in high_pending[:5])
+        if len(high_pending) > 5:
+            high_preview += f"；...共{len(high_pending)}项"
+        messages.append(f"高优任务提示: {high_preview}")
 
     return "\n".join(messages)
 

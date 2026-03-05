@@ -5,6 +5,21 @@
 
 ---
 
+## [v5.6.1] — 2026-03-05 「调度鲁棒性升级 · 根目录瘦身」
+
+### 🚀 新增 (Added)
+
+- **根目录遗留文档归档索引**：新增 `docs/archive/root-legacy/README.md`，记录根目录遗留文档迁移策略与回迁原则。
+
+### 🔧 变更 (Changed)
+
+- **任务调度识别增强**：`mcp_server/server.py` 统一任务文件识别规则，兼容 `task-*` 与 `TASK-*` 命名，修复新任务命名漏检。
+- **任务反馈链路增强**：`task_handoff_check()` 增加高优任务统计与未认领预览中的优先级信息，提升任务分流可见性。
+- **上下文摘要增强**：`get_context_brief()` 改为基于统一任务队列生成待办摘要，避免冷启动状态与任务池视图不一致。
+- **根目录文档瘦身**：`CortexOS_Control_Center.md` 与 `temp_gemini_brain_v2.md` 迁移至 `docs/archive/root-legacy/`，降低入口噪音。
+
+---
+
 ## [v5.6.0] — 2026-03-05 「舰队协同成熟 · 记忆统一 · 生态扩张」
 
 ### 🚀 新增 (Added)
