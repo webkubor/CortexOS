@@ -1,6 +1,7 @@
 """
-CortexOS 外部大脑 MCP Server（统一版 v2）
-基于 FastMCP，暴露大脑的 14 个核心操作 Tool。
+CortexOS 外部大脑 MCP Server（统一版 v2.1 - 协同进化版）
+基于 FastMCP，暴露大脑的核心操作 Tool。
+新增：秘钥写入工具、Obsidian 协同增强日志。
 启动方式：uv run server.py
 接入配置：{ "command": "uv", "args": ["run", "/path/to/CortexOS/mcp_server/server.py"] }
 """
@@ -57,6 +58,18 @@ if chromadb and embedding_functions:
     except Exception:
         CHROMA_CLIENT = None
         EMBED_FN = None
+
+
+# ─────────────────────────────────────────────
+# Helpers
+# ─────────────────────────────────────────────
+def _task_id_pattern() -> re.Pattern[str]:
+    return re.compile(r"task-\d{3}-[a-z0-9-]+", re.IGNORECASE)
+
+def _strip_md(text: str) -> str:
+    cleaned = re.sub(r"\*\*|`", "", text or "")
+    cleaned = re.sub(r"^[-#\s]+", "", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
 
 
 # ─────────────────────────────────────────────
@@ -179,11 +192,12 @@ def list_rules() -> str:
 
 
 # ─────────────────────────────────────────────
-# Tool 7: 写入任务日志（记忆哨兵）
+# Tool 7: 写入任务日志（Obsidian 协同版）
 # ─────────────────────────────────────────────
 @mcp.tool()
 def log_task(content: str, agent: str = "Gemini") -> str:
-    """将操作记录写入今日的助手私有日志目录 $CORTEXOS_ASSISTANT_MEMORY_HOME/logs/YYYY-MM-DD.md。
+    """将操作记录写入今日日志。
+    增强：自动识别内容中的 task-XXX 并生成 Obsidian 双链 [[task-XXX]]。
 
     参数:
         content: 要记录的内容（Markdown 格式，1-5 句话）
@@ -192,13 +206,19 @@ def log_task(content: str, agent: str = "Gemini") -> str:
     today = datetime.now().strftime("%Y-%m-%d")
     log_file = MEMORY_LOGS / f"{today}.md"
     MEMORY_LOGS.mkdir(parents=True, exist_ok=True)
+    
+    # 尝试匹配 Task ID 并注入双链，方便在 Obsidian 中反向链接
+    task_match = _task_id_pattern().search(content)
+    task_link = f" [[{task_match.group(0)}]]" if task_match else ""
+    
     timestamp = datetime.now().strftime("%H:%M:%S")
-    entry = f"\n## [{timestamp}] by {agent}\n{content}\n"
+    entry = f"\n## [{timestamp}] by {agent}{task_link}\n{content}\n"
+    
     if not log_file.exists():
-        log_file.write_text(f"# 操作日志 {today}\n", encoding="utf-8")
+        log_file.write_text(f"# 操作日志 {today}\ntags: #journal/agent\n", encoding="utf-8")
     with log_file.open("a", encoding="utf-8") as f:
         f.write(entry)
-    return f"✅ 日志已写入 {log_file.name}"
+    return f"✅ 日志已写入 {log_file.name} (已增强 Obsidian 协同)"
 
 
 # ─────────────────────────────────────────────
@@ -244,7 +264,6 @@ def read_secret(name: str) -> str:
         name: 密钥文件名（例如 'github.md'、'lark.env'）
     """
     secret_path = (SECRETS_DIR / name).resolve()
-    # 路径穿越防护：确保解析后路径仍在 SECRETS_DIR 内
     if not str(secret_path).startswith(str(SECRETS_DIR.resolve())):
         return "错误：非法路径，禁止访问 secrets 目录之外的文件。"
     if not secret_path.exists():
@@ -257,7 +276,32 @@ def read_secret(name: str) -> str:
 
 
 # ─────────────────────────────────────────────
-# Tool 11: 发送飞书通知
+# Tool 11: 写入/更新密钥文件 (NEW)
+# ─────────────────────────────────────────────
+@mcp.tool()
+def write_secret(name: str, content: str) -> str:
+    """安全地写入或更新秘钥文件。
+    该工具会自动确保路径安全，并支持配置信息的持久化。
+
+    参数:
+        name: 秘钥文件名（建议以 .md 或 .env 结尾）
+        content: 秘钥内容（推荐格式：KEY=VALUE）
+    """
+    # 强制安全检查
+    if "/" in name or ".." in name:
+        return "错误：文件名包含非法字符，仅允许在 secrets 根目录写入。"
+    
+    secret_path = (SECRETS_DIR / name).resolve()
+    try:
+        SECRETS_DIR.mkdir(parents=True, exist_ok=True)
+        secret_path.write_text(content, encoding="utf-8")
+        return f"✅ 秘钥 '{name}' 已成功保存至外置目录。"
+    except Exception as e:
+        return f"写入失败：{str(e)}"
+
+
+# ─────────────────────────────────────────────
+# Tool 12: 发送飞书通知
 # ─────────────────────────────────────────────
 @mcp.tool()
 def send_lark_notification(title: str, body: str) -> str:
@@ -305,7 +349,7 @@ def send_lark_notification(title: str, body: str) -> str:
 
 
 # ─────────────────────────────────────────────
-# Tool 12: 知识库关键词检索
+# Tool 13: 知识库关键词检索
 # ─────────────────────────────────────────────
 def _fulltext_search(query: str) -> list[dict]:
     """全文检索兜底逻辑。"""
@@ -353,7 +397,6 @@ def search_knowledge(query: str, top_k: int = 5) -> list[dict]:
     if not query:
         return []
 
-    # 语义依赖不可用时直接降级
     if CHROMA_CLIENT is None or EMBED_FN is None:
         return _fulltext_search(query) + [{"mode": "fallback", "error": "semantic_unavailable"}]
 
@@ -408,14 +451,8 @@ def search_knowledge(query: str, top_k: int = 5) -> list[dict]:
 
 
 # ─────────────────────────────────────────────
-# Tool 13: 轻量上下文摘要（冷启动首选，省 Token）
+# Tool 14: 轻量上下文摘要（冷启动首选，省 Token）
 # ─────────────────────────────────────────────
-def _strip_md(text: str) -> str:
-    cleaned = re.sub(r"\*\*|`", "", text or "")
-    cleaned = re.sub(r"^[-#\s]+", "", cleaned)
-    return re.sub(r"\s+", " ", cleaned).strip()
-
-
 @mcp.tool()
 def get_context_brief() -> str:
     """返回大脑当前状态的 200 字以内极简摘要，供 Agent 冷启动快速定向。
@@ -425,7 +462,6 @@ def get_context_brief() -> str:
     strategy = ""
     tasks_preview = "无"
 
-    # 1) 从 fleet_status.md 提取队长与最新战略建议首行
     if FLEET_STATUS.exists():
         try:
             content = FLEET_STATUS.read_text(encoding="utf-8")
@@ -453,7 +489,6 @@ def get_context_brief() -> str:
             captain = ""
             strategy = ""
 
-    # 2) 提取待执行任务
     tasks_dir = ASSISTANT_MEMORY_HOME / "tasks"
     try:
         if tasks_dir.exists():
@@ -482,12 +517,8 @@ def get_context_brief() -> str:
 
 
 # ─────────────────────────────────────────────
-# Tool 14: 任务完工与待认领检查
+# Tool 15: 任务完工与待认领检查 (NEW)
 # ─────────────────────────────────────────────
-def _task_id_pattern() -> re.Pattern[str]:
-    return re.compile(r"task-\d{3}-[a-z0-9-]+", re.IGNORECASE)
-
-
 def _tasks_dir() -> Path:
     return ASSISTANT_MEMORY_HOME / "tasks"
 
