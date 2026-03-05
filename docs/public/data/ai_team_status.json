@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-04T18:31:13.500Z",
+  "generatedAt": "2026-03-05T02:25:00.402Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 2,
-  "active": 2,
+  "total": 3,
+  "active": 3,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -33,6 +33,20 @@
       "progress": 60,
       "isCaptain": true,
       "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Codex-1 (Codex)",
+      "agent": "Codex",
+      "role": "后端",
+      "workspace": "~/Documents/CortexOS",
+      "task": "新增权限矩阵学习模板并接入规则索引",
+      "since": "2026-03-05 10:24",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 100,
+      "isCaptain": false,
+      "hasTodo": true,
       "isStale": false
     }
   ]
