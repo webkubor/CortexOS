@@ -4,7 +4,9 @@
             "command": "uv",
             "args": [
                 "run",
-                "/Users/webkubor/Documents/CortexOS/mcp_server/server.py"
+                "--project",
+                ".",
+                "mcp_server/server.py"
             ],
             "description": "小烛的外部大脑 MCP Server：舰队状态管理、规则加载、任务日志"
         }

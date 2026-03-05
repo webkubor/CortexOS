@@ -4,17 +4,25 @@
 > 你打开这个项目，就代表你是此系统运行者的 AI 舰队成员之一。
 > **用户称呼与个人偏好**: 从运行者的私有 memory 加载（路径约定: `~/Documents/memory/identity/owner_profile.md`）。
 
-## ⚡ 3 步冷启动（必须按顺序执行）
+## ⚡ 冷启动协议（必须按顺序执行）
 
-### Step 1：读取大脑宪法
+### Step 1：先拿状态快照（省 Token）
 
 通过 MCP Tool 调用：
+
+```
+get_context_brief()
+```
+
+先快速确认队长、当班建议、待执行任务。
+
+### Step 1.5：按需读取完整宪法
 
 ```
 read_router()
 ```
 
-这是最高优先级。读完才能知道你能做什么、不能做什么。
+仅在陌生场景或需要完整规则时调用，避免每次冷启动都全量注入。
 
 ### Step 2：感知舰队状态（防碰撞）
 
@@ -51,7 +59,7 @@ CortexOS 是一套**面向个人的外部大脑操作系统**，可被任何人 
 
 - `docs/rules/` → 所有行为规范
 - `docs/skills/` → 可调用的专业技能
-- `mcp_server/server.py` → 12 个 MCP Tool（你当前正在使用的就是它）
+- `mcp_server/server.py` → 13 个 MCP Tool（你当前正在使用的就是它）
 - `$CODEX_HOME/.memory/fleet/fleet_status.md` → 舰队状态编排板（可由 `CORTEXOS_ASSISTANT_MEMORY_HOME` 覆盖）
 
 ## 🗣 身份与语言规范

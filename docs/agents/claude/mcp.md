@@ -1,21 +1,36 @@
-# Claude MCP Servers (Logical Configuration)
+# Claude MCP Servers（实配状态）
 
-> **定义**: Claude 环境中用于 UI 审计、代码研究与权限管理的 MCP 服务列表。
+> 定义：Claude Code 在本机当前可用的 MCP 服务清单与排障结果。
 
-## 🛠 已就绪的服务
+## 当前状态（2026-03-05）
 
-| Server ID | 核心职能 | 调用层级 | 状态 |
-| :--- | :--- | :--- | :--- |
-| **playwright** | 跨浏览器交互与视觉分析，用于验证 UI 还原度。 | **L3** | ✓ Connected |
-| **context7** | 实时 API 文档检索，支持精确的代码重构。 | **L3** | ✓ Connected |
-| **pencil** | UI 设计编辑器权限，用于协同设计执行。 | **L1** | ✓ Authorized |
-| **chrome-devtools**| 浏览器底层快照与执行，用于深度前端调试。 | **Legacy** | ✓ Authorized |
+| Server ID | Command | 状态 |
+| :--- | :--- | :--- |
+| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest` | ✓ Connected |
+| `playwright` | `npx @playwright/mcp@latest` | ✓ Connected |
+| `cortexos-brain` | `uv run --project <CORTEXOS_ROOT> <CORTEXOS_ROOT>/mcp_server/server.py` | ✓ Connected |
+| `context7` | `npx -y @upstash/context7-mcp --api-key ****` | ✓ Connected |
 
-## 🔗 权限管理 (Permissions)
-Claude 拥有以下路径的 **自动授权 (Auto-Approve)** 权限：
-- `/Users/webkubor/Documents/CortexOS`
-- `/Users/webkubor/Documents/AI_Plan`
-- `/Users/webkubor/.gemini/tmp`
+## 已处理问题
 
----
-*Last Sync: 2026-02-05*
+1. `pencil` 已从 Claude 用户配置移除  
+原因：原二进制路径不存在，命令执行报 `no such file or directory`，会导致启动时持续报错。
+
+2. `cortexos-brain` 已全局挂载  
+用途：让 Claude 在任意项目都能调用 CortexOS MCP。
+
+3. `context7` 已全局挂载  
+用途：补齐实时文档查询能力。
+
+## 关键命令
+
+```bash
+claude mcp list
+claude mcp get cortexos-brain
+claude mcp get context7
+```
+
+## 配置位置
+
+- Claude 实际用户配置：`~/.claude.json`
+- 本地兼容配置镜像：`~/.claude/settings.json`

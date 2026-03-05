@@ -1,12 +1,13 @@
 """
 CortexOS 外部大脑 MCP Server（统一版 v2）
-基于 FastMCP，暴露大脑的 11 个核心操作 Tool。
+基于 FastMCP，暴露大脑的 13 个核心操作 Tool。
 启动方式：uv run server.py
 接入配置：{ "command": "uv", "args": ["run", "/path/to/CortexOS/mcp_server/server.py"] }
 """
 
 import json
 import os
+import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -404,6 +405,80 @@ def search_knowledge(query: str, top_k: int = 5) -> list[dict]:
         return _fulltext_search(query)
     except Exception as e:
         return _fulltext_search(query) + [{"mode": "fallback", "error": str(e)}]
+
+
+# ─────────────────────────────────────────────
+# Tool 13: 轻量上下文摘要（冷启动首选，省 Token）
+# ─────────────────────────────────────────────
+def _strip_md(text: str) -> str:
+    cleaned = re.sub(r"\*\*|`", "", text or "")
+    cleaned = re.sub(r"^[-#\s]+", "", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+@mcp.tool()
+def get_context_brief() -> str:
+    """返回大脑当前状态的 200 字以内极简摘要，供 Agent 冷启动快速定向。
+    推荐先调用本工具，再按需调用 read_router()。
+    """
+    captain = ""
+    strategy = ""
+    tasks_preview = "无"
+
+    # 1) 从 fleet_status.md 提取队长与最新战略建议首行
+    if FLEET_STATUS.exists():
+        try:
+            content = FLEET_STATUS.read_text(encoding="utf-8")
+            lines = content.splitlines()
+
+            for raw in lines:
+                if "👑" in raw and "|" in raw:
+                    parts = [p.strip() for p in raw.split("|")]
+                    if len(parts) > 1:
+                        captain = _strip_md(parts[1]).strip("*")
+                        break
+
+            in_suggestion = False
+            for raw in lines:
+                line = raw.strip()
+                if line.startswith("### 📌 当班建议"):
+                    in_suggestion = True
+                    continue
+                if in_suggestion and line.startswith("### ") and "当班建议" not in line:
+                    break
+                if in_suggestion and line.startswith("- **"):
+                    strategy = _strip_md(line).strip("*")
+                    break
+        except Exception:
+            captain = ""
+            strategy = ""
+
+    # 2) 提取待执行任务
+    tasks_dir = ASSISTANT_MEMORY_HOME / "tasks"
+    try:
+        if tasks_dir.exists():
+            pending = sorted(f.stem for f in tasks_dir.glob("task-*.md"))
+            if pending:
+                tasks_preview = "、".join(pending[:3])
+                if len(pending) > 3:
+                    tasks_preview += f" 等{len(pending)}项"
+    except Exception:
+        tasks_preview = "未知"
+
+    parts = []
+    if captain:
+        parts.append(f"队长:{captain}")
+    if strategy:
+        parts.append(f"战略:{strategy}")
+    parts.append(f"待办:{tasks_preview}")
+
+    if not captain and not strategy and tasks_preview in {"无", "未知"}:
+        return "状态摘要不可用，请调用 read_router() 获取完整上下文。"
+
+    summary = " | ".join(parts)
+    if len(summary) > 200:
+        return f"{summary[:197].rstrip()}..."
+    return summary
 
 
 # ─────────────────────────────────────────────
