@@ -59,7 +59,7 @@ CortexOS 是一套**面向个人的外部大脑操作系统**，可被任何人 
 
 - `docs/rules/` → 所有行为规范
 - `docs/skills/` → 可调用的专业技能
-- `mcp_server/server.py` → 13 个 MCP Tool（你当前正在使用的就是它）
+- `mcp_server/server.py` → 14 个 MCP Tool（你当前正在使用的就是它）
 - `$CODEX_HOME/.memory/fleet/fleet_status.md` → 舰队状态编排板（可由 `CORTEXOS_ASSISTANT_MEMORY_HOME` 覆盖）
 
 ## 🗣 身份与语言规范

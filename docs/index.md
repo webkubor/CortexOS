@@ -34,7 +34,7 @@ features:
 
   - icon: 🔌
     title: 一行配置，接入任意 AI 客户端
-    details: 基于 Model Context Protocol（MCP），将 CortexOS 的 12 个工具（read_router / fleet_claim / log_task 等）挂载到 Claude Desktop、Gemini CLI、Cursor，任何客户端即开即用。
+    details: 基于 Model Context Protocol（MCP），将 CortexOS 的 14 个工具（read_router / fleet_claim / log_task / task_handoff_check 等）挂载到 Claude Desktop、Gemini CLI、Cursor，任何客户端即开即用。
 
   - icon: 🛡️
     title: Pre-commit 安全门禁，防止私密信息泄漏

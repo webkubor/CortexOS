@@ -83,11 +83,12 @@ pm2 logs brain-cortex-pilot --lines 100
 
 ---
 
-## 3. MCP Tool 总表（`mcp_server/server.py` 全量 12 项）
+## 3. MCP Tool 总表（`mcp_server/server.py` 全量 14 项）
 
 | Tool | 用途 | 典型触发 |
 | :--- | :--- | :--- |
 | `read_router` | 读取大脑最高协议 | 冷启动第一步 |
+| `get_context_brief` | 读取轻量状态快照（低 token） | 冷启动优先 |
 | `get_fleet_status` | 获取全体节点状态 | 并行冲突判断 |
 | `fleet_claim` | 节点挂牌登记 | 开工前声明任务 |
 | `fleet_handover` | 移交队长 | 变更指挥节点 |
@@ -99,6 +100,7 @@ pm2 logs brain-cortex-pilot --lines 100
 | `read_secret` | 读取指定秘钥文件 | 读取 token/env |
 | `send_lark_notification` | 发送飞书通知（转调 Node 统一 Lark 服务） | 战报推送 |
 | `search_knowledge` | 检索知识库文档 | 经验召回/复盘查询 |
+| `task_handoff_check` | 标记任务完成并扫描未认领任务 | 每次收工后执行 |
 
 ---
 

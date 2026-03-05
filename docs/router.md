@@ -112,10 +112,11 @@ python3 scripts/ingest/query_brain.py "查询" --mode deep --budget 3200
 ## 6. 运行要求
 
 - 每次任务完成后写留痕（`log_task`）
+- 每次任务完成后必须执行 `task_handoff_check(task_id="<task-id>", agent="<Agent>", summary="<一句话结果>")`，同步完成状态并检查未认领任务
 - 拿到明确任务后，不允许长期保留“待分配任务/未分配角色”
 - 同路径并行目前是“告警不拦截”，执行前先看 `fleet:status`
 
 ---
-*Last Updated: 2026-03-04*
+*Last Updated: 2026-03-05*
 
-- 版本：v5.4.1（Router Density Refactor）
+- 版本：v5.5.1（Task Handoff Enforcement）

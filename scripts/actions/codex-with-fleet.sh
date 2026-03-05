@@ -126,6 +126,9 @@ ${START_BLOCK}
 8. 若用户说“移交队长给 XXX / 把0号机交给 XXX / 队长切到 XXX”，直接触发：
    cd "$ROOT_DIR" && pnpm run fleet:handover -- --to-node "XXX"
 9. 语言协议：默认且全程使用中文回复；仅在代码、命令、路径、专有名词场景保留英文。
+10. 每次任务完成后，必须调用 MCP Tool：
+   task_handoff_check(task_id="<task-id>", agent="Codex", summary="<一句话结果>")
+   用于标记任务完成并检查是否有未认领任务。
 EOF
 )"
 

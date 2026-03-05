@@ -1,6 +1,6 @@
 """
 CortexOS 外部大脑 MCP Server（统一版 v2）
-基于 FastMCP，暴露大脑的 13 个核心操作 Tool。
+基于 FastMCP，暴露大脑的 14 个核心操作 Tool。
 启动方式：uv run server.py
 接入配置：{ "command": "uv", "args": ["run", "/path/to/CortexOS/mcp_server/server.py"] }
 """
@@ -479,6 +479,169 @@ def get_context_brief() -> str:
     if len(summary) > 200:
         return f"{summary[:197].rstrip()}..."
     return summary
+
+
+# ─────────────────────────────────────────────
+# Tool 14: 任务完工与待认领检查
+# ─────────────────────────────────────────────
+def _task_id_pattern() -> re.Pattern[str]:
+    return re.compile(r"task-\d{3}-[a-z0-9-]+", re.IGNORECASE)
+
+
+def _tasks_dir() -> Path:
+    return ASSISTANT_MEMORY_HOME / "tasks"
+
+
+def _extract_active_claimed_task_ids() -> set[str]:
+    task_ids: set[str] = set()
+    if not FLEET_STATUS.exists():
+        return task_ids
+    try:
+        lines = FLEET_STATUS.read_text(encoding="utf-8").splitlines()
+        header_idx = next((i for i, line in enumerate(lines) if "| 节点 ID (模型/别名) |" in line), -1)
+        if header_idx == -1:
+            return task_ids
+
+        row_idx = header_idx + 2
+        while row_idx < len(lines):
+            raw = lines[row_idx].strip()
+            if not raw.startswith("|"):
+                break
+            if "示例节点" not in raw:
+                for matched in _task_id_pattern().findall(raw):
+                    task_ids.add(matched.lower())
+            row_idx += 1
+    except Exception:
+        return set()
+    return task_ids
+
+
+def _resolve_task_file(task_id: str) -> Path | None:
+    tasks_dir = _tasks_dir()
+    if not tasks_dir.exists():
+        return None
+    normalized = (task_id or "").strip().lower()
+    if not normalized:
+        return None
+    normalized = normalized.removesuffix(".md")
+
+    for file_path in sorted(tasks_dir.glob("task-*.md")):
+        stem = file_path.stem.lower()
+        if normalized == stem:
+            return file_path
+        if normalized.isdigit() and stem.startswith(f"task-{normalized}-"):
+            return file_path
+        if normalized in stem:
+            return file_path
+    return None
+
+
+def _task_is_completed(content: str) -> bool:
+    return bool(re.search(r"^>\s*状态[:：]\s*✅\s*已完成", content, flags=re.MULTILINE))
+
+
+def _upsert_task_completed(task_file: Path, agent: str, summary: str) -> dict:
+    raw = task_file.read_text(encoding="utf-8")
+    if _task_is_completed(raw):
+        return {"task_id": task_file.stem, "changed": False, "already_done": True}
+
+    now_local = datetime.now().strftime("%Y-%m-%d %H:%M")
+    status_line = f"> 状态: ✅ 已完成 | 完成人: {agent} | 完成时间: {now_local}"
+    updated = raw
+
+    if re.search(r"^>\s*状态[:：].*$", updated, flags=re.MULTILINE):
+        updated = re.sub(r"^>\s*状态[:：].*$", status_line, updated, count=1, flags=re.MULTILINE)
+    elif re.search(r"^>\s*执行人[:：].*$", updated, flags=re.MULTILINE):
+        updated = re.sub(r"^(>\s*执行人[:：].*$)", rf"\1\n{status_line}", updated, count=1, flags=re.MULTILINE)
+    else:
+        updated = f"{status_line}\n{updated}"
+
+    section_title = "## ✅ 完成记录"
+    summary_text = (summary or "").strip() or "已完成并通过验收。"
+    record_block = (
+        f"\n\n{section_title}\n"
+        f"- 完成人: {agent}\n"
+        f"- 完成时间: {now_local}\n"
+        f"- 结果: {summary_text}\n"
+    )
+    if section_title in updated:
+        updated += f"\n- [{now_local}] {agent}: {summary_text}\n"
+    else:
+        updated = updated.rstrip() + record_block
+
+    task_file.write_text(updated.rstrip() + "\n", encoding="utf-8")
+    return {"task_id": task_file.stem, "changed": True, "already_done": False}
+
+
+def _collect_task_queue() -> list[dict]:
+    tasks_dir = _tasks_dir()
+    if not tasks_dir.exists():
+        return []
+
+    queue: list[dict] = []
+    for file_path in sorted(tasks_dir.glob("task-*.md")):
+        try:
+            content = file_path.read_text(encoding="utf-8")
+        except Exception:
+            continue
+
+        title = ""
+        assignee = ""
+        title_match = re.search(r"^#\s+(.+)$", content, flags=re.MULTILINE)
+        if title_match:
+            title = _strip_md(title_match.group(1))
+        assignee_match = re.search(r"^\s*>\s*执行人[:：]\s*(.+)$", content, flags=re.MULTILINE)
+        if assignee_match:
+            assignee = _strip_md(assignee_match.group(1)).split("|", 1)[0].strip()
+
+        queue.append(
+            {
+                "task_id": file_path.stem.lower(),
+                "title": title,
+                "assignee": assignee,
+                "completed": _task_is_completed(content),
+            }
+        )
+    return queue
+
+
+@mcp.tool()
+def task_handoff_check(task_id: str = "", agent: str = "Codex", summary: str = "") -> str:
+    """任务收工检查：可选标记任务已完成，并返回仍未认领的待办任务列表。
+
+    推荐在每次任务交付后调用：
+    1) 传入 task_id 标记完成
+    2) 自动检查未认领任务，便于下一位 Agent 接单
+    """
+    messages: list[str] = []
+    normalized_agent = (agent or "Codex").strip() or "Codex"
+
+    if task_id.strip():
+        task_file = _resolve_task_file(task_id)
+        if not task_file:
+            messages.append(f"未找到任务文件: {task_id}")
+        else:
+            result = _upsert_task_completed(task_file, normalized_agent, summary)
+            if result.get("already_done"):
+                messages.append(f"任务已是完成状态: {result['task_id']}")
+            else:
+                messages.append(f"已标记完成: {result['task_id']}")
+
+    queue = _collect_task_queue()
+    claimed_ids = _extract_active_claimed_task_ids()
+    pending = [item for item in queue if not item["completed"]]
+    unclaimed = [item for item in pending if item["task_id"] not in claimed_ids]
+
+    messages.append(f"任务池: 总计{len(queue)} | 待完成{len(pending)} | 未认领{len(unclaimed)}")
+    if unclaimed:
+        preview = "；".join(f"{item['task_id']}（{item['assignee'] or '未指定执行人'}）" for item in unclaimed[:5])
+        if len(unclaimed) > 5:
+            preview += f"；...共{len(unclaimed)}项"
+        messages.append(f"未认领待办: {preview}")
+    else:
+        messages.append("未认领待办: 无")
+
+    return "\n".join(messages)
 
 
 # ─────────────────────────────────────────────
