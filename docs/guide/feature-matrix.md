@@ -83,7 +83,7 @@ pm2 logs brain-cortex-pilot --lines 100
 
 ---
 
-## 3. MCP Tool 总表（`mcp_server/server.py` 全量 14 项）
+## 3. MCP Tool 总表（`mcp_server/server.py` 全量 15 项）
 
 | Tool | 用途 | 典型触发 |
 | :--- | :--- | :--- |
@@ -94,12 +94,13 @@ pm2 logs brain-cortex-pilot --lines 100
 | `fleet_handover` | 移交队长 | 变更指挥节点 |
 | `load_rule` | 懒加载单条规则 | 按需加载规范 |
 | `list_rules` | 列出可用规则 | 不确定规则名时 |
-| `log_task` | 写入操作日志 | 完工留档 |
+| **`log_task`** | **(Obsidian 增强)** 写入操作日志并自动生成 task-[[ID]] 双链 | 完工留档 |
 | `fleet_sync` | 同步舰队状态到前端看板 | 需要看板刷新时 |
 | `list_secrets` | 列出外置秘钥文件 | 检查秘钥清单 |
 | `read_secret` | 读取指定秘钥文件 | 读取 token/env |
-| `send_lark_notification` | 发送飞书通知（转调 Node 统一 Lark 服务） | 战报推送 |
-| `search_knowledge` | 检索知识库文档 | 经验召回/复盘查询 |
+| **`write_secret`** | **(NEW)** 安全地写入或更新外置秘钥文件 | 保存新 Key |
+| `send_lark_notification` | 发送飞书通知 | 战报推送 |
+| `search_knowledge` | 检索知识库文档（语义 + 全文） | 经验召回/复盘查询 |
 | `task_handoff_check` | 标记任务完成并扫描未认领任务 | 每次收工后执行 |
 
 ---

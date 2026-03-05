@@ -5,15 +5,16 @@
 ---
 
 ## 🛠️ 1. 自动化基础设施 (Infrastructure & Extensions)
-这些是赋予 Agent 物理操作能力的**底层工具 (MCP Servers)**。
+这些是赋予 Agent 物理操作能力的**底层工具 (MCP Servers & CLI)**。
 
 | 工具名称 | 核心能力 (About) | 装载时间 | 调用方式 (Method) |
 | :--- | :--- | :--- | :--- |
-| **`chrome-devtools-mcp`** | **agent-browser**：浏览器自动化、A11y 语义识别。 | 2026-03-04 | `browser_*` / `chrome-devtools` |
-| **`nanobanana`** | **视觉画师**：AI 图像生成、编辑、修复与 Story 设计。 | 2026-02-19 | `generate_image` / `G()` |
-| **`context7`** | **文档库**：实时拉取第三方库的最新 API 文档。 | 2026-02-24 | `query-docs` |
-| **`mcp-toolbox`** | **数据管家**：连接本地/云端数据库的向量协议。 | 2026-02-24 | `mcp-toolbox` |
-| **`github-mcp`** | **GitHub 交互**：通过 MCP 操作 Issue、PR 与 Repo。 | 2026-03-04 | `github_*` |
+| **`agent-browser`** | **SSOT 浏览器**：高级自动化、A11y 语义快照、官方文档深度检索。 | 2026-03-05 | `agent-browser` (CLI) |
+| **`chrome-devtools`** | **底层驱动**：浏览器控制、性能分析、A11y 审计 (MCP)。 | 2026-03-04 | `browser_*` |
+| **`nanobanana-plus`** | **旗舰画师**：AI 图像生成、编辑、视觉故事、SVG 图标 (Upgraded)。 | 2026-03-05 | `generate_image` / `G()` |
+| **`huggingface-skills`**| **模型工厂**：HF 模型训练、数据集管理、Gradio UI 开发 (New)。 | 2026-03-05 | `hugging-face-*` |
+| **`github`** | **代码协作**：仓库管理、Issue/PR 操作、代码审查。 | 2026-03-05 | `github_*` |
+| **`obsidian`** | **记忆读写**：知识库精准修改 (patch_note)、双链管理。 | 2026-03-05 | `obsidian.*` |
 
 ---
 
@@ -22,13 +23,13 @@
 
 | 技能名称 | 核心职能 (About) | 状态 | 安装路径 (Package) |
 | :--- | :--- | :--- | :--- |
-| **`cinematic-storyboard-skill`** | **视觉大导**：写实武侠逻辑、15s 分镜、AI 视频 Prompt。 | 🌟 旗舰 | `.agents/skills/cinematic-storyboard-skill` |
+| **`huggingface-skills`** | **模型工程**：涵盖从训练 (TRL)、评估到部署的全流程。 | 🚀 新锐 | `.gemini/extensions/huggingface-skills` |
+| **`cinematic-storyboard`**| **视觉大导**：写实武侠逻辑、15s 分镜、AI 视频 Prompt。 | 🌟 旗舰 | `.agents/skills/cinematic-storyboard-skill` |
 | **`xhs-manager-skill`** | **小红书官**：agent-browser 驱动、矩阵发布、账号隔离。 | ✅ 已武装 | `.agents/skills/xhs-manager-skill` |
-| **`scm-ops-skill`** | **运维总管**：Git/GitHub 自动化、Release 循环、多实例。 | ✅ 已武装 | `.agents/skills/scm-ops-skill` |
-| **`brain-sentinel-skill`** | **记忆哨兵**：Exocortex 健康监测、记忆日志、审计。 | 🚨 激活中 | `.agents/skills/brain-sentinel-skill` |
-| **`visual-studio-skill`** | **视觉大师**：Persona 锁死、UI/UX 实现、品牌 IP。 | ✅ 已安装 | `.agents/skills/visual-studio-skill` |
-| **`audio-music-engineer-skill`**| **音乐工程师**：BGM 创作、SFX 音效设计。 | ✅ 已安装 | `.agents/skills/audio-music-engineer-skill` |
-| **`omni-publisher-skill`** | **全能分发**：跨平台同步（掘金、微信、小红书）。 | ✅ 已安装 | `.agents/skills/omni-publisher-skill` |
+| **`scm-ops-skill`** | **运维总管**：Git/GitHub 自动化、Release 循环。 | ✅ 已武装 | `.agents/skills/scm-ops-skill` |
+| **`brain-sentinel-skill`** | **记忆哨兵**：Obsidian 协同日志、双链追踪、审计。 | 🚨 激活中 | `.agents/skills/brain-sentinel-skill` |
+| **`file-hosting-master`** | **云端存储**：R2/GitHub 资产自动上传与分发 (v1.2.2)。 | ✅ 已更新 | `.agents/skills/file-hosting-master-skill` |
+
 
 ---
 
