@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-05T05:30:00.349Z",
+  "generatedAt": "2026-03-05T05:55:00.359Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 4,
-  "active": 4,
+  "total": 3,
+  "active": 3,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -41,26 +41,12 @@
       "role": "未分配",
       "workspace": "~/Documents/CortexOS",
       "task": "待分配任务",
-      "since": "2026-03-05 11:55",
+      "since": "2026-03-05 13:51",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,
       "isCaptain": false,
       "hasTodo": true,
-      "isStale": false
-    },
-    {
-      "member": "Codex-4 (Codex)",
-      "agent": "Codex",
-      "role": "前端",
-      "workspace": "~/Desktop/AI-tools/wechat-chat-gen",
-      "task": "确认项目中定义了几个运行/展示模式，并给出准确数量与名称",
-      "since": "2026-03-05 11:54",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
-      "hasTodo": false,
       "isStale": false
     }
   ]
