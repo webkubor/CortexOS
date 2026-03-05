@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-05T08:25:00.328Z",
+  "generatedAt": "2026-03-05T08:35:00.491Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 4,
@@ -27,7 +27,7 @@
       "role": "未分配",
       "workspace": "~/Documents/CortexOS",
       "task": "待分配任务",
-      "since": "2026-03-05 14:35",
+      "since": "2026-03-05 16:32",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 100,
