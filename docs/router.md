@@ -84,9 +84,9 @@ pnpm run fleet:handover -- --to-workspace "<路径>" --to-agent "Claude"
 | 助手私有记忆 | `.memory/` | 调教、偏好、重试模式 |
 | 记忆法则 | `.memory/memory_formula.md` | 规定“何时读写” |
 | 用户知识库 | `~/Documents/memory/knowledge/` | 复盘、经验、方案 |
-| 用户项目索引 | `~/Documents/memory/projects/index.md` | 项目档案入口 |
-| 用户技能索引 | `~/Documents/memory/skills/index.md` | 本地 skills 目录资产 |
-| 协作指挥中心 | `~/Documents/memory/plans/projects/*-command-center.md` | 多 Agent 项目沟通中枢 |
+| 助手项目索引 | `$CODEX_HOME/.memory/projects/index.md` | 小烛维护的项目索引（不写入用户 memory） |
+| 助手技能索引 | `$CODEX_HOME/.memory/skills/index.md` | 小烛维护的 skills 索引 |
+| 协作指挥中心 | `$CODEX_HOME/.memory/plans/projects/*-command-center.md` | 多 Agent 项目沟通中枢 |
 | 高敏凭证 | `~/Documents/memory/secrets/` | 私钥/Token（不进 Git） |
 
 ### 项目文档路由
@@ -97,7 +97,10 @@ pnpm run fleet:handover -- --to-workspace "<路径>" --to-agent "Claude"
 | SOP（操作步骤） | `docs/sops/` |
 | 运维手册 | `docs/ops/` |
 | 技能文档 | `docs/skills/` |
+| 全量工具清单 | `docs/intel/tooling_inventory.md` |
 | 技术协议 | `docs/tech/` |
+| 资产托管 SOP | `docs/sops/asset_hosting_sop.md` |
+| 工具发现 SOP | `docs/sops/tool_discovery_sop.md` |
 
 ## 4. 工具协议
 
@@ -122,12 +125,21 @@ python3 scripts/ingest/query_brain.py "查询" --mode deep --budget 3200
 
 ## 6. 运行要求
 
+- **私有 Skill 动态治理协议 (必做)**:
+  - **实时身份审计**: 凡遇到插件 (path 含 `extensions` / `skills`) 报错或性能低下，Agent **必须** 先执行 `Active Audit`。审计准则：
+    1. 检查 `package.json` 的 `author` 或 `repository` 是否包含 `webkubor`。
+    2. 检查 `.git/config` 远程地址。
+    3. 若审计通过（确认为自研），则进入 `[[task-YYYYMMDD-SKILL-NAME]]` 治理流。
+  - **大上下文深度重构**: 利用大上下文与低成本 Token 优势，对 Skill 执行**全量代码审计**（而非局部 patch）。在 `.memory/tasks/` 下记录包含 Root Cause、Verified Command 以及符合未来标准的“全流程重构路径”。
+  - **拒绝零碎修改**: 倡导优雅的、结构化的重构，不保留临时的、不优雅的 Hack 方案。
 - 每次任务完成后写留痕（`log_task`）
 - 每次任务完成后必须执行 `task_handoff_check(task_id="<task-id>", agent="<Agent>", summary="<一句话结果>")`，同步完成状态并检查未认领任务
 - 拿到明确任务后，不允许长期保留“待分配任务/未分配角色”
 - 同路径并行目前是“告警不拦截”，执行前先看 `fleet:status`
 
----
-*Last Updated: 2026-03-05*
+### Metadata
 
-- 版本：v5.5.1（Task Handoff Enforcement）
+*Last Updated: 2026-03-06*
+
+- **版本**: v5.6.0（Intelligence Interface & Asset Hosting）
+- **变更日志**: [查看进化史](./intel/evolution.md)

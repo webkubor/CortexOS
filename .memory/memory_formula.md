@@ -27,7 +27,8 @@ $CODEX_HOME/.memory/
 | 助手偏好、提示策略、思维习惯、失败重试 | `$CODEX_HOME/.memory/persona/` | 仅助手可用，不写入用户长期记忆 |
 | 运行日志 | `$CODEX_HOME/.memory/logs/` | 仅记录操作轨迹，不写密钥 |
 | 舰队协作状态 | `$CODEX_HOME/.memory/fleet/` | 多 Agent 协同运行态 |
-| 用户项目归档/复盘/知识 | `~/Documents/memory/{projects,knowledge,plans}/` | 属于用户资产，不写入 `.memory` |
+| 用户技术知识/复盘/分享素材 | `~/Documents/memory/{knowledge,shares,publish}/` | 属于用户资产，不写入 `.memory` |
+| 项目索引/协作计划索引 | `$CODEX_HOME/.memory/{projects,plans}/` | 由小烛维护，作为控制层入口 |
 | 用户高敏凭证 | `~/Documents/memory/secrets/` | 永不进入 Git 仓库 |
 
 ## 3. 读取触发矩阵（什么时候读）
@@ -61,7 +62,7 @@ $CODEX_HOME/.memory/
 
 | 记忆类型 | 路径 | 所有 Agent 可读 | 只有 CortexOS 写 |
 | :--- | :--- | :--- | :--- |
-| 王爷知识/项目/复盘 | `~/Documents/memory/` | ✅ | — |
+| 王爷知识/复盘/素材 | `~/Documents/memory/` | ✅ | — |
 | 小烛运行日志 | `.memory/logs/` | — | ✅ |
 | 小烛舰队状态 | `.memory/fleet/` | — | ✅ |
 | 小烛人格/策略 | `.memory/persona/` | — | ✅ |

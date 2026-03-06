@@ -257,9 +257,9 @@ pm2 save
 
 1. 先走门禁：按 `docs/rules/skill_vetting_gate.md` 进行安装前审查。  
 2. 填写审查单：`docs/checklists/skill_vetting_report.md`。  
-3. 审查通过后，在本机 skills 目录（如 `/Users/webkubor/Desktop/skills`）创建或安装技能。  
+3. 审查通过后，在本机 skills 目录（如 `~/Desktop/skills`）创建或安装技能。  
 4. 打开 `docs/skills/management.md` 确认“初始化建议安装”和“本机已安装扫描”状态。  
-5. 同步用户侧索引：`/Users/webkubor/Documents/memory/skills/index.md`。  
+5. 同步用户侧索引：`~/Documents/memory/skills/index.md`。  
 6. 给出触发语句和输入输出格式。  
 
 最小审查命令：

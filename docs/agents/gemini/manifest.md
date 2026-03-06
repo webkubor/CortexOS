@@ -13,7 +13,7 @@
 
 - **Design**: `pencil` (L1)
 - **Search**: `google_web_search` (L3)
-- **Image**: `nanobanana` (L2)
+- **Image**: `nanobanana-plus` (L2)
 - **Browser**: `playwright` (L3)
 
 ## 🧩 专属技能

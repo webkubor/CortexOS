@@ -13,6 +13,8 @@ const skillsReposFile = path.join(projectRoot, 'docs/skills/github_repos.md')
 const outMarkdownFile = path.join(projectRoot, 'docs/skills/management.md')
 const outJsonFile = path.join(projectRoot, 'docs/public/data/skills_inventory.json')
 const localSkillsRoot = path.join(os.homedir(), 'Desktop/skills')
+const localSkillsRootDisplay = '~/Desktop/skills'
+const localSkillsRootCommand = '$HOME/Desktop/skills'
 
 function nowLocal () {
   const d = new Date()
@@ -169,13 +171,13 @@ ${installLocationRows}
 
 ### 1.2 本机私有 skills 源码目录
 
-- 源码目录：\`${localSkillsRoot}\`
+- 源码目录：\`${localSkillsRootDisplay}\`
 - 推荐做法：源码放这里，再链接到对应运行时目录。
 
 示例（把本地 skill 接入 Codex）：
 
 \`\`\`bash
-ln -s "${localSkillsRoot}/your-skill" "$HOME/.codex/skills/your-skill"
+ln -s "${localSkillsRootCommand}/your-skill" "$HOME/.codex/skills/your-skill"
 \`\`\`
 
 ## 2. 初始化建议安装（CortexOS 原生 skills）
@@ -203,7 +205,7 @@ ls -la "$HOME/.agents/skills"
 
 \`\`\`bash
 mkdir -p "$HOME/.codex/skills"
-ln -sfn "${localSkillsRoot}/your-skill" "$HOME/.codex/skills/your-skill"
+ln -sfn "${localSkillsRootCommand}/your-skill" "$HOME/.codex/skills/your-skill"
 test -f "$HOME/.codex/skills/your-skill/SKILL.md" && echo "OK: SKILL.md 已就绪"
 \`\`\`
 
@@ -227,7 +229,7 @@ ls -la "$HOME/.codex/skills" | rg "xhs-manager|omni-publisher|scm-ops"
 
 - 原生拆分 skills 以 \`docs/skills/github_repos.md\` 为 SSOT。
 - 用户本机安装态以本页扫描结果为准。
-- 新增私有 skill：放到 \`${localSkillsRoot}\`，并同步更新 \`~/Documents/memory/skills/index.md\`。
+- 新增私有 skill：放到 \`${localSkillsRootDisplay}\`，并同步更新 \`~/Documents/memory/skills/index.md\`。
 `
 }
 
@@ -252,7 +254,7 @@ function main () {
     nativeSkills,
     installedSkills,
     scanDirs,
-    localSkillsRoot
+    localSkillsRoot: localSkillsRootDisplay
   }
 
   fs.mkdirSync(path.dirname(outJsonFile), { recursive: true })

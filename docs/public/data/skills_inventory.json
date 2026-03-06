@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-04T07:23:37.423Z",
-  "generatedAtLocal": "2026-03-04 15:23",
+  "generatedAt": "2026-03-06T07:25:37.865Z",
+  "generatedAtLocal": "2026-03-06 15:25",
   "nativeSkills": [
     {
       "name": "omni-publisher-skill",
@@ -203,16 +203,16 @@
       "hasSkillFile": true
     },
     {
-      "name": "file-hosting-master-skill",
-      "canonical": "file-hosting-master",
+      "name": "find-skills",
+      "canonical": "find",
       "sources": [
         "~/.agents/skills"
       ],
       "paths": [
-        "/Users/webkubor/.agents/skills/file-hosting-master-skill"
+        "/Users/webkubor/.agents/skills/find-skills"
       ],
       "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/file-hosting-master-skill"
+        "/Users/webkubor/.agents/skills/find-skills"
       ],
       "hasSkillFile": true
     },
@@ -233,21 +233,16 @@
       "hasSkillFile": true
     },
     {
-      "name": "gemini-skill-vitepress-init",
-      "canonical": "vitepress-init",
+      "name": "github-uploader",
+      "canonical": "github-uploader",
       "sources": [
-        "~/.agents/skills",
-        "~/.codex/skills"
+        "~/.agents/skills"
       ],
       "paths": [
-        "/Users/webkubor/.agents/skills/gemini-skill-vitepress-init",
-        "/Users/webkubor/.agents/skills/vitepress-init-skill",
-        "/Users/webkubor/.codex/skills/vitepress-init"
+        "/Users/webkubor/.agents/skills/github-uploader"
       ],
       "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/gemini-skill-vitepress-init",
-        "/Users/webkubor/.agents/skills/vitepress-init-skill",
-        "/Users/webkubor/.codex/skills/vitepress-init"
+        "/Users/webkubor/.agents/skills/github-uploader"
       ],
       "hasSkillFile": true
     },
@@ -296,6 +291,20 @@
       "hasSkillFile": true
     },
     {
+      "name": "obsidian",
+      "canonical": "obsidian",
+      "sources": [
+        "~/.agents/skills"
+      ],
+      "paths": [
+        "/Users/webkubor/.agents/skills/obsidian"
+      ],
+      "resolvedPaths": [
+        "/Users/webkubor/.agents/skills/obsidian"
+      ],
+      "hasSkillFile": true
+    },
+    {
       "name": "omni-publisher-skill",
       "canonical": "omni-publisher",
       "sources": [
@@ -323,6 +332,20 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/pwa-master-skill",
         "/Users/webkubor/.codex/skills/pwa-master"
+      ],
+      "hasSkillFile": true
+    },
+    {
+      "name": "r2-uploader",
+      "canonical": "r2-uploader",
+      "sources": [
+        "~/.agents/skills"
+      ],
+      "paths": [
+        "/Users/webkubor/.agents/skills/r2-uploader"
+      ],
+      "resolvedPaths": [
+        "/Users/webkubor/.agents/skills/r2-uploader"
       ],
       "hasSkillFile": true
     },
@@ -430,6 +453,23 @@
       "hasSkillFile": true
     },
     {
+      "name": "vitepress-init-skill",
+      "canonical": "vitepress-init",
+      "sources": [
+        "~/.agents/skills",
+        "~/.codex/skills"
+      ],
+      "paths": [
+        "/Users/webkubor/.agents/skills/vitepress-init-skill",
+        "/Users/webkubor/.codex/skills/vitepress-init"
+      ],
+      "resolvedPaths": [
+        "/Users/webkubor/.agents/skills/vitepress-init-skill",
+        "/Users/webkubor/.codex/skills/vitepress-init"
+      ],
+      "hasSkillFile": true
+    },
+    {
       "name": "xhs-manager-skill",
       "canonical": "xhs-manager",
       "sources": [
@@ -461,5 +501,5 @@
       "exists": true
     }
   ],
-  "localSkillsRoot": "/Users/webkubor/Desktop/skills"
+  "localSkillsRoot": "~/Desktop/skills"
 }

@@ -33,4 +33,4 @@ gemini skills install https://github.com/webkubor/omni-publisher-skill
 ## 关联入口
 
 - Skills 总入口：[`index`](./index)
-- 用户侧本地 skills 索引：`/Users/webkubor/Documents/memory/skills/index.md`
+- 用户侧本地 skills 索引：`~/Documents/memory/skills/index.md`

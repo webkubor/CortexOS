@@ -20,8 +20,8 @@
 
 推荐做法：
 
-1. 主工程 Vault：`/Users/webkubor/Documents/CortexOS`
-2. 私钥 Vault：`/Users/webkubor/Documents/memory/secrets`
+1. 主工程 Vault：`~/Documents/CortexOS`
+2. 私钥 Vault：`~/Documents/memory/secrets`
 3. 在 MCP 客户端为两个 Vault 分别配置独立 server（按需启用）
 
 Codex 示例（`~/.codex/config.toml`）：
@@ -29,11 +29,11 @@ Codex 示例（`~/.codex/config.toml`）：
 ```toml
 [mcp_servers.obsidian-main]
 command = "npx"
-args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "/Users/webkubor/Documents/CortexOS" ]
+args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "~/Documents/CortexOS" ]
 
 [mcp_servers.obsidian-secrets]
 command = "npx"
-args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "/Users/webkubor/Documents/memory/secrets" ]
+args = [ "-y", "@mauricio.wolff/mcp-obsidian@latest", "~/Documents/memory/secrets" ]
 ```
 
 ## 4. 模板使用（强烈建议）

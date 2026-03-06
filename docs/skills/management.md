@@ -4,7 +4,7 @@ description: Skills 管理页（安装位置 + 使用方式 + 扫描结果）
 # Skills 管理台
 
 > 本页由脚本自动生成：`node scripts/tools/sync-skills-management.mjs`  
-> 最近生成时间：2026-03-04 15:23
+> 最近生成时间：2026-03-06 15:25
 
 ## 0. 先做这 3 步（实操）
 
@@ -25,13 +25,13 @@ description: Skills 管理页（安装位置 + 使用方式 + 扫描结果）
 
 ### 1.2 本机私有 skills 源码目录
 
-- 源码目录：`/Users/webkubor/Desktop/skills`
+- 源码目录：`~/Desktop/skills`
 - 推荐做法：源码放这里，再链接到对应运行时目录。
 
 示例（把本地 skill 接入 Codex）：
 
 ```bash
-ln -s "/Users/webkubor/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skill"
+ln -s "$HOME/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skill"
 ```
 
 ## 2. 初始化建议安装（CortexOS 原生 skills）
@@ -45,11 +45,11 @@ ln -s "/Users/webkubor/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skil
 | pwa-master-skill | https://github.com/webkubor/pwa-master-skill | 是 | /Users/webkubor/.agents/skills/pwa-master-skill<br>/Users/webkubor/.codex/skills/pwa-master | `gemini skills install https://github.com/webkubor/pwa-master-skill` |
 | persona-generator-skill | https://github.com/webkubor/persona-generator-skill | 否 | - | `gemini skills install https://github.com/webkubor/persona-generator-skill` |
 | web-ui-skill | https://github.com/webkubor/web-ui-skill | 否 | - | `gemini skills install https://github.com/webkubor/web-ui-skill` |
-| vitepress-init-skill | https://github.com/webkubor/vitepress-init-skill | 是 | /Users/webkubor/.agents/skills/gemini-skill-vitepress-init<br>/Users/webkubor/.agents/skills/vitepress-init-skill<br>/Users/webkubor/.codex/skills/vitepress-init | `gemini skills install https://github.com/webkubor/vitepress-init-skill` |
+| vitepress-init-skill | https://github.com/webkubor/vitepress-init-skill | 是 | /Users/webkubor/.agents/skills/vitepress-init-skill<br>/Users/webkubor/.codex/skills/vitepress-init | `gemini skills install https://github.com/webkubor/vitepress-init-skill` |
 | brain-sentinel-skill | https://github.com/webkubor/brain-sentinel-skill | 是 | /Users/webkubor/.agents/skills/brain-sentinel-skill | `gemini skills install https://github.com/webkubor/brain-sentinel-skill` |
 | code-aureate-skill | https://github.com/webkubor/code-aureate-skill | 是 | /Users/webkubor/.agents/skills/code-aureate-skill | `gemini skills install https://github.com/webkubor/code-aureate-skill` |
 | knowledge-navigator-skill | https://github.com/webkubor/knowledge-navigator-skill | 是 | /Users/webkubor/.agents/skills/knowledge-navigator-skill | `gemini skills install https://github.com/webkubor/knowledge-navigator-skill` |
-| file-hosting-master-skill | https://github.com/webkubor/file-hosting-master-skill | 是 | /Users/webkubor/.agents/skills/file-hosting-master-skill | `gemini skills install https://github.com/webkubor/file-hosting-master-skill` |
+| file-hosting-master-skill | https://github.com/webkubor/file-hosting-master-skill | 否 | - | `gemini skills install https://github.com/webkubor/file-hosting-master-skill` |
 | scm-ops-skill | https://github.com/webkubor/scm-ops-skill | 是 | /Users/webkubor/.agents/skills/scm-ops-skill | `gemini skills install https://github.com/webkubor/scm-ops-skill` |
 | xhs-manager-skill | https://github.com/webkubor/xhs-manager-skill | 是 | /Users/webkubor/.agents/skills/xhs-manager-skill | `gemini skills install https://github.com/webkubor/xhs-manager-skill` |
 
@@ -65,14 +65,16 @@ ln -s "/Users/webkubor/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skil
 | feishu-writer | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/feishu-writer<br>/Users/webkubor/.codex/skills/feishu-writer |
 | figma | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/figma |
 | figma-implement-design | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/figma-implement-design |
-| file-hosting-master-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/file-hosting-master-skill |
+| find-skills | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/find-skills |
 | frontend-design | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/frontend-design<br>/Users/webkubor/.codex/skills/frontend-design |
-| gemini-skill-vitepress-init | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/gemini-skill-vitepress-init<br>/Users/webkubor/.agents/skills/vitepress-init-skill<br>/Users/webkubor/.codex/skills/vitepress-init |
+| github-uploader | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/github-uploader |
 | juejin-writer | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/juejin-writer<br>/Users/webkubor/.codex/skills/juejin-writer |
 | knowledge-navigator-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/knowledge-navigator-skill |
 | logo-designer | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/logo-designer |
+| obsidian | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/obsidian |
 | omni-publisher-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/omni-publisher-skill |
 | pwa-master-skill | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/pwa-master-skill<br>/Users/webkubor/.codex/skills/pwa-master |
+| r2-uploader | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/r2-uploader |
 | remotion-best-practices | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/remotion-best-practices<br>/Users/webkubor/.codex/skills/remotion-best-practices |
 | scm-ops-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/scm-ops-skill |
 | snippet-master | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/snippet-master |
@@ -80,6 +82,7 @@ ln -s "/Users/webkubor/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skil
 | think-skill | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/think-skill<br>/Users/webkubor/.codex/skills/think |
 | ui-ux-pro-max | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/ui-ux-pro-max |
 | visual-studio-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/visual-studio-skill |
+| vitepress-init-skill | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/vitepress-init-skill<br>/Users/webkubor/.codex/skills/vitepress-init |
 | xhs-manager-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/xhs-manager-skill |
 
 ## 4. 怎么使用（落地步骤）
@@ -95,7 +98,7 @@ ls -la "$HOME/.agents/skills"
 
 ```bash
 mkdir -p "$HOME/.codex/skills"
-ln -sfn "/Users/webkubor/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skill"
+ln -sfn "$HOME/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skill"
 test -f "$HOME/.codex/skills/your-skill/SKILL.md" && echo "OK: SKILL.md 已就绪"
 ```
 
@@ -119,4 +122,4 @@ ls -la "$HOME/.codex/skills" | rg "xhs-manager|omni-publisher|scm-ops"
 
 - 原生拆分 skills 以 `docs/skills/github_repos.md` 为 SSOT。
 - 用户本机安装态以本页扫描结果为准。
-- 新增私有 skill：放到 `/Users/webkubor/Desktop/skills`，并同步更新 `/Users/webkubor/Documents/memory/skills/index.md`。
+- 新增私有 skill：放到 `~/Desktop/skills`，并同步更新 `~/Documents/memory/skills/index.md`。

@@ -5,7 +5,7 @@
 ## ⚡ Claude 接入指令 (First-Time Bootstrap)
 
 ```bash
-cd /Users/webkubor/Documents/CortexOS
+cd ~/Documents/CortexOS
 pnpm run codex:setup
 source ~/.zshrc
 ```

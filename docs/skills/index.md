@@ -8,8 +8,8 @@ description: Skills 能力入口与查找顺序。
 ## 查找顺序
 
 1. Skills 管理台（统一视图）：[`management`](./management)
-2. 用户侧 skills 索引：`/Users/webkubor/Documents/memory/skills/index.md`
-3. 本地 skills 根目录：`/Users/webkubor/Desktop/skills`
+2. 用户侧 skills 索引：`~/Documents/memory/skills/index.md`
+3. 本地 skills 根目录：`~/Desktop/skills`
 4. 开源仓库清单：[`github_repos`](./github_repos)
 
 ## 边界
@@ -21,6 +21,6 @@ description: Skills 能力入口与查找顺序。
 
 - 查看“原生 + 已安装”总览：打开 [`management`](./management)
 - 查看可用开源 skills：打开 [`github_repos`](./github_repos)
-- 查本机私有 skills：先读 `/Users/webkubor/Documents/memory/skills/index.md`
-- 新增 skill：在 `/Users/webkubor/Desktop/skills` 建仓，并同步更新 `../memory/skills/index.md`
+- 查本机私有 skills：先读 `~/Documents/memory/skills/index.md`
+- 新增 skill：在 `~/Desktop/skills` 建仓，并同步更新 `../memory/skills/index.md`
 - 刷新管理页：运行 `pnpm run skills:sync`（或 `node scripts/tools/sync-skills-management.mjs`）
