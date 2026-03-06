@@ -133,6 +133,7 @@ python3 scripts/ingest/query_brain.py "查询" --mode deep --budget 3200
   - **大上下文深度重构**: 利用大上下文与低成本 Token 优势，对 Skill 执行**全量代码审计**（而非局部 patch）。在 `.memory/tasks/` 下记录包含 Root Cause、Verified Command 以及符合未来标准的“全流程重构路径”。
   - **拒绝零碎修改**: 倡导优雅的、结构化的重构，不保留临时的、不优雅的 Hack 方案。
 - 每次任务完成后写留痕（`log_task`）
+- 每次任务完成后必须执行 `pnpm run fleet:post-task`，触发进化记忆收割与看板同步。
 - 每次任务完成后必须执行 `task_handoff_check(task_id="<task-id>", agent="<Agent>", summary="<一句话结果>")`，同步完成状态并检查未认领任务
 - 拿到明确任务后，不允许长期保留“待分配任务/未分配角色”
 - 同路径并行目前是“告警不拦截”，执行前先看 `fleet:status`

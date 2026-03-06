@@ -19,6 +19,7 @@
     "fleet:status": "node scripts/actions/fleet-status.mjs",
     "fleet:handover": "node scripts/actions/fleet-handover.mjs",
     "fleet:cleanup": "node scripts/actions/fleet-cleanup.mjs",
+    "fleet:post-task": "node scripts/actions/fleet-post-task.mjs",
     "fleet:checkin": "node scripts/actions/fleet-checkin.mjs",
     "fleet:sync-dashboard": "node scripts/actions/sync-fleet-dashboard.mjs",
     "feishu:bot": "node scripts/services/feishu-bot-bridge.mjs",
