@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-06T16:05:00.481Z",
+  "generatedAt": "2026-03-06T19:25:44.000Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 2,
-  "active": 2,
+  "total": 1,
+  "active": 1,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -18,20 +18,6 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Candy-1 (Codex)",
-      "agent": "Codex",
-      "role": "前端",
-      "workspace": "~/Desktop/create/cinematic-storyboard-pro",
-      "task": "润色《沸腾之雪》第十集标题，改成更有江湖气的命名并同步 canon 索引。",
-      "since": "2026-03-07 00:00",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     }
