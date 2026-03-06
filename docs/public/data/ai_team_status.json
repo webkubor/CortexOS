@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-06T14:30:00.367Z",
+  "generatedAt": "2026-03-06T16:05:00.481Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 2,
@@ -22,12 +22,12 @@
       "isStale": false
     },
     {
-      "member": "Codex-1 (Codex)",
+      "member": "Candy-1 (Codex)",
       "agent": "Codex",
       "role": "前端",
       "workspace": "~/Desktop/create/cinematic-storyboard-pro",
-      "task": "为尚未出场的天榜人物设计首次亮相方案，结合现有世界观与项目风格输出可直接用于正片的出场设计。",
-      "since": "2026-03-06 22:27",
+      "task": "润色《沸腾之雪》第十集标题，改成更有江湖气的命名并同步 canon 索引。",
+      "since": "2026-03-07 00:00",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,
