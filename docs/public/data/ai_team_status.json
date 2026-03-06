@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-06T08:55:00.509Z",
+  "generatedAt": "2026-03-06T09:55:00.412Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 2,
-  "active": 2,
+  "total": 3,
+  "active": 3,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -28,6 +28,20 @@
       "workspace": "~/Documents/memory",
       "task": "待分配任务",
       "since": "2026-03-06 16:54",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false,
+      "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Candy-1 (Gemini)",
+      "agent": "Gemini",
+      "role": "未分配",
+      "workspace": "~/Documents/CortexOS",
+      "task": "待分配任务",
+      "since": "2026-03-06 17:51",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,
