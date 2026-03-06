@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-06T09:58:37.768Z",
+  "generatedAt": "2026-03-06T10:13:35.099Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 3,
@@ -38,10 +38,10 @@
     {
       "member": "小烛-1 (Gemini)",
       "agent": "Gemini",
-      "role": "战略官",
+      "role": "知识导航员",
       "workspace": "~/Documents/CortexOS",
-      "task": "激活大脑计划层，建立作战指挥中心文件 [[task-20260306-001]]",
-      "since": "2026-03-06 17:58",
+      "task": "接入王爷知识库深度检索，建立工程与经验的语义链接 [[task-20260306-004]]",
+      "since": "2026-03-06 18:11",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,
