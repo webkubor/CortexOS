@@ -12,8 +12,8 @@ hero:
       text: 🚀 快速开始
       link: /guide/
     - theme: alt
-      text: 👀 查看舰队队列
-      link: /guide/feature-matrix
+      text: 🛰️ 打开 AI Team 面板
+      link: /team/
 
 features:
   - icon: 🧠
@@ -40,19 +40,3 @@ features:
     title: Pre-commit 安全门禁，防止私密信息泄漏
     details: 内置 git pre-commit hook，每次提交自动扫描硬编码绝对路径、API Key、个人称呼等敏感内容。Level 1 直接拦截提交，Level 2 警告提示，白名单精细配置。
 ---
-
-<script setup>
-import FleetDashboard from './.vitepress/theme/components/FleetDashboard.vue'
-</script>
-
-<div class="standalone-dashboard">
-  <FleetDashboard />
-</div>
-
-<style>
-.standalone-dashboard {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 24px 32px;
-}
-</style>

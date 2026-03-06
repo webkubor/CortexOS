@@ -40,9 +40,10 @@ export default defineConfig({
         },
       },
     },
-    // 简化右上角导航，只保留两个入口
+    // 顶部导航：文档入口与独立面板入口分离
     nav: [
-      { text: "🛰️ 阵列态势", link: "/" },
+      { text: "📚 DOC", link: "/" },
+      { text: "🛰️ AI Team", link: "/team/" },
       { text: "🚀 使用指引", link: "/guide/" },
       { text: "🤖 Agent 配置", link: "/agents/" },
     ],
@@ -89,6 +90,7 @@ export default defineConfig({
         text: "🖥 运行与运维 (Ops)",
         collapsed: false,
         items: [
+          { text: "🛰️ AI Team 大面板", link: "/team/" },
           { text: "🚦 舰队态势板", link: "/ops/fleet-dashboard" },
           { text: "🔁 自动巡航", link: "/ops/auto-pilot" },
           { text: "🧪 健康检查", link: "/ops/external-health-check" },

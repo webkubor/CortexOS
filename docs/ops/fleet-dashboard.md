@@ -5,6 +5,11 @@
 - `.memory/fleet/fleet_status.md`
 - `.memory/fleet/fleet_meta.json`
 
+独立可视化大面板入口：
+
+- `/team/`
+- 本地开发时访问 `http://localhost:5173/CortexOS/team/`
+
 可通过环境变量覆盖：
 
 - `CORTEXOS_ASSISTANT_MEMORY_HOME=/你的路径/.memory`
