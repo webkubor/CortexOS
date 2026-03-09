@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-09T01:30:00.327Z",
+  "generatedAt": "2026-03-09T01:40:00.360Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 3,
-  "active": 3,
+  "total": 4,
+  "active": 4,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -42,6 +42,20 @@
       "workspace": "~/Desktop/AI-tools",
       "task": "待分配任务",
       "since": "2026-03-09 09:25",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false,
+      "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Codex-3 (Codex)",
+      "agent": "Codex",
+      "role": "后端",
+      "workspace": "~/Documents/CortexOS",
+      "task": "为 CortexOS 增加“小龙虾/OpenClaw 队长”引导文档与常用指令入口，便于 AI 自动探索和定位运行环境。",
+      "since": "2026-03-09 09:39",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,
