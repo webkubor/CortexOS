@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-06T19:25:44.000Z",
+  "generatedAt": "2026-03-09T01:20:00.352Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 1,
-  "active": 1,
+  "total": 2,
+  "active": 2,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -18,6 +18,20 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
+      "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Codex-1 (Codex)",
+      "agent": "Codex",
+      "role": "后端",
+      "workspace": "~/Desktop",
+      "task": "定位用户所说的“小龙虾”对应的本地服务或项目，并执行重启与状态确认。",
+      "since": "2026-03-09 09:19",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     }
