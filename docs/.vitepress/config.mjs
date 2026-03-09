@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
+import { fleetApiPlugin } from "../../scripts/actions/fleet-api-plugin.mjs";
 
 export default defineConfig({
   lang: "zh-CN",
@@ -18,7 +19,8 @@ export default defineConfig({
       llmstxt({
         title: "CortexOS",
         description: "Standardized AI Context Engineering & Long-term Memory Infrastructure.",
-      })
+      }),
+      fleetApiPlugin()
     ]
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],

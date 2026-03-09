@@ -38,7 +38,7 @@ const currentMembers = computed(() =>
   data.value.members.filter((m) => m.type === "active" || m.type === "queued")
 );
 
-onMounted(async () => {
+async function loadData() {
   loading.value = true;
   try {
     const res = await fetch("/CortexOS/data/ai_team_status.json", { cache: "no-store" });
@@ -50,19 +50,45 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+}
+
+onMounted(() => {
+  loadData();
 });
 
 function isWorking(member) {
   return member.type === "active" && member.progress > 0 && member.progress < 100;
 }
 
-function removeMember(member) {
+async function removeMember(member) {
+  // Optimistic UI Update
   data.value.members = data.value.members.filter(m => m.member !== member.member);
+  try {
+    await fetch("/api/fleet/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "kick-out", memberId: member.member })
+    });
+    // Optional: reloadData();
+  } catch (e) {
+    console.error("Failed to kick out member", e);
+  }
 }
 
-function makeCaptain(member) {
+async function makeCaptain(member) {
+  // Optimistic UI Update
   data.value.members.forEach(m => m.isCaptain = false);
   member.isCaptain = true;
+  try {
+    await fetch("/api/fleet/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "make-captain", memberId: member.member })
+    });
+    // Optional: reloadData();
+  } catch (e) {
+    console.error("Failed to make captain", e);
+  }
 }
 </script>
 
