@@ -11,19 +11,19 @@ const data = ref({
   queued: 0,
   members: [],
   missions: [
-    { id: "T-001", title: "Error Retrospective Loop Fix", status: "IN_PROGRESS", owner: "Codex-1" },
-    { id: "T-002", title: "Semantic Knowledge Ingestion", status: "IN_PROGRESS", owner: "Codex-1" },
-    { id: "T-003", title: "Context Briefing Logic Upgrade", status: "OPEN", owner: "UNASSIGNED" },
-    { id: "T-004", title: "Claude Code MCP Persistence", status: "IN_PROGRESS", owner: "Claude" }
+    { id: "TX-01", title: "Neural Feedback Loop Integration", status: "WORKING", owner: "Codex-Prime" },
+    { id: "TX-02", title: "Aesthetic Protocol Audit v5.0", status: "WORKING", owner: "Gemini-1" },
+    { id: "TX-03", title: "Cortex Memory Optimization", status: "PENDING", owner: "UNASSIGNED" },
+    { id: "TX-04", title: "Cross-Agent Sync persistence", status: "WORKING", owner: "Claude-Code" }
   ]
 });
 
-// Agent Logo 映射 (精细矢量路径)
+// 顶级官方 Logo 路径
 const agentLogos = {
-  gemini: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  claude: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4L4 20H20L12 4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4V20" stroke-linecap="round"/><path d="M8 12H16" stroke-linecap="round"/></svg>`,
-  codex: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke-linecap="round"/><path d="M12 8V16M8 12H16" stroke-linecap="round"/></svg>`,
-  default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke-linecap="round"/></svg>`
+  gemini: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z"/></svg>`,
+  claude: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L3.5 19H5.8L12 7.2L18.2 19H20.5L12 3ZM12 11.5L8.5 18H15.5L12 11.5Z"/></svg>`,
+  codex: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 7H13V13H11V7ZM11 15H13V17H11V15Z"/></svg>`,
+  default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>`
 };
 
 function getAgentLogo(name) {
@@ -38,31 +38,15 @@ const currentMembers = computed(() =>
   data.value.members.filter((m) => m.type === "active" || m.type === "queued")
 );
 
-const historyMembers = computed(() =>
-  data.value.members.filter((m) => m.type === "offline")
-);
-
-const captain = computed(() => currentMembers.value.find((m) => m.isCaptain) || null);
-
-const timeText = computed(() => {
-  if (!data.value.generatedAt) return "STATIONARY";
-  try {
-    return new Date(data.value.generatedAt).toLocaleString("zh-CN");
-  } catch {
-    return data.value.generatedAt;
-  }
-});
-
 onMounted(async () => {
   loading.value = true;
-  error.value = "";
   try {
-    const res = await fetch("/CortexOS/data/ai_team_status.json", { cache: "no-store", headers: { pragma: 'no-cache' } });
-    if (!res.ok) throw new Error("HTTP_LINK_FAULT");
+    const res = await fetch("/CortexOS/data/ai_team_status.json", { cache: "no-store" });
+    if (!res.ok) throw new Error();
     const json = await res.json();
     data.value = { ...data.value, ...json };
   } catch (e) {
-    error.value = "Neural Link Error: " + (e && e.message ? e.message : String(e));
+    error.value = "Neural Link Fault";
   } finally {
     loading.value = false;
   }
@@ -71,300 +55,338 @@ onMounted(async () => {
 function isWorking(member) {
   return member.type === "active" && member.progress > 0 && member.progress < 100;
 }
-
-function statusTone(member) {
-  if (member.isCaptain) return "captain";
-  return "active";
-}
 </script>
 
 <template>
-  <div class="aureate-v3">
-    <!-- Top HUD: Minimalist & Expensive -->
-    <header class="aureate-hud">
-      <div class="hud-brand">
-        <span class="hud-kicker">NEURAL_DECK_v3.0</span>
-        <span class="hud-main">CORTEX_OS</span>
-      </div>
-      <div class="hud-stats">
-        <div class="h-stat"><span class="h-label">AGENTS:</span> <span class="h-val">{{ currentMembers.length }}</span></div>
-        <div class="h-stat"><span class="h-label">COMMANDER:</span> <span class="h-val amber">{{ captain ? captain.alias : "NONE" }}</span></div>
-      </div>
-      <div class="hud-time">{{ timeText }}</div>
-    </header>
-
-    <div v-if="loading" class="aureate-loader">
-      <div class="line-loader"></div>
-      <div class="loader-text">SYNCING NEURAL MATRIX...</div>
+  <div class="aether-nexus">
+    <!-- 1. 弥散渐变动态背景 (The Living Aether) -->
+    <div class="aether-bg">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
     </div>
 
-    <template v-else>
-      <div class="aureate-content-v3">
-        <!-- Sidebar: Mission Control -->
-        <aside class="aureate-sidebar">
-          <div class="sidebar-head">
-            <span class="s-title">MISSION_CONTROL</span>
-            <div class="s-dot"></div>
-          </div>
-          <div class="sidebar-list">
-            <div v-for="task in data.missions" :key="task.id" class="mission-card-v3" :class="task.status.toLowerCase()">
+    <!-- 2. 沉浸式 HUD -->
+    <header class="aether-hud">
+      <div class="hud-group">
+        <div class="hud-tag">PROJECT_CORTEX</div>
+        <div class="hud-main">NEURAL_ARRAY_V5</div>
+      </div>
+      <div class="hud-center">
+        <div class="live-status">
+          <div class="live-scanner"></div>
+          <span class="live-text">MONITORING_ACTIVE</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <span class="hud-time">{{ new Date().toLocaleTimeString() }}</span>
+      </div>
+    </header>
+
+    <template v-if="!loading">
+      <div class="aether-stage">
+        <!-- 3. 作战清单 (Mission Flow) -->
+        <aside class="mission-flow">
+          <div class="flow-header">MISSION_BACKLOG</div>
+          <div class="flow-container">
+            <div v-for="(task, idx) in data.missions" :key="task.id" 
+                 class="mission-glass-card" :style="{ '--delay': idx * 0.1 + 's' }">
+              <div class="card-edge"></div>
               <div class="m-top">
                 <span class="m-id">{{ task.id }}</span>
-                <span class="m-status">{{ task.status }}</span>
+                <div class="m-indicator" :class="task.status.toLowerCase()"></div>
               </div>
-              <p class="m-desc">{{ task.title }}</p>
+              <p class="m-title">{{ task.title }}</p>
               <div class="m-owner">{{ task.owner }}</div>
             </div>
           </div>
         </aside>
 
-        <!-- Main: Agent Nodes -->
-        <main class="aureate-main">
-          <div class="main-head">
-            <span class="s-title">AGENT_NEURAL_NODES</span>
-          </div>
-          <div class="node-grid-v3">
-            <div v-for="member in currentMembers" :key="member.member" 
-                 class="node-v3" :class="[statusTone(member), { 'is-working': isWorking(member) }]">
+        <!-- 4. Agent 矩阵 (The Glass Matrix) -->
+        <main class="neural-matrix">
+          <div class="matrix-grid">
+            <div v-for="(member, idx) in currentMembers" :key="member.member" 
+                 class="agent-glass-node" 
+                 :class="{ 'is-working': isWorking(member), 'is-captain': member.isCaptain }"
+                 :style="{ '--delay': (idx + 3) * 0.1 + 's' }">
               
-              <div class="node-surface"></div>
-              
-              <div class="node-top">
-                <div class="node-identity">
-                  <div class="node-brand">
-                    <div class="agent-logo" v-html="getAgentLogo(member.agent)"></div>
-                    <div class="agent-ids">
-                      <h3 class="node-name">{{ member.alias || member.member.split('(')[0] }}</h3>
-                      <span class="node-type">{{ member.agent }}</span>
+              <!-- 液体玻璃反光层 -->
+              <div class="glass-glare"></div>
+              <div class="glass-noise"></div>
+
+              <div class="node-content">
+                <div class="node-header">
+                  <div class="agent-identity">
+                    <div class="agent-logo-wrapper" v-html="getAgentLogo(member.agent)"></div>
+                    <div class="agent-info">
+                      <h3 class="agent-name">{{ member.alias || member.member.split('(')[0] }}</h3>
+                      <span class="agent-sub">{{ member.agent }}</span>
                     </div>
                   </div>
+                  <div class="working-spinner" v-if="isWorking(member)"></div>
                 </div>
-                <div class="node-status-glow"></div>
+
+                <div class="task-reveal-box">
+                  <p class="task-text">{{ member.task || "STATIONARY_STATE" }}</p>
+                </div>
+
+                <div class="node-footer">
+                  <div class="load-bar-wrapper">
+                    <div class="load-labels">
+                      <span>NEURAL_LOAD</span>
+                      <span>{{ member.progress }}%</span>
+                    </div>
+                    <div class="load-track">
+                      <div class="load-fill" :style="{ width: member.progress + '%' }" :class="{ 'active': isWorking(member) }"></div>
+                    </div>
+                  </div>
+                  <div class="node-meta">
+                    <span class="meta-item">📍 {{ member.workspace.split('/').pop() }}</span>
+                    <span class="meta-item">⏱ {{ member.since }}</span>
+                  </div>
+                </div>
               </div>
 
-              <div class="node-task-box">
-                <div class="task-inner">
-                  {{ member.task || "Stationary Mode - Awaiting Dispatch" }}
-                </div>
-              </div>
-
-              <div class="node-progress-v3">
-                <div class="p-header">
-                  <span class="p-label">NEURAL_LOAD</span>
-                  <span class="p-val">{{ member.progress }}%</span>
-                </div>
-                <div class="p-track-v3">
-                  <div class="p-fill-v3" :style="{ width: member.progress + '%' }" :class="{ 'anim-working': isWorking(member) }"></div>
-                </div>
-              </div>
-
-              <div class="node-meta-v3">
-                <span class="meta-path">{{ member.workspace.split('/').pop() }}</span>
-                <span class="meta-time">{{ member.since }}</span>
-              </div>
-
-              <div v-if="member.isCaptain" class="commander-tag">PREMIUM_CORE</div>
+              <!-- 队长金质描边 -->
+              <div class="captain-crown" v-if="member.isCaptain">PRIME_DIRECTIVE</div>
             </div>
           </div>
         </main>
       </div>
     </template>
+
+    <!-- 加载动画 -->
+    <div v-if="loading" class="aether-loading">
+      <div class="aether-spinner"></div>
+      <div class="aether-text">INITIATING_AUREATE_LINK...</div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.aureate-v3 {
-  --bg-main: #050505;
-  --bg-surface: #0a0a0a;
-  --bg-card: #111111;
-  --c-border: rgba(255, 255, 255, 0.08);
-  --c-cyan: #22d3ee;
-  --c-amber: #fcd34d;
-  --c-grey: #4b5563;
-  --c-text: #9ca3af;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+/* 🔴 核心：现代高奢 Aether 设计系统 */
+.aether-nexus {
+  --c-cyan: #00f2ff;
+  --c-violet: #7000ff;
+  --c-amber: #ffb800;
+  --c-white: #ffffff;
+  --c-border: rgba(255, 255, 255, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-blur: blur(40px) saturate(180%);
   
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  font-family: "Geist", "Inter", sans-serif;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--bg-main);
-  min-height: 100vh;
-  color: #fff;
 }
 
-/* HUD */
-.aureate-hud {
-  height: 64px;
+/* 🌀 弥散渐变背景 */
+.aether-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: blur(120px);
+  opacity: 0.4;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  animation: move 20s infinite alternate;
+}
+.b1 { width: 600px; height: 600px; background: var(--c-violet); top: -10%; left: -10%; }
+.b2 { width: 500px; height: 500px; background: var(--c-cyan); bottom: -10%; right: -10%; animation-delay: -5s; }
+.b3 { width: 400px; height: 400px; background: #ff0055; top: 40%; left: 40%; animation-delay: -10s; }
+
+@keyframes move {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to { transform: translate(100px, 100px) rotate(360deg); }
+}
+
+/* 🛰 HUD */
+.aether-hud {
+  height: 70px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  z-index: 100;
+}
+.hud-tag { font-size: 9px; color: #666; letter-spacing: 0.3em; margin-bottom: 4px; }
+.hud-main { font-size: 16px; font-weight: 900; letter-spacing: -0.02em; }
+
+.live-status {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: #000;
-  border-bottom: 1px solid var(--c-border);
-  font-family: var(--font-mono);
+  gap: 12px;
+  padding: 6px 16px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 100px;
+  border: 1px solid var(--c-border);
 }
+.live-scanner {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--c-cyan);
+  box-shadow: 0 0 15px var(--c-cyan); animation: ping 1.5s infinite;
+}
+.live-text { font-size: 10px; font-weight: 800; color: var(--c-cyan); }
 
-.hud-brand { display: flex; flex-direction: column; }
-.hud-kicker { font-size: 8px; color: var(--c-grey); letter-spacing: 0.2em; }
-.hud-main { font-size: 14px; font-weight: 800; color: #fff; }
-
-.hud-stats { display: flex; gap: 32px; font-size: 11px; }
-.h-stat { display: flex; gap: 8px; }
-.h-label { color: var(--c-grey); }
-.h-val { font-weight: 700; color: #fff; }
-.h-val.green { color: var(--c-cyan); }
-.h-val.amber { color: var(--c-amber); }
-
-.hud-time { font-size: 10px; color: var(--c-grey); }
-
-/* Content Layout */
-.aureate-content-v3 {
+/* 🎭 布局层 */
+.aether-stage {
   display: flex;
   flex: 1;
+  padding: 24px;
+  gap: 24px;
+  z-index: 10;
 }
 
-.sidebar-head, .main-head {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--c-border);
-  background: rgba(255,255,255,0.01);
-}
-
-.s-title { font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: var(--c-grey); }
-.s-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-cyan); box-shadow: 0 0 10px var(--c-cyan); }
-
-/* Sidebar */
-.aureate-sidebar {
-  width: 300px;
-  border-right: 1px solid var(--c-border);
+/* 🧊 任务清单 - 玻璃态 */
+.mission-flow {
+  width: 320px;
   display: flex;
   flex-direction: column;
-}
-
-.sidebar-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-
-.mission-card-v3 {
-  background: var(--bg-surface);
-  border: 1px solid var(--c-border);
-  padding: 16px;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.mission-card-v3:hover { border-color: rgba(255,255,255,0.15); background: var(--bg-card); }
-
-.m-top { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 9px; font-family: var(--font-mono); }
-.m-id { color: var(--c-grey); }
-.m-status { color: var(--c-cyan); font-weight: 700; }
-.mission-card-v3.open .m-status { color: var(--c-grey); }
-
-.m-desc { font-size: 13px; font-weight: 500; color: #e5e7eb; line-height: 1.5; margin-bottom: 12px; }
-.m-owner { font-size: 9px; color: var(--c-grey); text-transform: uppercase; font-family: var(--font-mono); }
-
-/* Main Grid */
-.aureate-main { flex: 1; display: flex; flex-direction: column; }
-
-.node-grid-v3 {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  padding: 16px;
   gap: 16px;
 }
+.flow-header { font-size: 11px; font-weight: 900; color: #666; letter-spacing: 0.2em; padding-left: 8px; }
 
-.node-v3 {
-  background: var(--bg-surface);
+.mission-glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
   border: 1px solid var(--c-border);
-  padding: 24px;
-  border-radius: 12px;
+  padding: 20px;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  animation: slideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--delay);
+}
+.mission-glass-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
-.node-v3:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-2px);
-  background: var(--bg-card);
-  box-shadow: 0 12px 24px -12px rgba(0,0,0,0.5);
+.m-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.m-id { font-size: 10px; font-weight: 900; color: #444; }
+.m-indicator { width: 8px; height: 2px; background: #333; }
+.m-indicator.working { background: var(--c-cyan); box-shadow: 0 0 8px var(--c-cyan); }
+
+.m-title { font-size: 14px; font-weight: 600; color: #eee; margin: 0 0 12px 0; line-height: 1.4; }
+.m-owner { font-size: 10px; color: #666; font-family: ui-monospace; }
+
+/* 💎 Agent 矩阵 - 液态玻璃节点 */
+.neural-matrix { flex: 1; }
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
 }
 
-.node-surface {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+.agent-glass-node {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--c-border);
+  border-radius: 24px;
+  padding: 32px;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+  animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--delay);
+}
+
+.agent-glass-node:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 30px 60px -12px rgba(0,0,0,0.6);
+}
+
+/* 玻璃噪声与反光 */
+.glass-noise {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
   pointer-events: none;
 }
-
-.node-top { display: flex; justify-content: space-between; margin-bottom: 24px; }
-
-.node-brand { display: flex; align-items: center; gap: 14px; }
-.agent-logo { width: 32px; height: 32px; color: var(--c-grey); transition: all 0.3s; }
-.is-working .agent-logo { color: var(--c-cyan); }
-.captain .agent-logo { color: var(--c-amber); }
-
-.agent-ids { display: flex; flex-direction: column; }
-.node-name { font-size: 18px; font-weight: 800; color: #fff; margin: 0; }
-.node-type { font-size: 9px; color: var(--c-grey); font-family: var(--font-mono); margin-top: 2px; }
-
-.node-status-glow {
-  width: 8px; height: 8px; border-radius: 50%; background: #27272a; margin-top: 10px;
-}
-.is-working .node-status-glow {
-  background: var(--c-cyan);
-  box-shadow: 0 0 12px var(--c-cyan);
-  animation: soft-pulse 1.5s infinite alternate;
+.glass-glare {
+  position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 50%);
+  pointer-events: none; transform: rotate(-45deg);
 }
 
-@keyframes soft-pulse { from { opacity: 0.5; filter: blur(2px); } to { opacity: 1; filter: blur(0px); } }
+.node-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+.agent-identity { display: flex; align-items: center; gap: 20px; }
 
-.node-task-box {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.03);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
+.agent-logo-wrapper {
+  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+  color: #555; transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.task-inner { font-size: 13px; color: #d1d5db; line-height: 1.6; }
-
-.node-progress-v3 { margin-bottom: 24px; }
-.p-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 10px; font-weight: 700; }
-.p-label { color: var(--c-grey); letter-spacing: 0.1em; }
-.p-val { color: #fff; font-family: var(--font-mono); }
-
-.p-track-v3 { height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
-.p-fill-v3 { height: 100%; background: #3f3f46; transition: width 0.8s ease; }
-.is-working .p-fill-v3 { background: var(--c-cyan); }
-.captain .p-fill-v3 { background: var(--c-amber); }
-
-.anim-working {
-  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  background-size: 200% 100%;
-  animation: shine 2s linear infinite;
+.is-working .agent-logo-wrapper {
+  color: #fff; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
+  animation: logo-breathe 3s infinite ease-in-out;
 }
 
-@keyframes shine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes logo-breathe { 
+  0%, 100% { transform: scale(1); opacity: 0.8; } 
+  50% { transform: scale(1.1); opacity: 1; } 
+}
 
-.node-meta-v3 { display: flex; justify-content: space-between; font-size: 10px; color: var(--c-grey); font-family: var(--font-mono); }
+.agent-name { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -0.03em; }
+.agent-sub { font-size: 11px; color: #666; font-family: ui-monospace; margin-top: 4px; display: block; }
+
+.working-spinner {
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--c-cyan);
+  border-radius: 50%; animation: spin 1s linear infinite;
+}
+
+.task-reveal-box {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  min-height: 80px;
+}
+.task-text { font-size: 14px; line-height: 1.6; color: #ccc; margin: 0; font-weight: 500; }
+
+.node-footer { display: flex; flex-direction: column; gap: 20px; }
+.load-bar-wrapper { display: flex; flex-direction: column; gap: 12px; }
+.load-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 900; color: #555; }
+
+.load-track { height: 4px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; }
+.load-fill { height: 100%; background: #333; transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.load-fill.active { background: var(--c-cyan); box-shadow: 0 0 15px var(--c-cyan); }
+.is-captain .load-fill { background: var(--c-amber); box-shadow: 0 0 15px var(--c-amber); }
+
+.node-meta { display: flex; justify-content: space-between; font-size: 10px; color: #444; font-family: ui-monospace; }
 
 .commander-tag {
   position: absolute; bottom: 0; right: 0; background: var(--c-amber); color: #000;
-  padding: 2px 10px; font-size: 9px; font-weight: 900;
+  padding: 4px 16px; font-size: 10px; font-weight: 900; letter-spacing: 0.1em;
+  border-top-left-radius: 12px;
 }
 
-.aureate-loader {
-  padding: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+/* 🌀 加载动画 */
+.aether-loading { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; }
+.aether-spinner { 
+  width: 60px; height: 60px; border: 1px solid var(--c-border); border-top-color: var(--c-cyan);
+  border-radius: 50%; animation: spin 1s linear infinite;
 }
-.line-loader { width: 120px; height: 1px; background: var(--c-border); position: relative; overflow: hidden; }
-.line-loader::after {
-  content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 40px;
-  background: var(--c-cyan); animation: line-move 1.5s infinite;
+.aether-text { font-size: 11px; letter-spacing: 0.4em; color: #444; }
+
+/* 动画库 */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes ping { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+@keyframes slideIn { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+@media (max-width: 1024px) {
+  .aether-stage { flex-direction: column; }
+  .mission-flow { width: 100%; }
 }
-@keyframes line-move { 0% { left: -40px; } 100% { left: 120px; } }
-.loader-text { font-size: 10px; color: var(--c-grey); letter-spacing: 0.2em; }
 </style>
