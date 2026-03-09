@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-06T07:25:37.865Z",
-  "generatedAtLocal": "2026-03-06 15:25",
+  "generatedAt": "2026-03-09T01:47:17.171Z",
+  "generatedAtLocal": "2026-03-09 09:47",
   "nativeSkills": [
     {
       "name": "omni-publisher-skill",
@@ -89,6 +89,21 @@
   ],
   "installedSkills": [
     {
+      "name": "agent-reach",
+      "canonical": "agent-reach",
+      "sources": [
+        "~/.agents/skills"
+      ],
+      "paths": [
+        "/Users/webkubor/.agents/skills/agent-reach"
+      ],
+      "resolvedPaths": [
+        "/Users/webkubor/.agents/skills/agent-reach"
+      ],
+      "hasSkillFile": true,
+      "brokenPaths": []
+    },
+    {
       "name": "ai-modification-skill",
       "canonical": "ai-modification",
       "sources": [
@@ -100,7 +115,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/ai-modification-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "audio-music-engineer-skill",
@@ -114,7 +130,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/audio-music-engineer-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "brain-sentinel-skill",
@@ -128,7 +145,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/brain-sentinel-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "cinematic-storyboard-skill",
@@ -142,7 +160,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/cinematic-storyboard-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "code-aureate-skill",
@@ -156,7 +175,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/code-aureate-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "feishu-writer",
@@ -172,7 +192,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/feishu-writer"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "figma",
@@ -186,7 +207,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.codex/skills/figma"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "figma-implement-design",
@@ -200,7 +222,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.codex/skills/figma-implement-design"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "find-skills",
@@ -214,7 +237,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/find-skills"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "frontend-design",
@@ -230,7 +254,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/frontend-design"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "github-uploader",
@@ -244,7 +269,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/github-uploader"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "juejin-writer",
@@ -260,7 +286,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/juejin-writer"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "knowledge-navigator-skill",
@@ -274,7 +301,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/knowledge-navigator-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "logo-designer",
@@ -288,7 +316,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/logo-designer"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "obsidian",
@@ -302,7 +331,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/obsidian"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "omni-publisher-skill",
@@ -316,7 +346,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/omni-publisher-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "pwa-master-skill",
@@ -330,10 +361,10 @@
         "/Users/webkubor/.codex/skills/pwa-master"
       ],
       "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/pwa-master-skill",
-        "/Users/webkubor/.codex/skills/pwa-master"
+        "/Users/webkubor/.agents/skills/pwa-master-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "r2-uploader",
@@ -347,7 +378,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/r2-uploader"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "remotion-best-practices",
@@ -363,7 +395,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/remotion-best-practices"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "scm-ops-skill",
@@ -377,7 +410,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/scm-ops-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "snippet-master",
@@ -391,7 +425,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/snippet-master"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "start",
@@ -405,7 +440,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.codex/skills/start"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "think-skill",
@@ -419,10 +455,10 @@
         "/Users/webkubor/.codex/skills/think"
       ],
       "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/think-skill",
-        "/Users/webkubor/.codex/skills/think"
+        "/Users/webkubor/.agents/skills/think-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "ui-ux-pro-max",
@@ -436,7 +472,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.codex/skills/ui-ux-pro-max"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "visual-studio-skill",
@@ -450,7 +487,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/visual-studio-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "vitepress-init-skill",
@@ -464,10 +502,10 @@
         "/Users/webkubor/.codex/skills/vitepress-init"
       ],
       "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/vitepress-init-skill",
-        "/Users/webkubor/.codex/skills/vitepress-init"
+        "/Users/webkubor/.agents/skills/vitepress-init-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     },
     {
       "name": "xhs-manager-skill",
@@ -481,7 +519,8 @@
       "resolvedPaths": [
         "/Users/webkubor/.agents/skills/xhs-manager-skill"
       ],
-      "hasSkillFile": true
+      "hasSkillFile": true,
+      "brokenPaths": []
     }
   ],
   "scanDirs": [

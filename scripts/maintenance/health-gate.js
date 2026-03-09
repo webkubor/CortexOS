@@ -20,6 +20,11 @@ const checks = [
     args: ['scripts/maintenance/check-docs-index.js']
   },
   {
+    name: 'Skill paths runtime',
+    command: 'node',
+    args: ['scripts/maintenance/check-skill-paths.mjs']
+  },
+  {
     name: 'Health verify runtime',
     command: 'node',
     args: ['scripts/maintenance/verify-health.js']

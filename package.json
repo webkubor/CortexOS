@@ -8,6 +8,7 @@
     "docs:preview": "vitepress preview docs",
     "health:core": "node scripts/tools/health-check.js --strict",
     "health:docs-index": "node scripts/maintenance/check-docs-index.js",
+    "health:skills": "node scripts/maintenance/check-skill-paths.mjs",
     "health:verify": "node scripts/maintenance/verify-health.js",
     "health:gate": "node scripts/maintenance/health-gate.js",
     "health:mcp": "uv run mcp_server/server.py --help || echo 'MCP server smoke test failed'",

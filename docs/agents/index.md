@@ -32,7 +32,7 @@
 
 ## 详细档案
 
-- 🌸 [栖月档案](./qiyue/README.md) | [栖月 MCP](./qiyue/mcp.md)
+- 🌸 [栖月档案](./qiyue/README.md) | [栖月 MCP](./qiyue/mcp.md) | [小龙虾手册](./qiyue/openclaw.md)
 - [Gemini 配置档案](./gemini/README.md) | [Gemini MCP 清单](./gemini/mcp.md)
 - [Codex 配置档案](./codex/README.md) | [Codex MCP 清单](./codex/mcp.md)
 - [Claude Code 配置档案](./claude/README.md) | [Claude MCP 清单](./claude/mcp.md)

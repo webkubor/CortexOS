@@ -71,6 +71,7 @@ function listSkillEntriesInDir (dirPath, sourceLabel) {
     const fullPath = path.join(dirPath, entry.name)
     if (!entry.isDirectory() && !entry.isSymbolicLink()) continue
 
+    const entryExists = fs.existsSync(fullPath)
     let resolvedPath = fullPath
     try {
       resolvedPath = fs.realpathSync(fullPath)
@@ -84,6 +85,7 @@ function listSkillEntriesInDir (dirPath, sourceLabel) {
       source: sourceLabel,
       path: fullPath,
       resolvedPath,
+      entryExists,
       hasSkillFile
     })
   }
@@ -94,22 +96,27 @@ function mergeInstalledSkills (raw) {
   const map = new Map()
   for (const item of raw) {
     const key = item.canonical || item.name.toLowerCase()
+    const isUsable = item.entryExists && item.hasSkillFile
     if (!map.has(key)) {
       map.set(key, {
         name: item.name,
         canonical: key,
-        sources: new Set([item.source]),
-        paths: new Set([item.path]),
-        resolvedPaths: new Set([item.resolvedPath]),
-        hasSkillFile: item.hasSkillFile
+        sources: new Set(isUsable ? [item.source] : []),
+        paths: new Set(isUsable ? [item.path] : []),
+        resolvedPaths: new Set(isUsable ? [item.resolvedPath] : []),
+        hasSkillFile: isUsable,
+        brokenPaths: item.entryExists ? [] : [item.path]
       })
       continue
     }
     const prev = map.get(key)
-    prev.sources.add(item.source)
-    prev.paths.add(item.path)
-    prev.resolvedPaths.add(item.resolvedPath)
-    prev.hasSkillFile = prev.hasSkillFile || item.hasSkillFile
+    if (isUsable) {
+      prev.sources.add(item.source)
+      prev.paths.add(item.path)
+      prev.resolvedPaths.add(item.resolvedPath)
+      prev.hasSkillFile = prev.hasSkillFile || item.hasSkillFile
+    }
+    if (!item.entryExists) prev.brokenPaths.push(item.path)
   }
 
   return [...map.values()]
@@ -119,7 +126,8 @@ function mergeInstalledSkills (raw) {
       sources: [...item.sources].sort(),
       paths: [...item.paths].sort(),
       resolvedPaths: [...item.resolvedPaths].sort(),
-      hasSkillFile: item.hasSkillFile
+      hasSkillFile: item.hasSkillFile,
+      brokenPaths: [...new Set(item.brokenPaths)].sort()
     }))
     .sort((a, b) => a.name.localeCompare(b.name))
 }
@@ -128,6 +136,7 @@ function buildMarkdown ({ generatedAt, nativeSkills, installedSkills, scanDirs }
   const installedMap = new Map(installedSkills.map(s => [s.canonical, s]))
   const installedSet = new Set(installedSkills.map(s => s.canonical))
   const sampleRepo = nativeSkills[0]?.repo || 'https://github.com/webkubor/omni-publisher-skill'
+  const brokenAliasSkills = installedSkills.filter(item => item.brokenPaths.length > 0)
 
   const nativeRows = nativeSkills.map(item => {
     const installed = installedSet.has(item.canonical) ? '是' : '否'
@@ -138,8 +147,12 @@ function buildMarkdown ({ generatedAt, nativeSkills, installedSkills, scanDirs }
 
   const installedRows = installedSkills.map(item => {
     const sourceText = item.sources.join(', ')
-    const pathText = item.paths.join('<br>')
+    const pathText = item.paths.join('<br>') || '-'
     return `| ${item.name} | ${sourceText} | ${item.hasSkillFile ? '是' : '否'} | ${pathText} |`
+  }).join('\n')
+
+  const brokenAliasLines = brokenAliasSkills.map(item => {
+    return `- ${item.name}: ${item.brokenPaths.join(' , ')}`
   }).join('\n')
 
   const installLocationRows = scanDirs.map(d => {
@@ -158,8 +171,9 @@ description: Skills 管理页（安装位置 + 使用方式 + 扫描结果）
 
 1. 安装拆分出去的原生 skill（从下方表格复制 \`gemini skills install ...\`）  
 2. 运行 \`node scripts/tools/sync-skills-management.mjs\` 刷新本页  
-3. 看“本机已安装 Skills”确认路径是否出现  
-4. 在对话里直接点名 skill（\`$skill-name\`）实际触发一次
+3. 运行 \`pnpm run health:skills\` 检查是否存在失效 skill 路径引用  
+4. 看“本机已安装 Skills”确认路径是否出现  
+5. 在对话里直接点名 skill（\`$skill-name\`）实际触发一次
 
 ## 1. 安装在哪里
 
@@ -192,6 +206,10 @@ ${nativeRows || '| (空) | - | - | - | - |'}
 | :--- | :--- | :---: | :--- |
 ${installedRows || '| (未发现) | - | - | - |'}
 
+## 3.1 失效 alias / 悬空链接
+
+${brokenAliasLines || '- 无'}
+
 ## 4. 怎么使用（落地步骤）
 
 ### 4.1 先安装（Gemini 侧）
@@ -218,6 +236,7 @@ test -f "$HOME/.codex/skills/your-skill/SKILL.md" && echo "OK: SKILL.md 已就�
 
 \`\`\`bash
 node scripts/tools/sync-skills-management.mjs
+pnpm run health:skills
 ls -la "$HOME/.codex/skills" | rg "xhs-manager|omni-publisher|scm-ops"
 \`\`\`
 

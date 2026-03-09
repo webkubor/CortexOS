@@ -6,6 +6,7 @@ export default defineConfig({
   title: "CortexOS",
   description: "个人外部大脑操作系统：基于 MCP 协议的多智能体协同中枢。",
   base: "/CortexOS/",
+  ignoreDeadLinks: [/^http:\/\/localhost:/],
   srcExclude: [
     "**/secrets/**",
     "**/operation-logs/**",
@@ -80,6 +81,7 @@ export default defineConfig({
         text: "🤖 Agent 支持",
         items: [
           { text: "主流 Agent 配置总览", link: "/agents/" },
+          { text: "小龙虾 / 栖月 手册", link: "/agents/qiyue/openclaw" },
           { text: "Gemini 配置", link: "/agents/gemini/README" },
           { text: "Codex 配置", link: "/agents/codex/README" },
           { text: "Claude 配置", link: "/agents/claude/README" },
