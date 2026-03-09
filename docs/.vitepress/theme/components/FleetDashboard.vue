@@ -55,6 +55,15 @@ onMounted(async () => {
 function isWorking(member) {
   return member.type === "active" && member.progress > 0 && member.progress < 100;
 }
+
+function removeMember(member) {
+  data.value.members = data.value.members.filter(m => m.member !== member.member);
+}
+
+function makeCaptain(member) {
+  data.value.members.forEach(m => m.isCaptain = false);
+  member.isCaptain = true;
+}
 </script>
 
 <template>
@@ -122,7 +131,24 @@ function isWorking(member) {
                       <span class="agent-sub">{{ member.agent }}</span>
                     </div>
                   </div>
-                  <div class="working-spinner" v-if="isWorking(member)"></div>
+                  <div class="header-actions">
+                    <div class="working-spinner" v-if="isWorking(member)"></div>
+                    <div class="action-menu">
+                      <button class="action-btn make-captain" v-if="!member.isCaptain" @click="makeCaptain(member)"
+                        title="调配为队长">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path
+                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                      </button>
+                      <button class="action-btn kick-out" @click="removeMember(member)" title="移出矩阵">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="task-reveal-box">
@@ -430,6 +456,60 @@ function isWorking(member) {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 32px;
+  position: relative;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-menu {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.agent-glass-node:hover .action-menu {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--c-border);
+  color: #888;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.action-btn.make-captain:hover {
+  background: rgba(245, 200, 123, 0.1);
+  border-color: var(--c-aureate-glow);
+  color: var(--c-aureate-glow);
+  box-shadow: 0 0 15px rgba(245, 200, 123, 0.2);
+}
+
+.action-btn.kick-out:hover {
+  background: rgba(255, 85, 85, 0.1);
+  border-color: rgba(255, 85, 85, 0.4);
+  color: #ff5555;
+  box-shadow: 0 0 15px rgba(255, 85, 85, 0.2);
 }
 
 .agent-identity {
