@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-09T09:45:00.379Z",
+  "generatedAt": "2026-03-09T10:25:00.392Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 4,
-  "active": 4,
+  "total": 3,
+  "active": 3,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -18,20 +18,6 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Codex-3 (Codex)",
-      "agent": "Codex",
-      "role": "后端",
-      "workspace": "~/Documents/CortexOS",
-      "task": "扫描外部大脑与文档体系中的重复文案，识别可归并内容",
-      "since": "2026-03-09 16:21",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     },
