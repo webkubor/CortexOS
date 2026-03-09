@@ -11,12 +11,28 @@ const data = ref({
   queued: 0,
   members: [],
   missions: [
-    { id: "TASK-001", title: "error-retro 误报修复", status: "IN_PROGRESS", owner: "Codex-1" },
-    { id: "TASK-002", title: "语义搜索升级", status: "IN_PROGRESS", owner: "Codex-1" },
-    { id: "TASK-003", title: "context-brief 工具开发", status: "OPEN", owner: "UNASSIGNED" },
-    { id: "TASK-004", title: "Claude Code MCP 连接修复", status: "IN_PROGRESS", owner: "Claude" }
+    { id: "T-001", title: "Error Retrospective Loop Fix", status: "IN_PROGRESS", owner: "Codex-1" },
+    { id: "T-002", title: "Semantic Knowledge Ingestion", status: "IN_PROGRESS", owner: "Codex-1" },
+    { id: "T-003", title: "Context Briefing Logic Upgrade", status: "OPEN", owner: "UNASSIGNED" },
+    { id: "T-004", title: "Claude Code MCP Persistence", status: "IN_PROGRESS", owner: "Claude" }
   ]
 });
+
+// Agent Logo 映射 (精细矢量路径)
+const agentLogos = {
+  gemini: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  claude: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4L4 20H20L12 4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4V20" stroke-linecap="round"/><path d="M8 12H16" stroke-linecap="round"/></svg>`,
+  codex: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke-linecap="round"/><path d="M12 8V16M8 12H16" stroke-linecap="round"/></svg>`,
+  default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke-linecap="round"/></svg>`
+};
+
+function getAgentLogo(name) {
+  const lower = name.toLowerCase();
+  if (lower.includes('gemini')) return agentLogos.gemini;
+  if (lower.includes('claude')) return agentLogos.claude;
+  if (lower.includes('codex')) return agentLogos.codex;
+  return agentLogos.default;
+}
 
 const currentMembers = computed(() =>
   data.value.members.filter((m) => m.type === "active" || m.type === "queued")
@@ -29,7 +45,7 @@ const historyMembers = computed(() =>
 const captain = computed(() => currentMembers.value.find((m) => m.isCaptain) || null);
 
 const timeText = computed(() => {
-  if (!data.value.generatedAt) return "OFFLINE";
+  if (!data.value.generatedAt) return "STATIONARY";
   try {
     return new Date(data.value.generatedAt).toLocaleString("zh-CN");
   } catch {
@@ -42,11 +58,11 @@ onMounted(async () => {
   error.value = "";
   try {
     const res = await fetch("/CortexOS/data/ai_team_status.json", { cache: "no-store", headers: { pragma: 'no-cache' } });
-    if (!res.ok) throw new Error("HTTP 404");
+    if (!res.ok) throw new Error("HTTP_LINK_FAULT");
     const json = await res.json();
     data.value = { ...data.value, ...json };
   } catch (e) {
-    error.value = "Neural Connection Interrupted: " + (e && e.message ? e.message : String(e));
+    error.value = "Neural Link Error: " + (e && e.message ? e.message : String(e));
   } finally {
     loading.value = false;
   }
@@ -57,318 +73,298 @@ function isWorking(member) {
 }
 
 function statusTone(member) {
-  if (member.type === "offline") return "offline";
   if (member.isCaptain) return "captain";
   return "active";
 }
 </script>
 
 <template>
-  <div class="modern-dashboard">
-    <!-- 顶部极简 HUD -->
-    <header class="dashboard-hud">
-      <div class="hud-left">
-        <div class="hud-item main">
-          <span class="hud-label">FLEET_ARRAY</span>
-          <span class="hud-value cyan">CORTEX_01</span>
-        </div>
-        <div class="hud-divider"></div>
-        <div class="hud-item">
-          <span class="hud-label">SYNC</span>
-          <span class="hud-value">{{ timeText }}</span>
-        </div>
+  <div class="aureate-v3">
+    <!-- Top HUD: Minimalist & Expensive -->
+    <header class="aureate-hud">
+      <div class="hud-brand">
+        <span class="hud-kicker">NEURAL_DECK_v3.0</span>
+        <span class="hud-main">CORTEX_OS</span>
       </div>
-      <div class="hud-right">
-        <div class="hud-item">
-          <span class="hud-label">COMMANDER</span>
-          <span class="hud-value white">{{ captain ? captain.alias : "VACANT" }}</span>
-        </div>
+      <div class="hud-stats">
+        <div class="h-stat"><span class="h-label">AGENTS:</span> <span class="h-val">{{ currentMembers.length }}</span></div>
+        <div class="h-stat"><span class="h-label">COMMANDER:</span> <span class="h-val amber">{{ captain ? captain.alias : "NONE" }}</span></div>
       </div>
+      <div class="hud-time">{{ timeText }}</div>
     </header>
 
-    <!-- 状态反馈 -->
-    <div v-if="loading" class="modern-status loading">
-      <div class="loader-bar"></div>
-      <span class="status-text">Synchronizing Fleet State...</span>
-    </div>
-    <div v-else-if="error" class="modern-status error">
-      <span class="status-text">{{ error }}</span>
+    <div v-if="loading" class="aureate-loader">
+      <div class="line-loader"></div>
+      <div class="loader-text">SYNCING NEURAL MATRIX...</div>
     </div>
 
     <template v-else>
-      <div class="dashboard-body">
-        <!-- 左侧：任务看板 Mission Backlog -->
-        <aside class="mission-control">
-          <div class="module-header">
-            <h3 class="module-title">MISSION_BACKLOG</h3>
-            <span class="badge secondary">{{ data.missions.length }}</span>
+      <div class="aureate-content-v3">
+        <!-- Sidebar: Mission Control -->
+        <aside class="aureate-sidebar">
+          <div class="sidebar-head">
+            <span class="s-title">MISSION_CONTROL</span>
+            <div class="s-dot"></div>
           </div>
-          <div class="mission-scroll">
-            <div v-for="task in data.missions" :key="task.id" class="mission-card" :class="task.status.toLowerCase()">
-              <div class="m-header">
+          <div class="sidebar-list">
+            <div v-for="task in data.missions" :key="task.id" class="mission-card-v3" :class="task.status.toLowerCase()">
+              <div class="m-top">
                 <span class="m-id">{{ task.id }}</span>
-                <div class="m-dot"></div>
-              </div>
-              <p class="m-title">{{ task.title }}</p>
-              <div class="m-footer">
-                <span class="m-owner">{{ task.owner }}</span>
                 <span class="m-status">{{ task.status }}</span>
               </div>
+              <p class="m-desc">{{ task.title }}</p>
+              <div class="m-owner">{{ task.owner }}</div>
             </div>
           </div>
         </aside>
 
-        <!-- 右侧：Agent 矩阵 Matrix Grid -->
-        <main class="matrix-control">
-          <div class="module-header">
-            <h3 class="module-title">NEURAL_MATRIX</h3>
-            <span class="badge primary">ACTIVE</span>
+        <!-- Main: Agent Nodes -->
+        <main class="aureate-main">
+          <div class="main-head">
+            <span class="s-title">AGENT_NEURAL_NODES</span>
           </div>
-          <div class="matrix-grid">
+          <div class="node-grid-v3">
             <div v-for="member in currentMembers" :key="member.member" 
-                 class="agent-node" :class="[statusTone(member), { 'working': isWorking(member) }]">
+                 class="node-v3" :class="[statusTone(member), { 'is-working': isWorking(member) }]">
               
-              <div class="node-glass"></div>
+              <div class="node-surface"></div>
               
-              <div class="node-header">
-                <div class="node-id">
-                  <span class="node-alias">{{ member.alias || member.member.split('(')[0] }}</span>
-                  <span class="node-tag">{{ member.agent }}</span>
-                </div>
-                <div class="node-indicator">
-                  <div class="glow-dot"></div>
-                </div>
-              </div>
-
-              <div class="node-task">
-                <p class="task-content">{{ member.task || "Stationary" }}</p>
-              </div>
-
-              <div class="node-metrics">
-                <div class="metric">
-                  <div class="progress-info">
-                    <span class="p-label">NEURAL_LOAD</span>
-                    <span class="p-val">{{ member.progress }}%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="p-fill" :style="{ width: member.progress + '%' }" :class="{ 'anim': isWorking(member) }"></div>
+              <div class="node-top">
+                <div class="node-identity">
+                  <div class="node-brand">
+                    <div class="agent-logo" v-html="getAgentLogo(member.agent)"></div>
+                    <div class="agent-ids">
+                      <h3 class="node-name">{{ member.alias || member.member.split('(')[0] }}</h3>
+                      <span class="node-type">{{ member.agent }}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="node-meta">
-                  <span class="meta-path">{{ member.workspace.split('/').pop() }}</span>
-                  <span class="meta-time">{{ member.since }}</span>
+                <div class="node-status-glow"></div>
+              </div>
+
+              <div class="node-task-box">
+                <div class="task-inner">
+                  {{ member.task || "Stationary Mode - Awaiting Dispatch" }}
                 </div>
               </div>
 
-              <div class="node-captain-badge" v-if="member.isCaptain">
-                <span>COMMANDER_LOCK</span>
+              <div class="node-progress-v3">
+                <div class="p-header">
+                  <span class="p-label">NEURAL_LOAD</span>
+                  <span class="p-val">{{ member.progress }}%</span>
+                </div>
+                <div class="p-track-v3">
+                  <div class="p-fill-v3" :style="{ width: member.progress + '%' }" :class="{ 'anim-working': isWorking(member) }"></div>
+                </div>
               </div>
+
+              <div class="node-meta-v3">
+                <span class="meta-path">{{ member.workspace.split('/').pop() }}</span>
+                <span class="meta-time">{{ member.since }}</span>
+              </div>
+
+              <div v-if="member.isCaptain" class="commander-tag">PREMIUM_CORE</div>
             </div>
           </div>
         </main>
       </div>
-
-      <!-- 底部归档记录 -->
-      <footer class="archive-section">
-        <details class="archive-toggle">
-          <summary>ARCHIVED_HISTORY ({{ historyMembers.length }})</summary>
-          <div class="archive-table">
-            <div v-for="member in historyMembers" :key="member.member" class="archive-row">
-              <span class="a-alias">{{ member.alias }}</span>
-              <span class="a-task">{{ member.task }}</span>
-              <span class="a-time">{{ member.since }}</span>
-            </div>
-          </div>
-        </details>
-      </footer>
     </template>
   </div>
 </template>
 
 <style scoped>
-.modern-dashboard {
-  --c-cyan: #06b6d4;
-  --c-amber: #f59e0b;
-  --c-white: #ffffff;
-  --c-grey: #64748b;
-  --c-dark-80: rgba(10, 10, 10, 0.8);
-  --c-border: rgba(255, 255, 255, 0.05);
-  --c-border-hover: rgba(255, 255, 255, 0.1);
-  --font-mono: var(--vp-font-family-mono);
+.aureate-v3 {
+  --bg-main: #050505;
+  --bg-surface: #0a0a0a;
+  --bg-card: #111111;
+  --c-border: rgba(255, 255, 255, 0.08);
+  --c-cyan: #22d3ee;
+  --c-amber: #fcd34d;
+  --c-grey: #4b5563;
+  --c-text: #9ca3af;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   
-  margin-top: 0;
   display: flex;
   flex-direction: column;
-  background: #000;
-  color: #f1f5f9;
-  font-family: var(--vp-font-family-base);
-  min-height: 600px;
-  box-shadow: 0 0 0 1px var(--c-border);
+  background: var(--bg-main);
+  min-height: 100vh;
+  color: #fff;
 }
 
-/* Dashboard HUD */
-.dashboard-hud {
+/* HUD */
+.aureate-hud {
+  height: 64px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: 0 24px;
   background: #000;
   border-bottom: 1px solid var(--c-border);
   font-family: var(--font-mono);
 }
 
-.hud-left, .hud-right { display: flex; align-items: center; gap: 24px; }
-.hud-item { display: flex; flex-direction: column; gap: 2px; }
-.hud-label { font-size: 9px; color: var(--c-grey); letter-spacing: 0.1em; }
-.hud-value { font-size: 11px; font-weight: 700; color: #cbd5e1; }
-.hud-value.cyan { color: var(--c-cyan); }
-.hud-value.white { color: #fff; }
-.hud-divider { width: 1px; height: 16px; background: var(--c-border); }
+.hud-brand { display: flex; flex-direction: column; }
+.hud-kicker { font-size: 8px; color: var(--c-grey); letter-spacing: 0.2em; }
+.hud-main { font-size: 14px; font-weight: 800; color: #fff; }
 
-/* Dashboard Body */
-.dashboard-body {
+.hud-stats { display: flex; gap: 32px; font-size: 11px; }
+.h-stat { display: flex; gap: 8px; }
+.h-label { color: var(--c-grey); }
+.h-val { font-weight: 700; color: #fff; }
+.h-val.green { color: var(--c-cyan); }
+.h-val.amber { color: var(--c-amber); }
+
+.hud-time { font-size: 10px; color: var(--c-grey); }
+
+/* Content Layout */
+.aureate-content-v3 {
   display: flex;
   flex: 1;
-  background: #000;
 }
 
-.module-header {
-  padding: 16px 20px;
+.sidebar-head, .main-head {
+  height: 48px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--c-border);
+  background: rgba(255,255,255,0.01);
 }
 
-.module-title {
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  color: var(--c-grey);
-  letter-spacing: 0.15em;
-  margin: 0 !important;
-  border: none !important;
-}
+.s-title { font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: var(--c-grey); }
+.s-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-cyan); box-shadow: 0 0 10px var(--c-cyan); }
 
-.badge {
-  font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-family: var(--font-mono);
-}
-.badge.primary { background: var(--c-cyan); color: #000; }
-.badge.secondary { border: 1px solid var(--c-border); color: var(--c-grey); }
-
-/* Mission Control */
-.mission-control {
-  width: 320px;
+/* Sidebar */
+.aureate-sidebar {
+  width: 300px;
   border-right: 1px solid var(--c-border);
   display: flex;
   flex-direction: column;
 }
 
-.mission-scroll { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.sidebar-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 
-.mission-card {
-  background: #0a0a0a;
+.mission-card-v3 {
+  background: var(--bg-surface);
   border: 1px solid var(--c-border);
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: all 0.2s;
-  cursor: default;
 }
 
-.mission-card:hover { border-color: var(--c-border-hover); background: #111; }
+.mission-card-v3:hover { border-color: rgba(255,255,255,0.15); background: var(--bg-card); }
 
-.m-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.m-id { font-size: 9px; color: var(--c-grey); font-family: var(--font-mono); }
-.m-dot { width: 6px; height: 6px; border-radius: 50%; background: #334155; }
+.m-top { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 9px; font-family: var(--font-mono); }
+.m-id { color: var(--c-grey); }
+.m-status { color: var(--c-cyan); font-weight: 700; }
+.mission-card-v3.open .m-status { color: var(--c-grey); }
 
-.mission-card.in_progress .m-dot { background: var(--c-cyan); box-shadow: 0 0 8px var(--c-cyan); }
+.m-desc { font-size: 13px; font-weight: 500; color: #e5e7eb; line-height: 1.5; margin-bottom: 12px; }
+.m-owner { font-size: 9px; color: var(--c-grey); text-transform: uppercase; font-family: var(--font-mono); }
 
-.m-title { font-size: 13px; font-weight: 600; line-height: 1.4; margin: 0; color: #e2e8f0; }
-.m-footer { display: flex; justify-content: space-between; margin-top: 12px; font-size: 9px; color: var(--c-grey); }
+/* Main Grid */
+.aureate-main { flex: 1; display: flex; flex-direction: column; }
 
-/* Matrix Control */
-.matrix-control { flex: 1; }
-
-.matrix-grid {
+.node-grid-v3 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  padding: 0 16px 16px;
+  padding: 16px;
   gap: 16px;
 }
 
-.agent-node {
-  background: #0a0a0a;
+.node-v3 {
+  background: var(--bg-surface);
   border: 1px solid var(--c-border);
-  border-radius: 12px;
   padding: 24px;
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
-.agent-node:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+.node-v3:hover {
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
-  background: #111;
+  background: var(--bg-card);
+  box-shadow: 0 12px 24px -12px rgba(0,0,0,0.5);
 }
 
-.node-glass {
+.node-surface {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.03), transparent 60%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
   pointer-events: none;
 }
 
-.node-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-.node-alias { font-size: 18px; font-weight: 800; color: #fff; margin-right: 8px; }
-.node-tag { font-size: 10px; font-family: var(--font-mono); color: var(--c-grey); }
+.node-top { display: flex; justify-content: space-between; margin-bottom: 24px; }
 
-.glow-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; }
-.working .glow-dot { background: var(--c-cyan); box-shadow: 0 0 12px var(--c-cyan); animation: pulse 1s infinite alternate; }
+.node-brand { display: flex; align-items: center; gap: 14px; }
+.agent-logo { width: 32px; height: 32px; color: var(--c-grey); transition: all 0.3s; }
+.is-working .agent-logo { color: var(--c-cyan); }
+.captain .agent-logo { color: var(--c-amber); }
 
-@keyframes pulse { from { opacity: 0.4; } to { opacity: 1; transform: scale(1.1); } }
+.agent-ids { display: flex; flex-direction: column; }
+.node-name { font-size: 18px; font-weight: 800; color: #fff; margin: 0; }
+.node-type { font-size: 9px; color: var(--c-grey); font-family: var(--font-mono); margin-top: 2px; }
 
-.node-task { background: #000; padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.03); margin-bottom: 20px; }
-.task-content { font-size: 13px; line-height: 1.6; color: #cbd5e1; margin: 0; }
+.node-status-glow {
+  width: 8px; height: 8px; border-radius: 50%; background: #27272a; margin-top: 10px;
+}
+.is-working .node-status-glow {
+  background: var(--c-cyan);
+  box-shadow: 0 0 12px var(--c-cyan);
+  animation: soft-pulse 1.5s infinite alternate;
+}
 
-.node-metrics { display: flex; flex-direction: column; gap: 16px; }
-.progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10px; font-weight: 700; }
-.p-label { color: var(--c-grey); letter-spacing: 0.05em; }
+@keyframes soft-pulse { from { opacity: 0.5; filter: blur(2px); } to { opacity: 1; filter: blur(0px); } }
+
+.node-task-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.03);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.task-inner { font-size: 13px; color: #d1d5db; line-height: 1.6; }
+
+.node-progress-v3 { margin-bottom: 24px; }
+.p-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 10px; font-weight: 700; }
+.p-label { color: var(--c-grey); letter-spacing: 0.1em; }
 .p-val { color: #fff; font-family: var(--font-mono); }
 
-.progress-bar { height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; }
-.p-fill { height: 100%; background: #475569; transition: width 0.6s ease; }
-.working .p-fill { background: var(--c-cyan); }
-.captain .p-fill { background: var(--c-amber); }
+.p-track-v3 { height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
+.p-fill-v3 { height: 100%; background: #3f3f46; transition: width 0.8s ease; }
+.is-working .p-fill-v3 { background: var(--c-cyan); }
+.captain .p-fill-v3 { background: var(--c-amber); }
 
-.p-fill.anim {
-  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+.anim-working {
+  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   background-size: 200% 100%;
-  animation: scan 1.5s linear infinite;
+  animation: shine 2s linear infinite;
 }
 
-@keyframes scan { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes shine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-.node-meta { display: flex; justify-content: space-between; font-size: 9px; color: #475569; font-family: var(--font-mono); }
+.node-meta-v3 { display: flex; justify-content: space-between; font-size: 10px; color: var(--c-grey); font-family: var(--font-mono); }
 
-.node-captain-badge {
-  position: absolute; top: 0; right: 0; background: var(--c-amber); color: #000;
-  padding: 2px 8px; font-size: 8px; font-weight: 900; letter-spacing: 0.1em;
+.commander-tag {
+  position: absolute; bottom: 0; right: 0; background: var(--c-amber); color: #000;
+  padding: 2px 10px; font-size: 9px; font-weight: 900;
 }
 
-/* Archive */
-.archive-section { background: #000; border-top: 1px solid var(--border); }
-.archive-toggle summary { padding: 16px 24px; font-size: 11px; color: var(--c-grey); cursor: pointer; user-select: none; }
-.archive-table { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 8px; }
-.archive-row { display: flex; gap: 24px; font-size: 12px; color: #475569; font-family: var(--font-mono); padding: 8px 0; border-bottom: 1px solid var(--c-border); }
-.a-alias { width: 100px; color: #64748b; font-weight: 700; }
-.a-task { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-/* Status Bar */
-.modern-status { padding: 40px; text-align: center; }
-.loader-bar { width: 40px; height: 2px; background: var(--c-cyan); margin: 0 auto 16px; animation: load 1.5s ease infinite; }
-@keyframes load { 0% { width: 0; opacity: 0; } 50% { width: 80px; opacity: 1; } 100% { width: 0; opacity: 0; } }
-.status-text { font-size: 12px; color: var(--c-grey); letter-spacing: 0.1em; text-transform: uppercase; }
-
-@media (max-width: 1024px) {
-  .dashboard-body { flex-direction: column; }
-  .mission-control { width: 100%; border-right: none; border-bottom: 1px solid var(--c-border); }
+.aureate-loader {
+  padding: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
+.line-loader { width: 120px; height: 1px; background: var(--c-border); position: relative; overflow: hidden; }
+.line-loader::after {
+  content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 40px;
+  background: var(--c-cyan); animation: line-move 1.5s infinite;
+}
+@keyframes line-move { 0% { left: -40px; } 100% { left: 120px; } }
+.loader-text { font-size: 10px; color: var(--c-grey); letter-spacing: 0.2em; }
 </style>
