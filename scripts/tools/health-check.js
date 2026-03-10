@@ -138,10 +138,20 @@ function checkCriticalDirectories() {
   for (const dir of localOnlyDirs) {
     if (isCI) {
       log(colors.yellow, `⏭️  ${dir.name} 已跳过 (CI 环境，本地私密目录)`);
-    } else if (checkFileExists(dir.path) && fs.statSync(dir.path).isDirectory()) {
-      log(colors.green, `✅ ${dir.name} 目录存在`);
     } else {
-      log(colors.yellow, `⚠️  ${dir.name} 目录缺失 (本地建议创建)`);
+      let isDir = false;
+      if (checkFileExists(dir.path)) {
+        try {
+          isDir = fs.statSync(dir.path).isDirectory();
+        } catch (e) {
+          isDir = false;
+        }
+      }
+      if (isDir) {
+        log(colors.green, `✅ ${dir.name} 目录存在`);
+      } else {
+        log(colors.yellow, `⚠️  ${dir.name} 目录缺失或无权限 (本地建议创建/修复权限)`);
+      }
     }
   }
 
