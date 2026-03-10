@@ -236,8 +236,8 @@ async function makeCaptain(member) {
                 <div class="node-header">
                   <div class="agent-identity">
                     <div class="agent-logo-wrapper" :class="getModelMeta(member.agent).class">
-                      <div v-if="getModelMeta(member.agent).icon.includes('<svg')"
-                        v-html="getModelMeta(member.agent).icon"></div>
+                      <span class="alw-icon" v-if="getModelMeta(member.agent).icon.includes('<svg')"
+                        v-html="getModelMeta(member.agent).icon"></span>
                       <span v-else class="emoji-icon">{{ getModelMeta(member.agent).icon }}</span>
                     </div>
                     <div class="agent-info">
@@ -826,6 +826,13 @@ async function makeCaptain(member) {
 .agent-logo-wrapper svg {
   width: 28px;
   height: 28px;
+  display: block;
+}
+
+.alw-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .is-working .agent-logo-wrapper {
@@ -873,6 +880,7 @@ async function makeCaptain(member) {
   display: flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .role-badge.captain {
@@ -898,6 +906,7 @@ async function makeCaptain(member) {
   gap: 6px;
   font-family: ui-monospace, sans-serif;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .eb-icon {
