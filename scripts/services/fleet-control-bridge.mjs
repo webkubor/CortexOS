@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.join(__dirname, '../../')
 const fleetFile = path.join(projectRoot, '.memory/fleet/fleet_status.md')
-const port = Number(process.env.FLEET_CONTROL_PORT || 18789)
+const port = Number(process.env.FLEET_CONTROL_PORT || 18790)
 const host = process.env.FLEET_CONTROL_HOST || '127.0.0.1'
 
 function runCommand(command, args) {

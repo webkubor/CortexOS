@@ -10,10 +10,15 @@ const projectRoot = path.join(__dirname, '../../')
 
 const [mode = 'dev', ...restArgs] = process.argv.slice(2)
 const vitepressArgs = [mode, 'docs', ...restArgs]
+const bridgeEnv = {
+  ...process.env,
+  FLEET_CONTROL_PORT: process.env.FLEET_CONTROL_PORT || '18790'
+}
 
 const bridge = spawn('node', ['scripts/services/fleet-control-bridge.mjs'], {
   cwd: projectRoot,
-  stdio: 'inherit'
+  stdio: 'inherit',
+  env: bridgeEnv
 })
 
 const vitepress = spawn('pnpm', ['exec', 'vitepress', ...vitepressArgs], {

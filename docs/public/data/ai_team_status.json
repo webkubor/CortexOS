@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T10:20:07.756Z",
+  "generatedAt": "2026-03-10T10:26:57.996Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -30,30 +30,30 @@
   "queued": 0,
   "members": [
     {
-      "member": "Codex-1 (Codex)",
+      "member": "Codex-Prime (0号机/Codex)",
       "agent": "Codex",
       "role": "前端",
       "workspace": "~/Documents/CortexOS",
       "task": "收口项目启动入口并隐藏数据库初始化细节",
-      "since": "2026-03-10 18:20",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Candy-Prime (0号机/Gemini)",
-      "agent": "Gemini",
-      "role": "安全审计",
-      "workspace": "~/Documents/CortexOS",
-      "task": "执行 CortexOS 与 OpenClaw 系统安全审计并加固权限漏洞 (task-20260310-sec-audit)",
-      "since": "2026-03-10 12:31",
+      "since": "2026-03-10 18:26",
       "status": "[ 队长锁 ] 活跃",
       "type": "active",
       "progress": 60,
       "isCaptain": true,
+      "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Candy-1 (Gemini)",
+      "agent": "Gemini",
+      "role": "安全审计",
+      "workspace": "~/Documents/CortexOS",
+      "task": "执行 CortexOS 与 OpenClaw 系统安全审计并加固权限漏洞 (task-20260310-sec-audit)",
+      "since": "2026-03-10 18:26",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     },

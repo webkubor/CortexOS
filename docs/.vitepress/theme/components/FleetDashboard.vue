@@ -71,7 +71,7 @@ const currentMembers = computed(() =>
 const REFRESH_INTERVAL = 8000;
 let refreshTimer = null;
 let requestId = 0;
-const actionEndpoint = 'http://127.0.0.1:18789/api/fleet/action';
+const actionEndpoint = 'http://127.0.0.1:18790/api/fleet/action';
 
 async function loadData() {
   const currentRequestId = ++requestId;
