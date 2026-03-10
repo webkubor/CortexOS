@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T09:57:37.507Z",
+  "generatedAt": "2026-03-10T10:01:09.963Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -72,12 +72,12 @@
       "isStale": false
     },
     {
-      "member": "Candy-3 (Codex)",
+      "member": "Codex-3 (Codex)",
       "agent": "Codex",
       "role": "后端",
       "workspace": "~/Desktop/skills/nanobanana-plus",
-      "task": "Diagnose why local claude-router fails to start by checking binaries, config, processes, and logs",
-      "since": "2026-03-10 17:54",
+      "task": "修复本机 claude-code-router 启动问题，必要时重装并恢复可用配置。",
+      "since": "2026-03-10 18:01",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,

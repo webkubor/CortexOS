@@ -71,6 +71,7 @@ const currentMembers = computed(() =>
 const REFRESH_INTERVAL = 8000;
 let refreshTimer = null;
 let requestId = 0;
+const actionEndpoint = '/api/fleet/action';
 
 async function loadData() {
   const currentRequestId = ++requestId;
@@ -132,21 +133,31 @@ function getStatusText(status) {
 }
 
 async function removeMember(member) {
+  const previousMembers = data.value.members.map((item) => ({ ...item }));
+
   // Optimistic UI Update
   data.value.members = data.value.members.filter(m => m.member !== member.member);
   try {
-    await fetch("/api/fleet/action", {
+    const response = await fetch(actionEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "kick-out", memberId: member.member })
     });
-    // Optional: reloadData();
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.error || "移出节点失败");
+    }
+    await loadData();
   } catch (e) {
+    data.value.members = previousMembers;
+    error.value = e.message || "移出节点失败";
     console.error("Failed to kick out member", e);
   }
 }
 
 async function makeCaptain(member) {
+  const previousMembers = data.value.members.map((item) => ({ ...item }));
+
   // Optimistic UI Update
   data.value.members.forEach(m => {
     if (m.member === member.member) {
@@ -157,14 +168,20 @@ async function makeCaptain(member) {
   });
 
   try {
-    await fetch("/api/fleet/action", {
+    const response = await fetch(actionEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "make-captain", memberId: member.member })
     });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.error || "移交最高指令失败");
+    }
     // Trigger immediate refresh to sync with server state
     await loadData();
   } catch (e) {
+    data.value.members = previousMembers;
+    error.value = e.message || "移交最高指令失败";
     console.error("Failed to make captain", e);
   }
 }
@@ -347,6 +364,8 @@ async function makeCaptain(member) {
       <div class="aether-spinner"></div>
       <div class="aether-text">系统底层金丝直连初始化...</div>
     </div>
+
+    <div v-if="error" class="action-error-banner">{{ error }}</div>
   </div>
 </template>
 
@@ -373,6 +392,23 @@ async function makeCaptain(member) {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.action-error-banner {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 300;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 102, 102, 0.35);
+  border-radius: 14px;
+  background: rgba(35, 10, 10, 0.9);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  color: #ffd9d9;
+  font-size: 13px;
+  line-height: 1.5;
+  backdrop-filter: blur(14px);
 }
 
 /* 🌀 弥散渐变背景 - 克制光晕 */
