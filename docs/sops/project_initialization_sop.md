@@ -2,6 +2,7 @@
 
 > 核心目标：统一所有项目的 AI 协作结构 (.agent) 与文档格式。
 > **基准**: 以 th-payment-web 项目配置为标准。
+> 前端新项目统一基线补充见：[`vue3-vite-ts-scss-baseline`](./vue3-vite-ts-scss-baseline)。
 
 ## 1. 目录结构初始化
 
