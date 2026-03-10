@@ -21,20 +21,36 @@ const data = ref({
   ]
 });
 
-// 顶级官方 Logo 路径
-const agentLogos = {
-  gemini: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z"/></svg>`,
-  claude: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L3.5 19H5.8L12 7.2L18.2 19H20.5L12 3ZM12 11.5L8.5 18H15.5L12 11.5Z"/></svg>`,
-  codex: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 7H13V13H11V7ZM11 15H13V17H11V15Z"/></svg>`,
-  default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>`
+// 顶级官方 Logo 路径与元数据
+const agentModels = {
+  gemini: {
+    icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z"/></svg>`,
+    label: "Gemini 引擎",
+    class: "mod-gemini"
+  },
+  claude: {
+    icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L3.5 19H5.8L12 7.2L18.2 19H20.5L12 3ZM12 11.5L8.5 18H15.5L12 11.5Z"/></svg>`,
+    label: "Claude 引擎",
+    class: "mod-claude"
+  },
+  codex: {
+    icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 7H13V13H11V7ZM11 15H13V17H11V15Z"/></svg>`,
+    label: "Codex 矩阵",
+    class: "mod-codex"
+  },
+  lobster: {
+    icon: `🦞`,
+    label: "智能体引擎",
+    class: "mod-lobster"
+  }
 };
 
-function getAgentLogo(name) {
-  const lower = name.toLowerCase();
-  if (lower.includes('gemini')) return agentLogos.gemini;
-  if (lower.includes('claude')) return agentLogos.claude;
-  if (lower.includes('codex')) return agentLogos.codex;
-  return agentLogos.default;
+function getModelMeta(name) {
+  const lower = String(name || "").toLowerCase();
+  if (lower.includes('gemini')) return agentModels.gemini;
+  if (lower.includes('claude')) return agentModels.claude;
+  if (lower.includes('codex')) return agentModels.codex;
+  return agentModels.lobster;
 }
 
 function missionStatusClass(status) {
@@ -219,10 +235,26 @@ async function makeCaptain(member) {
               <div class="node-content">
                 <div class="node-header">
                   <div class="agent-identity">
-                    <div class="agent-logo-wrapper" v-html="getAgentLogo(member.agent)"></div>
+                    <div class="agent-logo-wrapper" :class="getModelMeta(member.agent).class">
+                      <div v-if="getModelMeta(member.agent).icon.includes('<svg')"
+                        v-html="getModelMeta(member.agent).icon"></div>
+                      <span v-else class="emoji-icon">{{ getModelMeta(member.agent).icon }}</span>
+                    </div>
                     <div class="agent-info">
                       <h3 class="agent-name">{{ member.alias || member.member.split('(')[0] }}</h3>
-                      <span class="agent-sub">{{ member.agent }}</span>
+                      <div class="agent-badges">
+                        <!-- 职位徽章 -->
+                        <span v-if="member.isCaptain" class="role-badge captain">👑 舰队统帅</span>
+                        <span v-else class="role-badge member">🛡️ 执行节点</span>
+
+                        <!-- 引擎徽章 -->
+                        <div class="engine-badge" :class="getModelMeta(member.agent).class">
+                          <span class="eb-icon" v-if="getModelMeta(member.agent).icon.includes('<svg')"
+                            v-html="getModelMeta(member.agent).icon"></span>
+                          <span class="eb-icon" v-else>{{ getModelMeta(member.agent).icon }}</span>
+                          <span class="eb-label">{{ getModelMeta(member.agent).label }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="header-actions">
@@ -825,12 +857,88 @@ async function makeCaptain(member) {
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
-.agent-sub {
+.agent-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.role-badge {
   font-size: 11px;
-  color: #666;
-  font-family: ui-monospace;
-  margin-top: 4px;
-  display: block;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.role-badge.captain {
+  background: rgba(245, 200, 123, 0.15);
+  border: 1px solid rgba(245, 200, 123, 0.3);
+  color: var(--c-aureate-glow);
+  box-shadow: 0 0 10px rgba(245, 200, 123, 0.1);
+}
+
+.role-badge.member {
+  background: rgba(100, 150, 255, 0.1);
+  border: 1px solid rgba(100, 150, 255, 0.2);
+  color: #a0c0ff;
+}
+
+.engine-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: ui-monospace, sans-serif;
+  border: 1px solid transparent;
+}
+
+.eb-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eb-icon.emoji {
+  font-size: 12px;
+}
+
+.engine-badge.mod-gemini {
+  background: rgba(66, 133, 244, 0.15);
+  border-color: rgba(66, 133, 244, 0.3);
+  color: #8ab4f8;
+}
+
+.engine-badge.mod-claude {
+  background: rgba(217, 119, 87, 0.15);
+  border-color: rgba(217, 119, 87, 0.3);
+  color: #ffb89e;
+}
+
+.engine-badge.mod-codex {
+  background: rgba(30, 215, 96, 0.15);
+  border-color: rgba(30, 215, 96, 0.3);
+  color: #8affc1;
+}
+
+.engine-badge.mod-lobster {
+  background: rgba(255, 50, 50, 0.15);
+  border-color: rgba(255, 50, 50, 0.4);
+  color: #ff6b6b;
+  box-shadow: 0 0 15px rgba(255, 50, 50, 0.2);
+}
+
+.emoji-icon {
+  font-size: 32px;
 }
 
 .working-spinner {
