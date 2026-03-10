@@ -7,6 +7,7 @@ import { touchFleetMeta } from './fleet-meta.mjs';
 import { ensureFleetPaths } from './fleet-paths.mjs';
 import { syncProjectRegistry } from './project-registry.mjs';
 import { syncFleetDashboard } from './sync-fleet-dashboard.mjs';
+import { syncAiTeamState } from '../lib/ai-team-state.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -302,6 +303,23 @@ function main() {
     });
   } catch (error) {
     warnings.push(`项目索引同步失败: ${sanitizeCell(error?.message || error)}`);
+  }
+
+  if (!args.dryRun) {
+    try {
+      syncAiTeamState({
+        action: 'claim',
+        operator: args.agent,
+        reason: 'fleet:claim',
+        payload: {
+          workspace: args.workspace,
+          nodeId: stripMarkdown(nodeId),
+          role: args.role
+        }
+      });
+    } catch (error) {
+      warnings.push(`AI Team 状态库同步失败: ${sanitizeCell(error?.message || error)}`);
+    }
   }
 
   if (!args.dryRun) {

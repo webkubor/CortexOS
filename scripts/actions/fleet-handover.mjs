@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ensureFleetPaths } from './fleet-paths.mjs';
+import { syncFleetDashboard } from './sync-fleet-dashboard.mjs';
+import { syncAiTeamState } from '../lib/ai-team-state.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -280,15 +282,27 @@ function main() {
   });
 
   const nextContent = lines.join('\n');
+  const nextCaptainId = stripMarkdown(promotedNode)
   if (!args.dryRun) {
     fs.writeFileSync(fleetFile, nextContent, 'utf8');
+    syncAiTeamState({
+      action: 'handover',
+      operator: 'system',
+      reason: 'fleet:handover',
+      payload: {
+        from: currentPrimeRow ? stripMarkdown(currentPrimeRow.node) : null,
+        to: nextCaptainId,
+        workspace: targetRow.workspace
+      }
+    });
+    syncFleetDashboard();
   }
 
   console.log(JSON.stringify({
     ok: true,
     file: fleetFile,
     from: currentPrimeRow ? stripMarkdown(currentPrimeRow.node) : null,
-    to: stripMarkdown(promotedNode),
+    to: nextCaptainId,
     workspace: targetRow.workspace,
     time: handoverTime,
     warnings,

@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ensureFleetPaths } from "./fleet-paths.mjs";
+import { syncFleetDashboard } from "./sync-fleet-dashboard.mjs";
+import { syncAiTeamState } from "../lib/ai-team-state.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -145,6 +147,15 @@ function main() {
 
   const finalContent = [...tableHeader, ...tableRows, ...footerLines].join("\n");
   fs.writeFileSync(fleetFile, finalContent, "utf8");
+  syncAiTeamState({
+    action: "cleanup",
+    operator: "system",
+    reason: "fleet:cleanup",
+    payload: {
+      cleanedCount
+    }
+  });
+  syncFleetDashboard();
   console.log(`✨ 阵列维护完成。`);
 }
 
