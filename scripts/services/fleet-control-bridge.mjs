@@ -5,6 +5,7 @@ import http from 'http'
 import path from 'path'
 import { spawn } from 'child_process'
 import { fileURLToPath } from 'url'
+import { getAiTeamState, syncAiTeamState } from '../lib/ai-team-state.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -45,6 +46,16 @@ function runCommand(command, args) {
 
 async function syncFleetDashboard() {
   return runCommand('node', ['scripts/actions/sync-fleet-dashboard.mjs'])
+}
+
+function refreshAiTeamState() {
+  syncAiTeamState({
+    action: 'bridge-refresh',
+    operator: 'bridge',
+    reason: 'fleet-control-bridge',
+    persistLog: false
+  })
+  return getAiTeamState()
 }
 
 function updateMemberStatus(memberId, nextStatus) {
@@ -132,6 +143,12 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  if (req.method === 'GET' && req.url === '/api/fleet/state') {
+    const state = refreshAiTeamState()
+    writeJson(res, 200, { ok: true, state }, origin)
+    return
+  }
+
   if (req.method !== 'POST' || req.url !== '/api/fleet/action') {
     writeJson(res, 404, { error: 'Not Found' }, origin)
     return
@@ -153,15 +170,21 @@ const server = http.createServer(async (req, res) => {
 
     if (action === 'kick-out') {
       updateMemberStatus(memberId, '[ 已离线 ]')
+      syncAiTeamState({
+        action: 'kick-out',
+        operator: 'bridge',
+        reason: 'fleet-control-bridge',
+        payload: { memberId }
+      })
       const result = await syncFleetDashboard()
-      writeJson(res, 200, { success: true, stdout: result.stdout }, origin)
+      writeJson(res, 200, { success: true, stdout: result.stdout, state: getAiTeamState() }, origin)
       return
     }
 
     if (action === 'make-captain') {
       const result = await runCommand('pnpm', ['run', 'fleet:handover', '--', '--to-node', memberId])
       await syncFleetDashboard()
-      writeJson(res, 200, { success: true, stdout: result.stdout }, origin)
+      writeJson(res, 200, { success: true, stdout: result.stdout, state: getAiTeamState() }, origin)
       return
     }
 

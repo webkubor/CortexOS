@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T11:00:00.350Z",
+  "generatedAt": "2026-03-10T11:01:04.226Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -77,7 +77,7 @@
       "role": "指挥官",
       "workspace": "~/clawd",
       "task": "等待唤醒与派单...",
-      "since": "2026-03-10 18:36",
+      "since": "2026-03-10 19:01",
       "status": "[ 队长锁 ] 活跃",
       "type": "active",
       "progress": 60,

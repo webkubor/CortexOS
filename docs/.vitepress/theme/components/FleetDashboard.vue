@@ -72,22 +72,107 @@ const REFRESH_INTERVAL = 8000;
 let refreshTimer = null;
 let requestId = 0;
 const actionEndpoint = 'http://127.0.0.1:18790/api/fleet/action';
+const stateEndpoint = 'http://127.0.0.1:18790/api/fleet/state';
+const staticDataPath = '/CortexOS/data/ai_team_status.json';
+
+function memberStatusToType(status, fallback = "active") {
+  const text = String(status || "").trim();
+  if (text.includes("已离线")) return "offline";
+  if (text.includes("等待")) return "queued";
+  if (text.includes("执行中") || text.includes("队长锁")) return "active";
+  return fallback;
+}
+
+function memberStatusToProgress(status, isCaptain) {
+  if (isCaptain) return 60;
+  const type = memberStatusToType(status);
+  if (type === "offline") return 100;
+  if (type === "queued") return 5;
+  return 55;
+}
+
+function getMissionStatus(member) {
+  const type = memberStatusToType(member.status, member.type);
+  if (type === "queued") return "待处理";
+  if (type === "offline") return "已离线";
+  return "执行中";
+}
+
+function normalizeBridgeState(state) {
+  const members = (state?.agents || []).map((agent) => ({
+    member: agent.memberId,
+    alias: agent.alias,
+    agent: agent.agentName,
+    role: agent.role,
+    workspace: agent.workspace,
+    task: agent.task,
+    since: agent.heartbeatAt || agent.updatedAt || "-",
+    status: agent.status,
+    type: agent.type || memberStatusToType(agent.status),
+    progress: memberStatusToProgress(agent.status, agent.isCaptain),
+    isCaptain: Boolean(agent.isCaptain)
+  }));
+
+  const missions = members
+    .filter((member) => member.task)
+    .slice(0, 6)
+    .map((member, index) => ({
+      id: `任务-${String(index + 1).padStart(2, "0")}`,
+      title: member.task,
+      status: getMissionStatus(member),
+      owner: member.alias || member.member
+    }));
+
+  return {
+    generatedAt: state?.generatedAt || "",
+    total: state?.total ?? members.length,
+    active: state?.active ?? members.filter((member) => member.type === "active").length,
+    offline: state?.offline ?? members.filter((member) => member.type === "offline").length,
+    queued: state?.queued ?? members.filter((member) => member.type === "queued").length,
+    members,
+    missions
+  };
+}
+
+async function loadStaticShell() {
+  const url = new URL(staticDataPath, window.location.origin);
+  url.searchParams.set("t", String(Date.now()));
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error("static-shell-failed");
+  const payload = await response.json();
+  data.value = {
+    ...data.value,
+    environment: payload.environment || data.value.environment,
+    version: payload.version || data.value.version,
+    missions: payload.missions || data.value.missions
+  };
+}
 
 async function loadData() {
   const currentRequestId = ++requestId;
   if (!data.value.generatedAt) loading.value = true;
   error.value = "";
   try {
-    const url = new URL("/CortexOS/data/ai_team_status.json", window.location.origin);
-    url.searchParams.set("t", String(Date.now()));
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    const json = await res.json();
+    const bridgeResponse = await fetch(stateEndpoint, { cache: "no-store" });
+    if (!bridgeResponse.ok) throw new Error("bridge-state-failed");
+    const payload = await bridgeResponse.json();
+    const json = normalizeBridgeState(payload.state || {});
     if (currentRequestId !== requestId) return;
     data.value = { ...data.value, ...json };
   } catch (e) {
-    if (currentRequestId !== requestId) return;
-    error.value = "Neural Link Fault";
+    try {
+      const url = new URL(staticDataPath, window.location.origin);
+      url.searchParams.set("t", String(Date.now()));
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("json-fallback-failed");
+      const json = await res.json();
+      if (currentRequestId !== requestId) return;
+      data.value = { ...data.value, ...json };
+      error.value = "实时桥暂不可用，已切回静态看板";
+    } catch {
+      if (currentRequestId !== requestId) return;
+      error.value = "Neural Link Fault";
+    }
   } finally {
     if (currentRequestId === requestId) loading.value = false;
   }
@@ -106,6 +191,7 @@ function handleVisibilityRefresh() {
 }
 
 onMounted(() => {
+  loadStaticShell().catch(() => {});
   loadData();
   startAutoRefresh();
   window.addEventListener("focus", handleVisibilityRefresh);
@@ -132,6 +218,13 @@ function getStatusText(status) {
   return map[status?.toUpperCase()] || status;
 }
 
+function applyBridgeState(state) {
+  data.value = {
+    ...data.value,
+    ...normalizeBridgeState(state || {})
+  };
+}
+
 async function removeMember(member) {
   const previousMembers = data.value.members.map((item) => ({ ...item }));
 
@@ -147,7 +240,9 @@ async function removeMember(member) {
       const payload = await response.json().catch(() => ({}));
       throw new Error(payload.error || "移出节点失败");
     }
-    await loadData();
+    const payload = await response.json().catch(() => ({}));
+    if (payload.state) applyBridgeState(payload.state);
+    else await loadData();
   } catch (e) {
     data.value.members = previousMembers;
     error.value = e.message || "移出节点失败";
@@ -177,8 +272,9 @@ async function makeCaptain(member) {
       const payload = await response.json().catch(() => ({}));
       throw new Error(payload.error || "移交最高指令失败");
     }
-    // Trigger immediate refresh to sync with server state
-    await loadData();
+    const payload = await response.json().catch(() => ({}));
+    if (payload.state) applyBridgeState(payload.state);
+    else await loadData();
   } catch (e) {
     data.value.members = previousMembers;
     error.value = e.message || "移交最高指令失败";

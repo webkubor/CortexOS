@@ -175,7 +175,7 @@ export function loadFleetSnapshot() {
   return { agents }
 }
 
-export function syncAiTeamState({ action = 'sync', operator = 'system', payload = null, reason = '' } = {}) {
+export function syncAiTeamState({ action = 'sync', operator = 'system', payload = null, reason = '', persistLog = true } = {}) {
   const snapshot = loadFleetSnapshot()
   const db = ensureAiTeamDb()
 
@@ -252,7 +252,7 @@ export function syncAiTeamState({ action = 'sync', operator = 'system', payload 
     LIMIT 1
   `).get()
 
-  if ((previousCaptain?.member_id || null) !== (nextCaptain?.member_id || null) && nextCaptain?.member_id) {
+  if (persistLog && (previousCaptain?.member_id || null) !== (nextCaptain?.member_id || null) && nextCaptain?.member_id) {
     db.prepare(`
       INSERT INTO captain_events (from_member_id, to_member_id, reason, operator)
       VALUES (?, ?, ?, ?)
@@ -264,32 +264,99 @@ export function syncAiTeamState({ action = 'sync', operator = 'system', payload 
     )
   }
 
-  db.prepare(`
-    INSERT INTO operation_logs (action, target_type, target_id, payload_json)
-    VALUES (?, ?, ?, ?)
-  `).run(
-    action,
-    'fleet',
-    nextCaptain?.member_id || null,
-    JSON.stringify({
-      operator,
-      reason,
-      agents: snapshot.agents.map(agent => ({
-        memberId: agent.memberId,
-        agentName: agent.agentName,
-        workspace: agent.workspace,
-        isCaptain: Boolean(agent.isCaptain)
-      })),
-      payload
-    })
-  )
+  if (persistLog) {
+    db.prepare(`
+      INSERT INTO operation_logs (action, target_type, target_id, payload_json)
+      VALUES (?, ?, ?, ?)
+    `).run(
+      action,
+      'fleet',
+      nextCaptain?.member_id || null,
+      JSON.stringify({
+        operator,
+        reason,
+        agents: snapshot.agents.map(agent => ({
+          memberId: agent.memberId,
+          agentName: agent.agentName,
+          workspace: agent.workspace,
+          isCaptain: Boolean(agent.isCaptain)
+        })),
+        payload
+      })
+    )
+  }
 
-  db.close()
-
-  return {
+  const summary = {
     ok: true,
     action,
     totalAgents: snapshot.agents.length,
     captain: nextCaptain?.member_id || null
+  }
+
+  db.close()
+  return summary
+}
+
+export function getAiTeamState() {
+  const db = ensureAiTeamDb()
+  const agents = db.prepare(`
+    SELECT
+      member_id AS memberId,
+      node_id AS nodeId,
+      agent_name AS agentName,
+      alias,
+      role,
+      workspace,
+      task,
+      type,
+      is_captain AS isCaptain,
+      status,
+      heartbeat_at AS heartbeatAt,
+      updated_at AS updatedAt
+    FROM agents
+    ORDER BY is_captain DESC, updated_at DESC, agent_name ASC
+  `).all().map(agent => ({
+    ...agent,
+    isCaptain: Boolean(agent.isCaptain)
+  }))
+
+  const captain = agents.find(agent => agent.isCaptain) || null
+  const recentCaptainEvents = db.prepare(`
+    SELECT
+      id,
+      from_member_id AS fromMemberId,
+      to_member_id AS toMemberId,
+      reason,
+      operator,
+      created_at AS createdAt
+    FROM captain_events
+    ORDER BY id DESC
+    LIMIT 10
+  `).all()
+
+  const recentOperations = db.prepare(`
+    SELECT
+      id,
+      action,
+      target_type AS targetType,
+      target_id AS targetId,
+      created_at AS createdAt
+    FROM operation_logs
+    ORDER BY id DESC
+    LIMIT 20
+  `).all()
+
+  db.close()
+
+  return {
+    generatedAt: new Date().toISOString(),
+    total: agents.length,
+    active: agents.filter(agent => agent.type === 'active').length,
+    offline: agents.filter(agent => agent.type === 'offline').length,
+    queued: agents.filter(agent => agent.type === 'queued').length,
+    captain: captain ? captain.memberId : null,
+    agents,
+    recentCaptainEvents,
+    recentOperations
   }
 }
