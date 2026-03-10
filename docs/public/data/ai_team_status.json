@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T10:26:57.996Z",
+  "generatedAt": "2026-03-10T10:38:05.396Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -25,21 +25,21 @@
     "skillsCount": 17
   },
   "total": 5,
-  "active": 4,
-  "offline": 1,
+  "active": 5,
+  "offline": 0,
   "queued": 0,
   "members": [
     {
-      "member": "Codex-Prime (0号机/Codex)",
+      "member": "Codex-4 (Codex)",
       "agent": "Codex",
       "role": "前端",
       "workspace": "~/Documents/CortexOS",
-      "task": "收口项目启动入口并隐藏数据库初始化细节",
-      "since": "2026-03-10 18:26",
-      "status": "[ 队长锁 ] 活跃",
+      "task": "分析队长下线检测与 AI Team 看板同步链路",
+      "since": "2026-03-10 18:38",
+      "status": "[ 执行中 ] 活跃",
       "type": "active",
-      "progress": 60,
-      "isCaptain": true,
+      "progress": 55,
+      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     },
@@ -86,16 +86,16 @@
       "isStale": false
     },
     {
-      "member": "栖月-Prime",
+      "member": "栖月-Prime (0号机/Lobster)",
       "agent": "Lobster",
       "role": "指挥官",
-      "workspace": "系统沉睡舱",
+      "workspace": "~/clawd",
       "task": "等待唤醒与派单...",
-      "since": "-",
-      "status": "已离线",
-      "type": "offline",
-      "progress": 100,
-      "isCaptain": false,
+      "since": "2026-03-10 18:36",
+      "status": "[ 队长锁 ] 活跃",
+      "type": "active",
+      "progress": 60,
+      "isCaptain": true,
       "hasTodo": false,
       "isStale": false
     }
