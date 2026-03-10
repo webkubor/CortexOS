@@ -34,8 +34,8 @@ const agentModels = {
     class: "mod-claude"
   },
   codex: {
-    icon: `<img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai-color.svg" class="model-icon-img" alt="Codex" />`,
-    label: "Codex 矩阵",
+    icon: `<img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai-color.svg" class="model-icon-img" alt="Chatgpt" />`,
+    label: "ChatGPT / OpenAI",
     class: "mod-codex"
   },
   lobster: {
