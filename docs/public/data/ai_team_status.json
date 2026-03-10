@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-10T04:15:00.442Z",
+  "generatedAt": "2026-03-10T04:31:48.280Z",
   "version": "v5.5.0 (智能体常驻 + 引擎可视化 + 阶级标定)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 4,
-  "active": 3,
+  "total": 5,
+  "active": 4,
   "offline": 1,
   "queued": 0,
   "members": [
@@ -46,6 +46,20 @@
       "type": "active",
       "progress": 55,
       "isCaptain": false,
+      "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Candy-Prime (0号机/Gemini)",
+      "agent": "Gemini",
+      "role": "安全审计",
+      "workspace": "~/Documents/CortexOS",
+      "task": "执行 CortexOS 与 OpenClaw 系统安全审计并加固权限漏洞 (task-20260310-sec-audit)",
+      "since": "2026-03-10 12:31",
+      "status": "[ 队长锁 ] 活跃",
+      "type": "active",
+      "progress": 60,
+      "isCaptain": true,
       "hasTodo": false,
       "isStale": false
     },
