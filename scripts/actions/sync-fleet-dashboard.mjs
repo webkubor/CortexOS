@@ -233,9 +233,9 @@ export function syncFleetDashboard() {
   }
 
   // 👑 唯一机长选举逻辑 (Single Captain Election)
-  // 优先级: 活跃的 Prime 节点 > 第一个处于“队长锁”状态的节点 > 列表第一个活跃节点
-  let captainIndex = rows.findIndex(r => r.member.includes("Prime") && r.type === "active");
-  if (captainIndex === -1) captainIndex = rows.findIndex(r => r.status.includes("队长锁"));
+  // 优先级: 处于“队长锁”状态的节点 (手动干预) > 活跃的 Prime 节点 (默认大脑) > 列表第一个活跃节点
+  let captainIndex = rows.findIndex(r => r.status.includes("队长锁"));
+  if (captainIndex === -1) captainIndex = rows.findIndex(r => r.member.includes("Prime") && r.type === "active");
   if (captainIndex === -1) captainIndex = rows.findIndex(r => r.type === "active");
   if (captainIndex === -1 && rows.length > 0) captainIndex = 0; // Fallback to first ever node if all else fails
 
