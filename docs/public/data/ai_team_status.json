@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-03-10T08:14:53.945Z",
+  "generatedAt": "2026-03-10T08:25:00.441Z",
   "version": "v5.5.0 (智能体常驻 + 引擎可视化 + 阶级标定)",
   "source": ".memory/fleet/fleet_status.md",
-  "total": 4,
-  "active": 3,
+  "total": 3,
+  "active": 2,
   "offline": 1,
   "queued": 0,
   "members": [
@@ -32,20 +32,6 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Candy-2 (Gemini)",
-      "agent": "Gemini",
-      "role": "未分配",
-      "workspace": "~/Desktop/create/雪夜无名",
-      "task": "解析《雪夜无名》创作风格并执行 AI 原生工作空间改造（MOD 化）",
-      "since": "2026-03-10 14:21",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     },
