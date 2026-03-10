@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T12:32:27.917Z",
+  "generatedAt": "2026-03-10T12:40:00.416Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -25,8 +25,8 @@
     "skillsCount": 17
   },
   "total": 3,
-  "active": 3,
-  "offline": 0,
+  "active": 2,
+  "offline": 1,
   "queued": 0,
   "members": [
     {
@@ -44,12 +44,12 @@
       "isStale": false
     },
     {
-      "member": "栖月-Prime (0号机/Lobster)",
-      "agent": "Lobster",
-      "role": "指挥官",
-      "workspace": "~/clawd",
-      "task": "等待唤醒与派单...",
-      "since": "2026-03-10 19:01",
+      "member": "Candy-1 (Codex)",
+      "agent": "Codex",
+      "role": "前端",
+      "workspace": "~/Desktop/create/cinematic-storyboard-pro",
+      "task": "整理并创作项目序幕内容，检查 episodes 结构与 ep00 状态，补成正式可用稿。",
+      "since": "2026-03-10 20:32",
       "status": "[ 队长锁 ] 活跃",
       "type": "active",
       "progress": 60,
@@ -58,15 +58,15 @@
       "isStale": false
     },
     {
-      "member": "Candy-1 (Codex)",
-      "agent": "Codex",
-      "role": "前端",
-      "workspace": "~/Desktop/create/cinematic-storyboard-pro",
-      "task": "整理并创作项目序幕内容，检查 episodes 结构与 ep00 状态，补成正式可用稿。",
-      "since": "2026-03-10 20:32",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
+      "member": "栖月-Prime",
+      "agent": "Lobster",
+      "role": "指挥官",
+      "workspace": "系统沉睡舱",
+      "task": "等待唤醒与派单...",
+      "since": "-",
+      "status": "已离线",
+      "type": "offline",
+      "progress": 100,
       "isCaptain": false,
       "hasTodo": false,
       "isStale": false
