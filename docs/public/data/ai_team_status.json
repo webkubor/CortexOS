@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T11:10:00.417Z",
+  "generatedAt": "2026-03-10T12:09:49.845Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -24,8 +24,8 @@
     "nodeVersion": "v22.19.0",
     "skillsCount": 17
   },
-  "total": 3,
-  "active": 3,
+  "total": 2,
+  "active": 2,
   "offline": 0,
   "queued": 0,
   "members": [
@@ -36,20 +36,6 @@
       "workspace": "~/Documents/CortexOS",
       "task": "执行 AI Team 实时化改造 Phase 1：将舰队状态同步写入 SQLite 并接入现有操作链路",
       "since": "2026-03-10 18:51",
-      "status": "[ 执行中 ] 活跃",
-      "type": "active",
-      "progress": 55,
-      "isCaptain": false,
-      "hasTodo": false,
-      "isStale": false
-    },
-    {
-      "member": "Codex-3 (Codex)",
-      "agent": "Codex",
-      "role": "后端",
-      "workspace": "~/Desktop/skills/nanobanana-plus",
-      "task": "修复本机 claude-code-router 启动问题，必要时重装并恢复可用配置。",
-      "since": "2026-03-10 18:01",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,
