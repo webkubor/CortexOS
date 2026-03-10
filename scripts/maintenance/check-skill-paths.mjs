@@ -55,11 +55,11 @@ const placeholderNames = new Set([
   'example-skill'
 ])
 
-function isTextFile (filePath) {
+function isTextFile(filePath) {
   return textExts.has(path.extname(filePath).toLowerCase())
 }
 
-function shouldSkipPath (targetPath) {
+function shouldSkipPath(targetPath) {
   const relative = path.relative(projectRoot, targetPath)
   if (!relative || relative.startsWith('..')) return false
   const normalized = relative.split(path.sep).join('/')
@@ -72,12 +72,18 @@ function shouldSkipPath (targetPath) {
   return false
 }
 
-function sanitizeMatch (rawMatch) {
+function sanitizeMatch(rawMatch) {
   return rawMatch.replace(/[。，“”、,.;:!?]+$/u, '')
 }
 
-function walk (dirPath, out = []) {
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+function walk(dirPath, out = []) {
+  let entries = []
+  try {
+    entries = fs.readdirSync(dirPath, { withFileTypes: true })
+  } catch (e) {
+    if (e.code === 'EPERM' || e.code === 'EACCES') return out
+    throw e
+  }
   for (const entry of entries) {
     const fullPath = path.join(dirPath, entry.name)
     if (entry.isDirectory()) {
@@ -90,12 +96,12 @@ function walk (dirPath, out = []) {
   return out
 }
 
-function expandHome (rawPath) {
+function expandHome(rawPath) {
   if (rawPath.startsWith('~/')) return path.join(home, rawPath.slice(2))
   return rawPath
 }
 
-function pathExists (targetPath) {
+function pathExists(targetPath) {
   try {
     fs.accessSync(targetPath)
     return true
@@ -104,7 +110,7 @@ function pathExists (targetPath) {
   }
 }
 
-function extractSkillName (rawPath) {
+function extractSkillName(rawPath) {
   const normalized = rawPath.replace(/^~\//, `${home}/`)
   const parts = normalized.split('/').filter(Boolean)
   const skillsIndex = parts.findIndex(part => part === 'skills')
@@ -115,7 +121,7 @@ function extractSkillName (rawPath) {
   return next
 }
 
-function findSkillCandidates (skillName) {
+function findSkillCandidates(skillName) {
   const candidates = [
     path.join(home, '.codex/skills', skillName, 'SKILL.md'),
     path.join(home, '.agents/skills', skillName, 'SKILL.md'),
@@ -130,7 +136,7 @@ function findSkillCandidates (skillName) {
   return results
 }
 
-function collectMatches (content) {
+function collectMatches(content) {
   const matches = []
   for (const pattern of pathPatterns) {
     for (const match of content.matchAll(pattern)) {
@@ -140,7 +146,7 @@ function collectMatches (content) {
   return [...new Set(matches)]
 }
 
-function buildBrokenRefsReport () {
+function buildBrokenRefsReport() {
   const files = walk(projectRoot)
   const brokenRefs = []
 
@@ -172,7 +178,11 @@ function buildBrokenRefsReport () {
   return brokenRefs
 }
 
-function main () {
+function main() {
+  if (process.env.CI === 'true') {
+    console.log('⏭️  CI 环境：跳过本地 skill 路径有效性检测')
+    return
+  }
   const brokenRefs = buildBrokenRefsReport()
 
   if (brokenRefs.length === 0) {
