@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T03:44:31.044Z",
+  "generatedAt": "2026-03-10T03:46:08.948Z",
   "version": "v5.4.0 (角色分工 + 客观进度 + 僵尸检测)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 3,
@@ -26,8 +26,8 @@
       "agent": "Codex",
       "role": "前端",
       "workspace": "~/Documents/CortexOS",
-      "task": "排查 AI Team 面板新增机器人需手动刷新问题，并改为自动刷新",
-      "since": "2026-03-10 11:42",
+      "task": "统一 AI Team 任务队列文案为中文，移除默认英文任务与状态",
+      "since": "2026-03-10 11:46",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,

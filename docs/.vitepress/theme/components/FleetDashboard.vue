@@ -11,10 +11,10 @@ const data = ref({
   queued: 0,
   members: [],
   missions: [
-    { id: "TX-01", title: "Neural Feedback Loop Integration", status: "WORKING", owner: "Codex-Prime" },
-    { id: "TX-02", title: "Aesthetic Protocol Audit v5.0", status: "WORKING", owner: "Gemini-1" },
-    { id: "TX-03", title: "Cortex Memory Optimization", status: "PENDING", owner: "UNASSIGNED" },
-    { id: "TX-04", title: "Cross-Agent Sync persistence", status: "WORKING", owner: "Claude-Code" }
+    { id: "任务-01", title: "外脑反馈链路校准", status: "执行中", owner: "Codex-主机" },
+    { id: "任务-02", title: "审美协议巡检", status: "执行中", owner: "Gemini-执行节点" },
+    { id: "任务-03", title: "记忆索引压缩优化", status: "待处理", owner: "待分配" },
+    { id: "任务-04", title: "跨 Agent 同步持久化", status: "执行中", owner: "Claude-战略节点" }
   ]
 });
 
@@ -32,6 +32,13 @@ function getAgentLogo(name) {
   if (lower.includes('claude')) return agentLogos.claude;
   if (lower.includes('codex')) return agentLogos.codex;
   return agentLogos.default;
+}
+
+function missionStatusClass(status) {
+  const text = String(status || "").trim();
+  if (text === "执行中") return "working";
+  if (text === "待处理") return "pending";
+  return "unknown";
 }
 
 const currentMembers = computed(() =>
@@ -131,6 +138,7 @@ async function makeCaptain(member) {
       <div class="blob b2"></div>
       <div class="blob b3"></div>
     </div>
+    <div class="aether-pattern"></div>
 
     <!-- 2. 沉浸式 HUD -->
     <header class="aether-hud">
@@ -160,7 +168,7 @@ async function makeCaptain(member) {
               <div class="card-edge"></div>
               <div class="m-top">
                 <span class="m-id">{{ task.id }}</span>
-                <div class="m-indicator" :class="task.status.toLowerCase()"></div>
+                <div class="m-indicator" :class="missionStatusClass(task.status)"></div>
               </div>
               <p class="m-title">{{ task.title }}</p>
               <div class="m-owner">{{ task.owner }}</div>
@@ -277,7 +285,17 @@ async function makeCaptain(member) {
   inset: 0;
   z-index: 0;
   filter: blur(120px);
+  opacity: 0.8;
+}
+
+.aether-pattern {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
   opacity: 0.6;
+  pointer-events: none;
 }
 
 .blob {
@@ -346,8 +364,9 @@ async function makeCaptain(member) {
 .hud-main {
   font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  color: #fafafa;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .live-status {
@@ -402,16 +421,23 @@ async function makeCaptain(member) {
 }
 
 .mission-glass-card {
-  background: var(--glass-bg);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.5) 100%);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--c-border);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.04);
-  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.6);
+  padding: 24px;
   border-radius: 16px;
   position: relative;
   overflow: hidden;
   animation: slideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   animation-delay: var(--delay);
+  transition: all 0.4s ease;
+}
+
+.mission-glass-card:hover {
+  transform: translateX(4px);
+  border-color: rgba(245, 200, 123, 0.2);
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.1), inset 0 0 30px rgba(245, 200, 123, 0.03), 0 12px 32px rgba(0, 0, 0, 0.8);
 }
 
 .mission-glass-card::before {
@@ -448,6 +474,10 @@ async function makeCaptain(member) {
   box-shadow: 0 0 8px rgba(245, 200, 123, 0.5);
 }
 
+.m-indicator.pending {
+  background: rgba(255, 255, 255, 0.35);
+}
+
 .m-title {
   font-size: 14px;
   font-weight: 600;
@@ -475,10 +505,10 @@ async function makeCaptain(member) {
 
 .agent-glass-node {
   position: relative;
-  background: rgba(255, 255, 255, 0.015);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.6) 100%);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.1), 0 12px 40px rgba(0, 0, 0, 0.5);
   border-radius: 24px;
   padding: 32px;
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -488,10 +518,10 @@ async function makeCaptain(member) {
 }
 
 .agent-glass-node:hover {
-  transform: translateY(-8px) scale(1.02);
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(245, 200, 123, 0.15);
+  transform: translateY(-6px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.7) 100%);
+  border-color: rgba(245, 200, 123, 0.3);
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.15), inset 0 0 40px rgba(245, 200, 123, 0.06), 0 20px 50px -12px rgba(0, 0, 0, 0.8);
 }
 
 /* 玻璃噪声与反光 */
@@ -581,13 +611,23 @@ async function makeCaptain(member) {
 }
 
 .agent-logo-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(245, 200, 123, 0.4);
+  border-radius: 16px;
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+  color: #666;
   transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.agent-logo-wrapper svg {
+  width: 28px;
+  height: 28px;
 }
 
 .is-working .agent-logo-wrapper {
@@ -611,11 +651,12 @@ async function makeCaptain(member) {
 }
 
 .agent-name {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
   margin: 0;
-  color: #fff;
+  color: #ffffff;
   letter-spacing: 0.02em;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .agent-sub {
@@ -689,13 +730,35 @@ async function makeCaptain(member) {
 }
 
 .load-fill.active {
-  background: var(--c-aureate-base);
-  box-shadow: 0 0 12px rgba(212, 174, 94, 0.4);
+  background: var(--c-aureate-glow);
+  box-shadow: 0 0 12px rgba(245, 200, 123, 0.5);
+  position: relative;
+}
+
+.load-fill.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  animation: pulse-slide 2s linear infinite;
+}
+
+@keyframes pulse-slide {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .is-captain .load-fill {
   background: var(--c-aureate-glow);
-  box-shadow: 0 0 15px rgba(245, 200, 123, 0.5);
+  box-shadow: 0 0 20px rgba(245, 200, 123, 0.8);
 }
 
 .node-meta {
