@@ -6,11 +6,22 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { ensureFleetPaths } from "./fleet-paths.mjs";
 
+import { execSync } from "child_process";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, "../../");
 const { fleetFile: sourceFile } = ensureFleetPaths(projectRoot);
 const outputFile = path.join(projectRoot, "docs/public/data/ai_team_status.json");
+
+function checkCLI(cmd) {
+  try {
+    execSync(`which ${cmd}`, { stdio: "ignore" });
+    return "online";
+  } catch {
+    return "offline";
+  }
+}
 
 const STALE_HOURS = 4;
 const HOME_DIR = os.homedir();
@@ -187,7 +198,7 @@ export function syncFleetDashboard() {
       workspace: sanitizeWorkspaceForOutput(workspaceRaw),
       type: statusType(row.status),
       progress: finalProgress,
-      isCaptain: row.member.includes("Prime") || row.status.includes("队长锁"),
+      isCaptain: false, // Initial value, determined later
       hasTodo: todoProgress !== null,
       isStale: isStale
     });
@@ -209,16 +220,33 @@ export function syncFleetDashboard() {
       status: "已离线",
       type: "offline",
       progress: 100,
-      isCaptain: true,
+      isCaptain: false, // Initial value
       hasTodo: false,
       isStale: false
     });
   }
 
+  // 👑 唯一机长选举逻辑 (Single Captain Election)
+  // 优先级: 活跃的 Prime 节点 > 第一个处于“队长锁”状态的节点 > 列表第一个活跃节点
+  let captainIndex = rows.findIndex(r => r.member.includes("Prime") && r.type === "active");
+  if (captainIndex === -1) captainIndex = rows.findIndex(r => r.status.includes("队长锁"));
+  if (captainIndex === -1) captainIndex = rows.findIndex(r => r.type === "active");
+  if (captainIndex === -1 && rows.length > 0) captainIndex = 0; // Fallback to first ever node if all else fails
+
+  if (captainIndex !== -1) {
+    rows[captainIndex].isCaptain = true;
+  }
+
   const payload = {
     generatedAt: new Date().toISOString(),
-    version: "v5.5.0 (智能体常驻 + 引擎可视化 + 阶级标定)",
+    version: "v5.6.0 (工具链路监控 + 智能体常驻 + 阶级标定)",
     source: ".memory/fleet/fleet_status.md",
+    environment: {
+      codex: checkCLI("codex"),
+      gemini: checkCLI("gemini"),
+      claude: checkCLI("claude-code"),
+      openclaw: checkCLI("openclaw"),
+    },
     total: rows.length,
     active: rows.filter((r) => r.type === "active").length,
     offline: rows.filter((r) => r.type === "offline").length,

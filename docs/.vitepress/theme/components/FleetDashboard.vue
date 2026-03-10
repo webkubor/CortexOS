@@ -148,15 +148,22 @@ async function removeMember(member) {
 
 async function makeCaptain(member) {
   // Optimistic UI Update
-  data.value.members.forEach(m => m.isCaptain = false);
-  member.isCaptain = true;
+  data.value.members.forEach(m => {
+    if (m.member === member.member) {
+      m.isCaptain = true;
+    } else {
+      m.isCaptain = false;
+    }
+  });
+
   try {
     await fetch("/api/fleet/action", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "make-captain", memberId: member.member })
     });
-    // Optional: reloadData();
+    // Trigger immediate refresh to sync with server state
+    await loadData();
   } catch (e) {
     console.error("Failed to make captain", e);
   }
@@ -305,6 +312,38 @@ async function makeCaptain(member) {
           </div>
         </main>
       </div>
+
+      <!-- 5. 可视化工具链健康状态栏 (CLI Health Footer) -->
+      <footer class="cli-health-footer">
+        <div class="footer-glass-blur"></div>
+        <div class="footer-container">
+          <div class="health-group">
+            <span class="health-label">核心链路体检:</span>
+            <div class="health-items">
+              <div class="health-item" :class="data.environment?.codex">
+                <span class="h-dot"></span>
+                <span class="h-name">CODEX</span>
+              </div>
+              <div class="health-item" :class="data.environment?.gemini">
+                <span class="h-dot"></span>
+                <span class="h-name">GEMINI</span>
+              </div>
+              <div class="health-item" :class="data.environment?.claude">
+                <span class="h-dot"></span>
+                <span class="h-name">CLAUDE</span>
+              </div>
+              <div class="health-item" :class="data.environment?.openclaw">
+                <span class="h-dot"></span>
+                <span class="h-name">OPENCLAW</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer-meta">
+            <span class="sync-info">同步周期: {{ REFRESH_INTERVAL / 1000 }}s</span>
+            <span class="version-tag">{{ data.version || 'V5.6.0' }}</span>
+          </div>
+        </div>
+      </footer>
     </template>
 
     <!-- 加载动画 -->
@@ -1142,6 +1181,132 @@ async function makeCaptain(member) {
 
   .mission-flow {
     width: 100%;
+  }
+}
+
+/* 🧪 CLI Health Footer Styles */
+.cli-health-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(139, 115, 71, 0.2);
+  background: rgba(9, 10, 14, 0.85);
+  backdrop-filter: blur(20px);
+}
+
+.footer-container {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.health-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.health-label {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 0.1em;
+}
+
+.health-items {
+  display: flex;
+  gap: 16px;
+}
+
+.health-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.health-item .h-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.health-item .h-name {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #555;
+}
+
+/* 🟢 Online State */
+.health-item.online {
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.health-item.online .h-dot {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+  animation: h-pulse 2s infinite;
+}
+
+.health-item.online .h-name {
+  color: #22c55e;
+}
+
+/* 🔴 Offline State */
+.health-item.offline {
+  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.health-item.offline .h-dot {
+  background: #ef4444;
+}
+
+.health-item.offline .h-name {
+  color: #ef4444;
+}
+
+.footer-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 10px;
+  color: #444;
+  font-family: ui-monospace;
+}
+
+.version-tag {
+  color: var(--c-aureate-dim);
+  background: rgba(139, 115, 71, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+@keyframes h-pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 </style>

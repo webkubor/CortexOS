@@ -1,7 +1,13 @@
 {
-  "generatedAt": "2026-03-10T08:25:00.441Z",
-  "version": "v5.5.0 (智能体常驻 + 引擎可视化 + 阶级标定)",
+  "generatedAt": "2026-03-10T08:30:00.476Z",
+  "version": "v5.6.0 (工具链路监控 + 智能体常驻 + 阶级标定)",
   "source": ".memory/fleet/fleet_status.md",
+  "environment": {
+    "codex": "online",
+    "gemini": "online",
+    "claude": "offline",
+    "openclaw": "online"
+  },
   "total": 3,
   "active": 2,
   "offline": 1,
@@ -14,9 +20,9 @@
       "workspace": "~/Documents/CortexOS",
       "task": "精简前端项目技术基线表达并补充剪贴板依赖约定",
       "since": "2026-03-10 16:14",
-      "status": "[ 执行中 ] 活跃",
+      "status": "👑 [ 队长锁 ] 活跃",
       "type": "active",
-      "progress": 55,
+      "progress": 60,
       "isCaptain": false,
       "hasTodo": false,
       "isStale": false
@@ -45,7 +51,7 @@
       "status": "已离线",
       "type": "offline",
       "progress": 100,
-      "isCaptain": true,
+      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     }
