@@ -84,7 +84,19 @@ pnpm add -D sass vue-tsc @vitejs/plugin-vue typescript eslint eslint-plugin-vue 
 - 通过 `vite.config.ts` 的 `additionalData` 全局注入 tokens
 - 组件内只写 scoped SCSS，不重复 import tokens
 
-## 7. AI 协作文档基线
+## 7. Vue 单文件组件顺序
+
+统一顺序如下：
+
+1. `<template>`
+2. `<script setup lang="ts">`
+3. `<style scoped lang="scss">`
+
+说明：
+- 先看结构，再看逻辑，最后看样式，阅读成本最低
+- 模板仓库内所有 `.vue` 示例都必须遵守这个顺序
+
+## 8. AI 协作文档基线
 
 每个项目必须包含：
 - `.agent/PROJECT.md`：项目总览
@@ -93,7 +105,7 @@ pnpm add -D sass vue-tsc @vitejs/plugin-vue typescript eslint eslint-plugin-vue 
 - `.agent/plans/`：任务计划
 - `.agent/reviews/`：任务复盘
 
-## 8. 验收清单
+## 9. 验收清单
 
 - `pnpm install` 成功
 - `pnpm dev` 可启动
@@ -103,6 +115,6 @@ pnpm add -D sass vue-tsc @vitejs/plugin-vue typescript eslint eslint-plugin-vue 
 - 网络请求全部经 `src/lib/http/client.ts`
 - `.agent/` 目录完整
 
-## 9. 模板入口
+## 10. 模板入口
 
 现成模板目录：`templates/vue3-vite-ts-scss/`（仓库根目录）

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T07:05:41.186Z",
+  "generatedAt": "2026-03-10T07:49:31.783Z",
   "version": "v5.5.0 (智能体常驻 + 引擎可视化 + 阶级标定)",
   "source": ".memory/fleet/fleet_status.md",
   "total": 4,
@@ -12,8 +12,8 @@
       "agent": "Codex",
       "role": "前端",
       "workspace": "~/Documents/CortexOS",
-      "task": "建立 AI 开发项目统一基线模板：Vue 3 + Vite + TypeScript + SCSS",
-      "since": "2026-03-10 15:05",
+      "task": "将前端 AI 项目统一基线写入用户外部记忆库 dev/开发规范",
+      "since": "2026-03-10 15:49",
       "status": "[ 执行中 ] 活跃",
       "type": "active",
       "progress": 55,

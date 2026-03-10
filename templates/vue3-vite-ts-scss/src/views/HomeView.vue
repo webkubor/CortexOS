@@ -1,23 +1,3 @@
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useAppStore } from '@/stores/app'
-import { http } from '@/lib/http/client'
-
-const appStore = useAppStore()
-const { projectName, statusText } = storeToRefs(appStore)
-const serverHint = ref('未探测')
-
-onMounted(async () => {
-  try {
-    await http.get('health').json()
-    serverHint.value = '后端连通'
-  } catch {
-    serverHint.value = '未配置后端，当前为纯前端模板'
-  }
-})
-</script>
-
 <template>
   <main class="home-page">
     <section class="hero-card">
@@ -40,6 +20,26 @@ onMounted(async () => {
     </section>
   </main>
 </template>
+
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAppStore } from '@/stores/app'
+import { http } from '@/lib/http/client'
+
+const appStore = useAppStore()
+const { projectName, statusText } = storeToRefs(appStore)
+const serverHint = ref('未探测')
+
+onMounted(async () => {
+  try {
+    await http.get('health').json()
+    serverHint.value = '后端连通'
+  } catch {
+    serverHint.value = '未配置后端，当前为纯前端模板'
+  }
+})
+</script>
 
 <style scoped lang="scss">
 .home-page {
