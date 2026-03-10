@@ -177,7 +177,10 @@ async function makeCaptain(member) {
               <div class="card-edge"></div>
               <div class="m-top">
                 <span class="m-id">{{ task.id }}</span>
-                <div class="m-indicator" :class="missionStatusClass(task.status)"></div>
+                <div class="m-status-badge" :class="missionStatusClass(task.status)">
+                  <span class="status-dot"></span>
+                  {{ task.status }}
+                </div>
               </div>
               <p class="m-title">{{ task.title }}</p>
               <div class="m-owner">{{ task.owner }}</div>
@@ -469,36 +472,57 @@ async function makeCaptain(member) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .m-id {
-  font-size: 10px;
-  font-weight: 900;
-  color: #444;
+  font-size: 13px;
+  font-weight: 800;
+  color: #666;
+  letter-spacing: 0.1em;
 }
 
-.m-indicator {
-  width: 8px;
-  height: 2px;
-  background: #333;
+.m-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #aaa;
+  letter-spacing: 0.05em;
 }
 
-.m-indicator.working {
-  background: var(--c-aureate-glow);
-  box-shadow: 0 0 8px rgba(245, 200, 123, 0.5);
+.m-status-badge.working {
+  background: rgba(245, 200, 123, 0.1);
+  border-color: rgba(245, 200, 123, 0.3);
+  color: var(--c-aureate-base);
 }
 
-.m-indicator.pending {
-  background: rgba(255, 255, 255, 0.35);
+.m-status-badge.pending {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ddd;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
 }
 
 .m-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: #eee;
-  margin: 0 0 12px 0;
-  line-height: 1.4;
+  color: #fff;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 .m-owner {
