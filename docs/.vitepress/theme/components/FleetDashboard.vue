@@ -3,6 +3,9 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 const loading = ref(true);
 const error = ref("");
+const currentTime = ref(new Date());
+let timeInterval = null;
+
 const data = ref({
   generatedAt: "",
   total: 0,
@@ -86,10 +89,15 @@ onMounted(() => {
   startAutoRefresh();
   window.addEventListener("focus", handleVisibilityRefresh);
   document.addEventListener("visibilitychange", handleVisibilityRefresh);
+
+  timeInterval = setInterval(() => {
+    currentTime.value = new Date();
+  }, 1000);
 });
 
 onBeforeUnmount(() => {
   if (refreshTimer) clearInterval(refreshTimer);
+  if (timeInterval) clearInterval(timeInterval);
   window.removeEventListener("focus", handleVisibilityRefresh);
   document.removeEventListener("visibilitychange", handleVisibilityRefresh);
 });
@@ -152,8 +160,11 @@ async function makeCaptain(member) {
     <!-- 2. 沉浸式 HUD -->
     <header class="aether-hud">
       <div class="hud-group">
-        <div class="hud-tag">星际舰队中枢</div>
-        <div class="hud-main">神经矩阵 V5</div>
+        <div class="hud-main-title">
+          星际舰队中枢
+          <span class="hud-divider">//</span>
+          <span class="hud-version-badge">V5</span>
+        </div>
       </div>
       <div class="hud-center">
         <div class="live-status">
@@ -162,7 +173,13 @@ async function makeCaptain(member) {
         </div>
       </div>
       <div class="hud-right">
-        <span class="hud-time">{{ new Date().toLocaleTimeString() }}</span>
+        <div class="quantum-clock">
+          <span class="q-time q-hour">{{ currentTime.getHours().toString().padStart(2, '0') }}</span>
+          <span class="q-colon">:</span>
+          <span class="q-time q-minute">{{ currentTime.getMinutes().toString().padStart(2, '0') }}</span>
+          <span class="q-colon">:</span>
+          <span class="q-time q-second">{{ currentTime.getSeconds().toString().padStart(2, '0') }}</span>
+        </div>
       </div>
     </header>
 
@@ -365,20 +382,40 @@ async function makeCaptain(member) {
   z-index: 100;
 }
 
-.hud-tag {
-  font-size: 10px;
-  color: #888;
-  letter-spacing: 0.1em;
-  font-weight: 500;
-  margin-bottom: 4px;
+.hud-group {
+  display: flex;
+  align-items: center;
 }
 
-.hud-main {
+.hud-main-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.hud-divider {
+  color: var(--c-aureate-dim);
+  font-family: ui-monospace, sans-serif;
   font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: #ffffff;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  opacity: 0.5;
+}
+
+.hud-version-badge {
+  background: linear-gradient(135deg, rgba(212, 174, 94, 0.2), rgba(212, 174, 94, 0.05));
+  border: 1px solid var(--c-aureate-glow);
+  box-shadow: inset 0 0 10px rgba(245, 200, 123, 0.2), 0 0 15px rgba(245, 200, 123, 0.15);
+  color: var(--c-aureate-glow);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  font-family: ui-monospace, sans-serif;
 }
 
 .live-status {
@@ -389,6 +426,51 @@ async function makeCaptain(member) {
   background: rgba(255, 255, 255, 0.02);
   border-radius: 100px;
   border: 1px solid var(--c-border);
+}
+
+/* ⏱ Quantum Clock */
+.quantum-clock {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(139, 115, 71, 0.4);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.4);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.q-time {
+  color: #fafafa;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.q-second {
+  color: var(--c-aureate-base);
+  text-shadow: 0 0 10px rgba(212, 174, 94, 0.4);
+}
+
+.q-colon {
+  color: var(--c-aureate-dim);
+  animation: blink 1s step-end infinite;
+  margin: 0 2px;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .live-scanner {
@@ -405,6 +487,51 @@ async function makeCaptain(member) {
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--c-aureate-base);
+}
+
+/* ⏱ Quantum Clock */
+.quantum-clock {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(139, 115, 71, 0.4);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.4);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.q-time {
+  color: #fafafa;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.q-second {
+  color: var(--c-aureate-base);
+  text-shadow: 0 0 10px rgba(212, 174, 94, 0.4);
+}
+
+.q-colon {
+  color: var(--c-aureate-dim);
+  animation: blink 1s step-end infinite;
+  margin: 0 2px;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* 🎭 布局层 */
