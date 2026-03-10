@@ -11,6 +11,7 @@ function expandHomePath (input, homeDir) {
 
 function resolveAssistantMemoryHome (projectRoot) {
   const homeDir = process.env.HOME || os.homedir()
+  // 允许通过环境变量把运行态记忆迁出仓库，默认仍落在项目 `.memory/`。
   const assistantMemoryRaw = process.env.CORTEXOS_ASSISTANT_MEMORY_HOME || path.join(projectRoot, '.memory')
   return path.resolve(expandHomePath(assistantMemoryRaw, homeDir))
 }
@@ -30,6 +31,7 @@ function writeDefaultFleetFile (fleetFile) {
 }
 
 function copyIfMissing (targetFile, legacyFile) {
+  // 老路径只做一次性迁移兜底，后续统一以新路径为准。
   if (fs.existsSync(targetFile) || !fs.existsSync(legacyFile)) return
   fs.copyFileSync(legacyFile, targetFile)
 }

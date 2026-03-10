@@ -98,6 +98,7 @@ function main() {
 
   let projectRegistry = null;
   try {
+    // checkin 也会刷新项目索引，这样“继续干同一个项目”不会丢上下文。
     projectRegistry = syncProjectRegistry({
       workspace: args.workspace,
       agent: args.agent,
@@ -105,7 +106,9 @@ function main() {
       task: args.task,
       nodeId: args.nodeId,
     });
-  } catch {}
+  } catch {
+    // 心跳本身不能因为项目索引异常而失败，这里保持静默兜底。
+  }
 
   console.log(
     JSON.stringify(

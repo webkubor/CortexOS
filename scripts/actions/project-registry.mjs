@@ -59,6 +59,7 @@ function readJsonSafe (file, fallback) {
 }
 
 function resolveProjectRoot (workspace) {
+  // 优先按 Git 根目录归档，避免同一项目在子目录重复登记多次。
   try {
     const root = execFileSync('git', ['-C', workspace, 'rev-parse', '--show-toplevel'], {
       encoding: 'utf8',
@@ -77,6 +78,7 @@ function detectProjectName (rootPath) {
       const parsed = JSON.parse(fs.readFileSync(packageJson, 'utf8'))
       if (parsed.name) {
         const packageName = sanitizeText(parsed.name)
+        // 包名和目录名仅大小写不同的场景，保留目录名可读性更好。
         if (packageName.toLowerCase() === dirName.toLowerCase()) return dirName
         return packageName
       }
@@ -105,6 +107,7 @@ function parseLegacyIndex () {
   const results = []
 
   for (let i = 0; i < lines.length; i++) {
+    // 兼容旧版手写索引，首次切换到 registry.json 时自动导入。
     const headerMatch = lines[i].match(/^- `([^`]+)`（([^）]+)）$/)
     if (!headerMatch) continue
     const name = sanitizeText(headerMatch[1])
@@ -164,6 +167,7 @@ function upsertProject (registry, payload) {
   const existing = registry.projects.find(item => item.rootPath === rootPath)
   const updatedAt = nowIso()
 
+  // 先构建统一对象，再决定是更新已有条目还是插入新条目。
   const base = existing || {
     slug,
     name,
@@ -209,6 +213,7 @@ function upsertProject (registry, payload) {
 function renderIndex (registry) {
   const rows = registry.projects
     .slice()
+    // 首页优先看最近活跃项目，排序按最后触达时间倒序。
     .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')))
     .map(project => {
       const commandLink = `../plans/projects/${project.commandCenter}`
@@ -330,6 +335,7 @@ function ensureCommandCenter (project) {
   }
 
   const text = fs.readFileSync(filePath, 'utf8')
+  // 只覆盖自动区块，保留人工补充的背景、阻塞和判断。
   if (text.includes('<!-- AUTO:START -->') && text.includes('<!-- AUTO:END -->')) {
     const next = text.replace(/<!-- AUTO:START -->[\s\S]*?<!-- AUTO:END -->/, autoBlock)
     fs.writeFileSync(filePath, next, 'utf8')
@@ -349,6 +355,7 @@ export function syncProjectRegistry (payload) {
   registry.generatedAt = nowIso()
   const commandCenterFile = path.join(plansDir, project.commandCenter)
   if (!dryRun) {
+    // 每次同步都顺手兜底全部 command center，防止历史项目缺文件。
     registry.projects.forEach(item => ensureCommandCenter(item))
     fs.writeFileSync(registryFile, `${JSON.stringify(registry, null, 2)}\n`, 'utf8')
     fs.writeFileSync(indexFile, `${renderIndex(registry)}\n`, 'utf8')

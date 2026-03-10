@@ -99,6 +99,7 @@ function stripMarkdown(value) {
 function parseTableRow(line) {
   const parts = line.split('|').slice(1, -1).map(s => s.trim());
   if (parts.length < 5) return null;
+  // 兼容历史表格列宽变化，避免旧编排板升级时直接失效。
   if (parts.length >= 7) {
     return {
       raw: line,
@@ -226,6 +227,7 @@ function main() {
   if (args.forceSwitch) {
     warnings.push('参数 --force-switch 当前为兼容保留项；同路径多模型默认允许并行登记。');
   }
+  // 同路径不再硬拦截，但明确回显冲突告警，避免多 Agent 静默踩文件。
   if (parallelRows.length > 0) {
     const agents = parallelRows.map(row => row.agent || extractAgentFromNode(row.node)).join(', ');
     const nodes = parallelRows.map(row => stripMarkdown(row.node)).join(' | ');
@@ -237,6 +239,7 @@ function main() {
 
   let number;
   if (sameWorkspaceSameAgentRow) {
+    // 同一个 Agent 回到原路径时复用机位号，保证看板身份稳定。
     const nodeText = stripMarkdown(sameWorkspaceSameAgentRow.node);
     const match = nodeText.match(/\b(\d+)\b/);
     if (match) {
@@ -287,6 +290,7 @@ function main() {
 
   let projectRegistry = null;
   try {
+    // 项目索引同步失败不应阻断入队，但要通过 warnings 暴露出来。
     projectRegistry = syncProjectRegistry({
       workspace: args.workspace,
       agent: args.agent,

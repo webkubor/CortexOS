@@ -19,6 +19,7 @@ function safeReadJSON(file) {
 }
 
 export function fleetMetaKey(agent, workspace) {
+  // 同一个 Agent 在不同工作目录应视为不同上下文，key 需要带 workspace。
   return `${String(agent || "").trim()}::${String(workspace || "").trim()}`;
 }
 
@@ -49,6 +50,7 @@ export function touchFleetMeta({ agent, workspace, role, task, status, heartbeat
   const now = heartbeatAt;
   const existing = meta.entries[key] || {};
 
+  // 这里保留首次登录时间，只滚动刷新心跳、任务和状态。
   const next = {
     firstLoginAt: existing.firstLoginAt || now,
     lastHeartbeatAt: now,
@@ -61,6 +63,7 @@ export function touchFleetMeta({ agent, workspace, role, task, status, heartbeat
   };
 
   if (isCompletedTask(task, status)) {
+    // 已完成任务单独留一份快照，方便 dashboard 和后续 handoff 展示。
     next.lastCompletedTask = {
       task: task || existing.lastTask || "已完成任务",
       at: now,
