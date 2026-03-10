@@ -98,6 +98,15 @@ function isWorking(member) {
   return member.type === "active" && member.progress > 0 && member.progress < 100;
 }
 
+function getStatusText(status) {
+  const map = {
+    'WORKING': '执行中',
+    'PENDING': '待处理',
+    'DONE': '已完成'
+  };
+  return map[status?.toUpperCase()] || status;
+}
+
 async function removeMember(member) {
   // Optimistic UI Update
   data.value.members = data.value.members.filter(m => m.member !== member.member);
@@ -418,6 +427,12 @@ async function makeCaptain(member) {
   color: #888;
   letter-spacing: 0.1em;
   padding-left: 8px;
+}
+
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .mission-glass-card {
