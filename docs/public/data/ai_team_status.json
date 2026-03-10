@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T13:00:00.413Z",
+  "generatedAt": "2026-03-10T14:35:00.421Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -24,25 +24,11 @@
     "nodeVersion": "v22.19.0",
     "skillsCount": 17
   },
-  "total": 2,
-  "active": 1,
+  "total": 1,
+  "active": 0,
   "offline": 1,
   "queued": 0,
   "members": [
-    {
-      "member": "Candy-1 (Codex)",
-      "agent": "Codex",
-      "role": "前端",
-      "workspace": "~/Desktop/create/cinematic-storyboard-pro",
-      "task": "整理并创作项目序幕内容，检查 episodes 结构与 ep00 状态，补成正式可用稿。",
-      "since": "2026-03-10 20:32",
-      "status": "[ 队长锁 ] 活跃",
-      "type": "active",
-      "progress": 60,
-      "isCaptain": true,
-      "hasTodo": false,
-      "isStale": false
-    },
     {
       "member": "栖月-Prime",
       "agent": "Lobster",
@@ -53,7 +39,7 @@
       "status": "已离线",
       "type": "offline",
       "progress": 100,
-      "isCaptain": false,
+      "isCaptain": true,
       "hasTodo": false,
       "isStale": false
     }
