@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { touchFleetMeta } from './fleet-meta.mjs';
 import { ensureFleetPaths } from './fleet-paths.mjs';
+import { syncProjectRegistry } from './project-registry.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -284,6 +285,20 @@ function main() {
     });
   }
 
+  let projectRegistry = null;
+  try {
+    projectRegistry = syncProjectRegistry({
+      workspace: args.workspace,
+      agent: args.agent,
+      role: args.role,
+      task: args.task,
+      nodeId: stripMarkdown(nodeId),
+      dryRun: args.dryRun
+    });
+  } catch (error) {
+    warnings.push(`项目索引同步失败: ${sanitizeCell(error?.message || error)}`);
+  }
+
   console.log(JSON.stringify({
     ok: true,
     file: fleetFile,
@@ -294,6 +309,12 @@ function main() {
     workspace: args.workspace,
     task: args.task,
     warnings,
+    projectRegistry: projectRegistry ? {
+      name: projectRegistry.project.name,
+      rootPath: projectRegistry.project.rootPath,
+      lastWorkspace: projectRegistry.project.lastWorkspace,
+      commandCenterFile: projectRegistry.commandCenterFile
+    } : null,
     dryRun: args.dryRun
   }, null, 2));
 }

@@ -2,6 +2,7 @@
 
 import path from "path";
 import { touchFleetMeta } from "./fleet-meta.mjs";
+import { syncProjectRegistry } from "./project-registry.mjs";
 
 function sanitize(value) {
   return String(value ?? "").replace(/\|/g, "｜").trim();
@@ -95,6 +96,17 @@ function main() {
     nodeId: args.nodeId,
   });
 
+  let projectRegistry = null;
+  try {
+    projectRegistry = syncProjectRegistry({
+      workspace: args.workspace,
+      agent: args.agent,
+      role: args.role,
+      task: args.task,
+      nodeId: args.nodeId,
+    });
+  } catch {}
+
   console.log(
     JSON.stringify(
       {
@@ -106,6 +118,13 @@ function main() {
         heartbeatAt: args.heartbeatAt,
         firstLoginAt: saved.firstLoginAt,
         lastCompletedTask: saved.lastCompletedTask || null,
+        projectRegistry: projectRegistry
+          ? {
+              name: projectRegistry.project.name,
+              rootPath: projectRegistry.project.rootPath,
+              commandCenterFile: projectRegistry.commandCenterFile,
+            }
+          : null,
       },
       null,
       2

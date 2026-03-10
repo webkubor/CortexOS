@@ -50,6 +50,7 @@ $CODEX_HOME/.memory/
 | 发现稳定可复用的提示策略 | `.memory/persona/prompt_strategy.md` | 只写可复用规则，不写项目私密 |
 | 出现可复现失败并找到解法 | `.memory/persona/retry_patterns.md` | 记录“症状-原因-重试步骤” |
 | 用户偏好发生变化 | `.memory/identity/owner_profile.md` | 仅维护偏好，不写隐私密钥 |
+| AI Team 进入某个项目路径执行任务 | `.memory/projects/index.md` + `.memory/plans/projects/*-command-center.md` | 自动登记或刷新项目入口 |
 
 ## 5. 防污染规则
 

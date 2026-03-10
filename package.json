@@ -22,6 +22,7 @@
     "fleet:cleanup": "node scripts/actions/fleet-cleanup.mjs",
     "fleet:post-task": "node scripts/actions/fleet-post-task.mjs",
     "fleet:checkin": "node scripts/actions/fleet-checkin.mjs",
+    "projects:sync": "node scripts/actions/project-registry.mjs",
     "fleet:sync-dashboard": "node scripts/actions/sync-fleet-dashboard.mjs",
     "feishu:bot": "node scripts/services/feishu-bot-bridge.mjs",
     "skills:sync": "node scripts/tools/sync-skills-management.mjs",
