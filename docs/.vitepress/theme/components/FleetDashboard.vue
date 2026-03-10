@@ -104,13 +104,13 @@ async function makeCaptain(member) {
     <!-- 2. 沉浸式 HUD -->
     <header class="aether-hud">
       <div class="hud-group">
-        <div class="hud-tag">PROJECT_CORTEX</div>
-        <div class="hud-main">NEURAL_ARRAY_V5</div>
+        <div class="hud-tag">星际舰队中枢</div>
+        <div class="hud-main">神经矩阵 V5</div>
       </div>
       <div class="hud-center">
         <div class="live-status">
           <div class="live-scanner"></div>
-          <span class="live-text">MONITORING_ACTIVE</span>
+          <span class="live-text">监控运行中</span>
         </div>
       </div>
       <div class="hud-right">
@@ -122,7 +122,7 @@ async function makeCaptain(member) {
       <div class="aether-stage">
         <!-- 3. 作战清单 (Mission Flow) -->
         <aside class="mission-flow">
-          <div class="flow-header">MISSION_BACKLOG</div>
+          <div class="flow-header">任务队列</div>
           <div class="flow-container">
             <div v-for="(task, idx) in data.missions" :key="task.id" class="mission-glass-card"
               :style="{ '--delay': idx * 0.1 + 's' }">
@@ -178,13 +178,13 @@ async function makeCaptain(member) {
                 </div>
 
                 <div class="task-reveal-box">
-                  <p class="task-text">{{ member.task || "STATIONARY_STATE" }}</p>
+                  <p class="task-text">{{ member.task || "待命状态" }}</p>
                 </div>
 
                 <div class="node-footer">
                   <div class="load-bar-wrapper">
                     <div class="load-labels">
-                      <span>NEURAL_LOAD</span>
+                      <span>指令负载</span>
                       <span>{{ member.progress }}%</span>
                     </div>
                     <div class="load-track">
@@ -200,7 +200,7 @@ async function makeCaptain(member) {
               </div>
 
               <!-- 队长金质描边 -->
-              <div class="captain-crown" v-if="member.isCaptain">PRIME_DIRECTIVE</div>
+              <div class="captain-crown" v-if="member.isCaptain">最高指令</div>
             </div>
           </div>
         </main>
@@ -210,7 +210,7 @@ async function makeCaptain(member) {
     <!-- 加载动画 -->
     <div v-if="loading" class="aether-loading">
       <div class="aether-spinner"></div>
-      <div class="aether-text">INITIATING_AUREATE_LINK...</div>
+      <div class="aether-text">系统底层金丝直连初始化...</div>
     </div>
   </div>
 </template>
@@ -234,7 +234,7 @@ async function makeCaptain(member) {
   background: #090A0E;
   /* 极深的灰蓝/黑曜石 */
   color: #fff;
-  font-family: "Geist", "Inter", sans-serif;
+  font-family: "Geist", "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -305,16 +305,18 @@ async function makeCaptain(member) {
 }
 
 .hud-tag {
-  font-size: 9px;
-  color: #666;
-  letter-spacing: 0.3em;
+  font-size: 10px;
+  color: #888;
+  letter-spacing: 0.1em;
+  font-weight: 500;
   margin-bottom: 4px;
 }
 
 .hud-main {
   font-size: 16px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #fafafa;
 }
 
 .live-status {
@@ -337,8 +339,9 @@ async function makeCaptain(member) {
 }
 
 .live-text {
-  font-size: 10px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   color: var(--c-aureate-base);
 }
 
@@ -360,10 +363,10 @@ async function makeCaptain(member) {
 }
 
 .flow-header {
-  font-size: 11px;
-  font-weight: 900;
-  color: #666;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 0.1em;
   padding-left: 8px;
 }
 
@@ -371,6 +374,7 @@ async function makeCaptain(member) {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--c-border);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.04);
   padding: 20px;
   border-radius: 16px;
   position: relative;
@@ -442,7 +446,8 @@ async function makeCaptain(member) {
   position: relative;
   background: rgba(255, 255, 255, 0.015);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--c-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.4);
   border-radius: 24px;
   padding: 32px;
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -575,10 +580,11 @@ async function makeCaptain(member) {
 }
 
 .agent-name {
-  font-size: 22px;
-  font-weight: 900;
+  font-size: 20px;
+  font-weight: 600;
   margin: 0;
-  letter-spacing: -0.03em;
+  color: #fff;
+  letter-spacing: 0.02em;
 }
 
 .agent-sub {
@@ -599,8 +605,9 @@ async function makeCaptain(member) {
 }
 
 .task-reveal-box {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5);
   padding: 20px;
   border-radius: 16px;
   margin-bottom: 32px;
@@ -608,11 +615,12 @@ async function makeCaptain(member) {
 }
 
 .task-text {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
-  color: #ccc;
+  color: #b0b0b0;
   margin: 0;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .node-footer {
@@ -630,9 +638,10 @@ async function makeCaptain(member) {
 .load-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
-  font-weight: 900;
-  color: #555;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 0.05em;
 }
 
 .load-track {
@@ -672,10 +681,10 @@ async function makeCaptain(member) {
   right: 0;
   background: linear-gradient(135deg, var(--c-aureate-glow), var(--c-aureate-dim));
   color: #000;
-  padding: 4px 16px;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.15em;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   border-bottom-left-radius: 16px;
   box-shadow: 0 4px 12px rgba(245, 200, 123, 0.2);
 }
@@ -700,9 +709,10 @@ async function makeCaptain(member) {
 }
 
 .aether-text {
-  font-size: 11px;
-  letter-spacing: 0.4em;
-  color: #444;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  font-weight: 400;
+  color: #888;
 }
 
 /* 动画库 */
