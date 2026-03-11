@@ -155,7 +155,6 @@ function canCompleteMemberTask(task) {
           </div>
         </div>
         <div class="header-actions">
-          <div class="working-spinner" v-if="isWorking(member)"></div>
           <div class="action-menu">
             <button class="action-btn add-task" @click="emit('add-task', member)" title="给该成员新增任务">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -434,14 +433,14 @@ function canCompleteMemberTask(task) {
 }
 
 .role-badge {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 999px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   white-space: nowrap;
 }
 
@@ -532,19 +531,6 @@ function canCompleteMemberTask(task) {
   line-height: 1;
 }
 
-.working-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.05);
-  border-top-color: var(--c-aureate-glow, #f8d79a);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 .task-reveal-box {
   background: rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(255, 255, 255, 0.035);
@@ -555,9 +541,9 @@ function canCompleteMemberTask(task) {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 0 0 232px;
-  height: 232px;
-  min-height: 232px;
+  flex: 0 0 208px;
+  height: 208px;
+  min-height: 208px;
 }
 
 .task-history-head {
