@@ -46,10 +46,10 @@ body.team-dashboard-page {
   <TeamCommandDeck />
   <FleetDashboard />
   
-  <!-- 返回文档的极简悬浮按钮 -->
+  <!-- 返回文档的悬浮入口，避免压住中枢头部 HUD -->
   <a href="/CortexOS/" class="back-to-docs">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    BACK_TO_HQ
+    返回文档
   </a>
 </div>
 
@@ -64,28 +64,47 @@ body.team-dashboard-page {
 }
 
 .back-to-docs {
-  position: absolute;
-  top: 20px;
-  right: 220px;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.05);
+  position: fixed;
+  left: 28px;
+  bottom: 28px;
+  z-index: 120;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.88));
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 16px;
-  border-radius: 4px;
-  color: #64748b;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: rgba(226, 232, 240, 0.78);
   font-family: var(--vp-font-family-mono);
-  font-size: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.78);
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
 .back-to-docs:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  border-color: rgba(103, 232, 249, 0.28);
+  background:
+    linear-gradient(135deg, rgba(8, 47, 73, 0.96), rgba(15, 23, 42, 0.9));
   color: #fff;
 }
 
-.back-to-docs svg { width: 12px; height: 12px; }
+.back-to-docs svg {
+  width: 13px;
+  height: 13px;
+}
+
+@media (max-width: 960px) {
+  .back-to-docs {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    justify-content: center;
+  }
+}
 </style>

@@ -674,21 +674,27 @@ async function makeCaptain(member) {
 
           <div class="footer-system-stats" v-if="data.environment">
             <div class="stat-item">
-              <span class="stat-label">📦 SKILLS:</span>
+              <span class="stat-icon">📦</span>
+              <span class="stat-label">SKILLS:</span>
               <span class="stat-value">{{ data.environment.skillsCount || 0 }}</span>
             </div>
             <div class="stat-item">
-              <span class="stat-label">🔌 MCP:</span>
+              <span class="stat-icon">🔌</span>
+              <span class="stat-label">MCP:</span>
               <span class="stat-value">{{ data.environment.mcpCount || 0 }}</span>
             </div>
             <div class="stat-item">
-              <span class="stat-label">🚀 NODE:</span>
+              <span class="stat-icon">🚀</span>
+              <span class="stat-label">NODE:</span>
               <span class="stat-value">{{ data.environment.nodeVersion || '--' }}</span>
             </div>
           </div>
 
           <div class="footer-meta">
-            <span class="sync-info">实时通道: SSE · {{ realtimeStatus }}</span>
+            <div class="sync-info">
+              <span class="sync-label">实时通道: SSE ·</span>
+              <span class="sync-status" :class="{ 'is-online': realtimeStatus === '在线' }">{{ realtimeStatus }}</span>
+            </div>
             <span class="version-tag">{{ data.version || 'V5.6.5' }}</span>
           </div>
         </div>
@@ -899,61 +905,93 @@ async function makeCaptain(member) {
 
 /* 🛰 HUD */
 .aether-hud {
-  height: 70px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--c-border);
+  min-height: 88px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.28)),
+    rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(245, 200, 123, 0.08);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.03);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
+  padding: 18px 32px;
+  gap: 24px;
   z-index: 100;
 }
 
-.hud-group {
+.hud-left {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
-.hud-main-title {
+.hud-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: rgba(245, 200, 123, 0.68);
+  text-transform: uppercase;
+}
+
+.hud-title-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  min-width: 0;
 }
 
-.hud-divider {
-  color: var(--c-aureate-dim);
-  font-family: ui-monospace, sans-serif;
-  font-size: 16px;
-  opacity: 0.5;
+.hud-main-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.18);
+}
+
+.hud-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.52);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
 }
 
 .hud-version-badge {
-  background: linear-gradient(135deg, rgba(212, 174, 94, 0.2), rgba(212, 174, 94, 0.05));
-  border: 1px solid var(--c-aureate-glow);
-  box-shadow: inset 0 0 10px rgba(245, 200, 123, 0.2), 0 0 15px rgba(245, 200, 123, 0.15);
+  background: linear-gradient(135deg, rgba(212, 174, 94, 0.16), rgba(212, 174, 94, 0.04));
+  border: 1px solid rgba(245, 200, 123, 0.35);
+  box-shadow: inset 0 0 12px rgba(245, 200, 123, 0.12), 0 0 20px rgba(245, 200, 123, 0.08);
   color: var(--c-aureate-glow);
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 900;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   font-family: ui-monospace, sans-serif;
+  white-space: nowrap;
 }
 
 .live-status {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 100px;
-  border: 1px solid var(--c-border);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.live-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.live-meta {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.08em;
 }
 
 /* ⏱ Quantum Clock */
@@ -1013,8 +1051,26 @@ async function makeCaptain(member) {
 .live-text {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--c-aureate-base);
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-source-pill {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  font-family: ui-monospace, sans-serif;
 }
 
 /* ⏱ Quantum Clock */
@@ -1408,15 +1464,31 @@ async function makeCaptain(member) {
   cursor: pointer;
   z-index: 266;
   position: relative;
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%23F5C87B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
+  padding-right: 42px;
 }
 
 .custom-select-trigger.is-open {
   border-color: rgba(245, 200, 123, 0.5);
   background-color: rgba(15, 18, 24, 0.9);
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5' stroke='%23F5C87B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.custom-select-trigger::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid rgba(245, 200, 123, 0.72);
+  border-bottom: 1.5px solid rgba(245, 200, 123, 0.72);
+  transform: translateY(-60%) rotate(45deg);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  pointer-events: none;
+}
+
+.custom-select-trigger.is-open::after {
+  transform: translateY(-35%) rotate(-135deg);
+  border-color: rgba(245, 200, 123, 0.92);
 }
 
 .custom-options-panel {
@@ -2196,10 +2268,24 @@ async function makeCaptain(member) {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 6px;
   letter-spacing: 0.05em;
+}
+
+.sync-label {
+  color: #888888;
+}
+
+.sync-status {
+  font-weight: 600;
+  color: #888888;
+}
+
+.sync-status.is-online {
+  color: #22c55e;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
 }
 
 .footer-system-stats {
@@ -2218,15 +2304,21 @@ async function makeCaptain(member) {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 6px;
   white-space: nowrap;
 }
 
+.stat-icon {
+  font-size: 13px;
+  opacity: 1; /* Keep emoji colors punchy */
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
 .stat-label {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
+  color: #888888;
   font-weight: 600;
   letter-spacing: 0.05em;
 }
