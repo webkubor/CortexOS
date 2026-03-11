@@ -110,6 +110,92 @@ function buildTaskQueue(db) {
   }))
 }
 
+function parseLiveTaskRecord(agent) {
+  const text = stripMarkdown(agent?.task || '')
+  if (isIdleTaskText(text)) return null
+
+  const parts = text.split('｜').map(part => stripMarkdown(part)).filter(Boolean)
+  const hasTaskId = parts.length > 1 && /^(task[-#]?\d|\d{4}-\d{2}-\d{2}-)/i.test(parts[0])
+
+  return {
+    taskId: hasTaskId ? parts[0] : '',
+    title: hasTaskId ? parts.slice(1).join('｜') : text,
+    status: '执行中',
+    priority: '当前',
+    publishedAt: '',
+    updatedAt: agent?.heartbeatAt || agent?.updatedAt || nowIso(),
+    isLive: true
+  }
+}
+
+function buildMemberRecentTasks(db, agent, limit = 6) {
+  const rows = db.prepare(`
+    SELECT
+      task_id AS taskId,
+      title,
+      status,
+      priority,
+      published_at AS publishedAt,
+      updated_at AS updatedAt,
+      completed
+    FROM tasks
+    WHERE lower(assignee_member_id) = lower(?)
+      OR (
+        (assignee_member_id IS NULL OR assignee_member_id = '')
+        AND lower(assignee_agent) = lower(?)
+        AND lower(workspace) = lower(?)
+        AND lower(assignee) = lower(?)
+      )
+    ORDER BY completed ASC, updated_at DESC, id DESC
+    LIMIT ?
+  `).all(
+    stripMarkdown(agent?.memberId || ''),
+    stripMarkdown(agent?.agentName || ''),
+    stripMarkdown(agent?.workspace || ''),
+    stripMarkdown(agent?.alias || agent?.memberId || ''),
+    limit
+  )
+
+  const recentTasks = rows.map((task) => ({
+    taskId: task.taskId,
+    title: task.title || task.taskId,
+    status: Number(task.completed) === 1 ? '已完成' : (task.status || '待启动'),
+    priority: task.priority || '未标注',
+    publishedAt: task.publishedAt || '',
+    updatedAt: task.updatedAt || '',
+    isLive: false
+  }))
+
+  const liveTask = parseLiveTaskRecord(agent)
+  if (!liveTask) {
+    return recentTasks
+  }
+
+  const matchedTask = recentTasks.find((task) => {
+    if (liveTask.taskId && task.taskId) {
+      return liveTask.taskId.toLowerCase() === task.taskId.toLowerCase()
+    }
+    return task.title === liveTask.title
+  })
+
+  if (matchedTask) {
+    matchedTask.isLive = true
+    matchedTask.status = liveTask.status
+    return recentTasks
+  }
+
+  return [liveTask, ...recentTasks].slice(0, limit)
+}
+
+function buildRecentTaskMap(db, agents) {
+  const lookup = new Map()
+  for (const agent of agents) {
+    const key = agent.identityKey || agent.memberId
+    lookup.set(key, buildMemberRecentTasks(db, agent))
+  }
+  return lookup
+}
+
 function normalizeTaskRecord(task, index = 0) {
   const status = stripMarkdown(task.status || '待启动')
   const completed = status === '已完成' ? 1 : 0
@@ -1193,7 +1279,12 @@ export function getAiTeamState() {
   const agents = getCurrentAgents()
   const db = ensureAiTeamDb()
   const missions = buildTaskQueue(db, agents)
-  const captain = agents.find(agent => agent.isCaptain) || null
+  const recentTaskMap = buildRecentTaskMap(db, agents)
+  const enrichedAgents = agents.map((agent) => ({
+    ...agent,
+    recentTasks: recentTaskMap.get(agent.identityKey || agent.memberId) || []
+  }))
+  const captain = enrichedAgents.find(agent => agent.isCaptain) || null
   const recentCaptainEvents = db.prepare(`
     SELECT
       id,
@@ -1223,12 +1314,12 @@ export function getAiTeamState() {
 
   return {
     generatedAt: new Date().toISOString(),
-    total: agents.length,
-    active: agents.filter(agent => agent.type === 'active').length,
-    offline: agents.filter(agent => agent.type === 'offline').length,
-    queued: agents.filter(agent => agent.type === 'queued').length,
+    total: enrichedAgents.length,
+    active: enrichedAgents.filter(agent => agent.type === 'active').length,
+    offline: enrichedAgents.filter(agent => agent.type === 'offline').length,
+    queued: enrichedAgents.filter(agent => agent.type === 'queued').length,
     captain: captain ? captain.memberId : null,
-    agents,
+    agents: enrichedAgents,
     missions,
     recentCaptainEvents,
     recentOperations

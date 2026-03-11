@@ -132,6 +132,20 @@ function getMemberStateTag(member) {
   return text || "在线";
 }
 
+function taskHistoryStatusClass(task) {
+  if (task?.isLive) return "live";
+  return missionStatusClass(task?.status);
+}
+
+function getTaskHistoryStatusLabel(task) {
+  if (task?.isLive) return "当前";
+  return String(task?.status || "待启动").trim() || "待启动";
+}
+
+function formatTaskHistoryTime(task) {
+  return String(task?.updatedAt || task?.publishedAt || "").trim() || "刚刚更新";
+}
+
 function getMemberRoleLabel(member) {
   const raw = String(member?.role || "").trim();
   if (!raw || raw === "未分配") return "";
@@ -214,7 +228,19 @@ function normalizeBridgeState(state) {
     status: member.status,
     type: member.type || memberStatusToType(member.status),
     progress: member.progress ?? memberStatusToProgress(member.status, member.isCaptain),
-    isCaptain: Boolean(member.isCaptain)
+    isCaptain: Boolean(member.isCaptain),
+    recentTasks: Array.isArray(member.recentTasks)
+      ? member.recentTasks.map((task, index) => ({
+        id: `${member.member || member.memberId || "member"}-任务轨迹-${index + 1}`,
+        taskId: task.taskId || "",
+        title: task.title || task.taskId || "未命名任务",
+        status: task.status || "待启动",
+        priority: task.priority || "未标注",
+        publishedAt: task.publishedAt || "",
+        updatedAt: task.updatedAt || "",
+        isLive: Boolean(task.isLive)
+      }))
+      : []
   }));
 
   const missions = Array.isArray(state?.missions)
@@ -611,7 +637,7 @@ async function makeCaptain(member) {
                   </div>
                 </div>
               </div>
-              <p class="m-title hover-expand">{{ task.title }}</p>
+              <p class="m-title text-ellipsis">{{ task.title }}</p>
               <div class="m-owner">
                 <span class="text-ellipsis owner-name" :title="task.owner">{{ task.owner }}</span>
                 <span v-if="(task.assigneeAgent || task.assigneeRole) && (task.assigneeAgent !== task.owner)" class="m-owner-meta text-ellipsis" :title="[task.assigneeAgent, task.assigneeRole].filter(Boolean).join(' / ')">
@@ -621,8 +647,37 @@ async function makeCaptain(member) {
                   {{ task.assigneeRole }}
                 </span>
               </div>
-              <div v-if="task.workspace" class="m-published-at hover-expand">工作路径 {{ task.workspace }}</div>
+              <div v-if="task.workspace" class="m-published-at text-ellipsis">工作路径 {{ task.workspace }}</div>
               <div v-if="task.publishedAt" class="m-published-at text-ellipsis" :title="'发布时间 ' + task.publishedAt">发布时间 {{ task.publishedAt }}</div>
+              
+              <!-- Hover Detail Bubble overlay -->
+              <div class="mission-detail-bubble">
+                <h4 class="mb-title">{{ task.title }}</h4>
+                
+                <div class="mb-meta-item" v-if="task.workspace">
+                  <span class="mb-label">工作区</span>
+                  <span class="mb-value">{{ task.workspace }}</span>
+                </div>
+                
+                <div class="mb-meta-divider"></div>
+                
+                <div class="mb-owner-row">
+                  <div class="mb-meta-item">
+                    <span class="mb-label">所有者</span>
+                    <span class="mb-value">{{ task.owner }}</span>
+                  </div>
+                  
+                  <div class="mb-meta-item" v-if="task.assigneeAgent || task.assigneeRole">
+                    <span class="mb-label">执行方</span>
+                    <span class="mb-value">{{ [task.assigneeAgent, task.assigneeRole].filter(Boolean).join(' / ') }}</span>
+                  </div>
+                </div>
+
+                <div class="mb-meta-item" v-if="task.publishedAt" style="margin-top: 8px;">
+                  <span class="mb-label">发布时间</span>
+                  <span class="mb-value">{{ task.publishedAt }}</span>
+                </div>
+              </div>
             </div>
             <div v-if="data.missions.length === 0" class="mission-empty-state">
               <div>当前任务池为空</div>
@@ -689,7 +744,22 @@ async function makeCaptain(member) {
                 </div>
 
                 <div class="task-reveal-box">
-                  <p class="task-text">{{ member.task || "待命状态" }}</p>
+                  <div class="task-history-head">
+                    <span class="task-history-title-label">任务轨迹</span>
+                    <span class="task-history-count">{{ member.recentTasks?.length || 0 }}</span>
+                  </div>
+                  <div v-if="member.recentTasks?.length" class="task-history-scroll">
+                    <article v-for="taskItem in member.recentTasks" :key="taskItem.id" class="task-history-item">
+                      <div class="task-history-topline">
+                        <span class="task-history-status" :class="taskHistoryStatusClass(taskItem)">
+                          {{ getTaskHistoryStatusLabel(taskItem) }}
+                        </span>
+                        <span class="task-history-time">{{ formatTaskHistoryTime(taskItem) }}</span>
+                      </div>
+                      <p class="task-history-name" :title="taskItem.title">{{ taskItem.title }}</p>
+                    </article>
+                  </div>
+                  <div v-else class="task-history-empty">当前无任务记录</div>
                 </div>
 
                 <div class="node-footer">
@@ -1430,27 +1500,81 @@ async function makeCaptain(member) {
   display: block;
 }
 
-.hover-expand {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.mission-detail-bubble {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  background: rgba(15, 18, 24, 0.98);
+  border-radius: 10px;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.98);
+  backdrop-filter: blur(20px);
+  z-index: 20;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(245, 200, 123, 0.2);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none; /* Keeps it strictly hover-view only */
+}
+
+.mission-glass-card:hover .mission-detail-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.mb-title {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+.mb-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.mb-meta-item:last-child {
+  margin-bottom: 0;
+}
+
+.mb-label {
+  font-size: 10px;
+  color: #777;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mb-value {
+  font-size: 11px;
+  color: #cfcfcf;
+  font-family: ui-monospace, sans-serif;
   word-break: break-all;
-  white-space: normal;
-  transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1.4;
 }
 
-.m-title.hover-expand {
-  max-height: 17px;
+.mb-meta-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 10px 0;
 }
 
-.m-published-at.hover-expand {
-  max-height: 12px;
-}
-
-.mission-glass-card:hover .hover-expand {
-  -webkit-line-clamp: 20;
-  max-height: 150px;
+.mb-owner-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .mission-empty-state {
@@ -2059,23 +2183,140 @@ async function makeCaptain(member) {
   background: rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(255, 255, 255, 0.035);
   box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.38);
-  padding: 16px 18px;
+  padding: 14px 16px;
   border-radius: 14px;
   margin-bottom: 20px;
-  min-height: 68px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.task-text {
+.task-history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.task-history-title-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.task-history-count {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.task-history-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 156px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.task-history-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.task-history-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.task-history-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-history-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.task-history-status {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.task-history-status.live,
+.task-history-status.working {
+  color: #f5c87b;
+  background: rgba(245, 200, 123, 0.12);
+}
+
+.task-history-status.pending {
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.task-history-status.done {
+  color: #74d49b;
+  background: rgba(116, 212, 155, 0.12);
+}
+
+.task-history-status.unknown {
+  color: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.task-history-time {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.36);
+}
+
+.task-history-name {
   font-size: 12px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
   margin: 0;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  font-weight: 500;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.task-history-empty {
+  min-height: 108px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
 }
 
 .node-footer {

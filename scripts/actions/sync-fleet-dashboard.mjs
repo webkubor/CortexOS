@@ -105,7 +105,18 @@ export function buildFleetDashboardPayload(state = getAiTeamState()) {
       progress: todoProgress !== null ? todoProgress : statusToProgress(agent.status, agent.isCaptain),
       isCaptain: agent.isCaptain,
       hasTodo: todoProgress !== null,
-      isStale: false
+      isStale: false,
+      recentTasks: Array.isArray(agent.recentTasks)
+        ? agent.recentTasks.map((task) => ({
+            taskId: task.taskId || '',
+            title: task.title || task.taskId || '未命名任务',
+            status: task.status || '待启动',
+            priority: task.priority || '未标注',
+            publishedAt: task.publishedAt || '',
+            updatedAt: task.updatedAt || '',
+            isLive: Boolean(task.isLive)
+          }))
+        : []
     }
   })
 
