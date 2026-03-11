@@ -5,6 +5,26 @@
 
 ---
 
+## [Unreleased] — 2026-03-11 「AI Team 运行态数据库化（计划归入 v5.7.1）」
+
+### 🎯 迁移原因 (Why)
+
+- **实时状态不应继续依赖 Markdown/JSON 链路**：原链路为 `fleet_status.md -> ai_team_status.json -> 前端轮询`，人工切换队长和节点上下线存在明显延迟。
+- **AI Team 后续要承接对话、日志和审计**：这些状态需要稳定主库，不适合继续散落在 `md/json` 文件里。
+- **多 Agent 协作需要更强的一致性**：队长、心跳、节点状态、操作记录需要统一存放，避免状态源分裂。
+
+### 🔧 变更 (Changed)
+
+- **AI Team 运行态主源切换到 SQLite**：当前主源改为 `.memory/sqlite/ai-team.db`，队长、节点、心跳、操作记录统一落库。
+- **旧 fleet 文件退出运行链路**：`fleet_status.md / fleet_meta.json` 不再作为运行态主源；相关 claim/checkin/handover/status/cleanup/bridge 逻辑已切库。
+- **MCP 摘要与任务认领检测切库**：`get_context_brief()` 与任务认领判断不再直接读取旧舰队文件，而是统一读取 `get_fleet_status()`。
+
+### 📝 文档 (Docs)
+
+- **迁移说明落地**：`docs/ops/fleet-dashboard.md` 现在明确记录“本次迁移计划归入 v5.7.1”及迁移原因。
+
+---
+
 ## [v5.7.0] — 2026-03-10 「项目自动登记 · 文档版本对齐」
 
 ### 🚀 新增 (Added)
