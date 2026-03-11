@@ -486,15 +486,15 @@ async function makeCaptain(member) {
                   {{ task.status }}
                 </div>
               </div>
-              <p class="m-title">{{ task.title }}</p>
-              <div class="m-owner">
-                <span>{{ task.owner }}</span>
-                <span v-if="task.assigneeAgent || task.assigneeRole" class="m-owner-meta">
+              <p class="m-title text-ellipsis" :title="task.title">{{ task.title }}</p>
+              <div class="m-owner text-ellipsis">
+                <span :title="task.owner">{{ task.owner }}</span>
+                <span v-if="task.assigneeAgent || task.assigneeRole" class="m-owner-meta" :title="[task.assigneeAgent, task.assigneeRole].filter(Boolean).join(' / ')">
                   {{ [task.assigneeAgent, task.assigneeRole].filter(Boolean).join(' / ') }}
                 </span>
               </div>
-              <div v-if="task.workspace" class="m-published-at">工作路径 {{ task.workspace }}</div>
-              <div v-if="task.publishedAt" class="m-published-at">发布时间 {{ task.publishedAt }}</div>
+              <div v-if="task.workspace" class="m-published-at text-ellipsis" :title="'工作路径 ' + task.workspace">工作路径 {{ task.workspace }}</div>
+              <div v-if="task.publishedAt" class="m-published-at text-ellipsis" :title="'发布时间 ' + task.publishedAt">发布时间 {{ task.publishedAt }}</div>
             </div>
             <div v-if="data.missions.length === 0" class="mission-empty-state">
               <div>当前任务池为空</div>
@@ -1106,25 +1106,35 @@ async function makeCaptain(member) {
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 6px 0;
+  margin: 0 0 10px 0;
   line-height: 1.3;
   letter-spacing: 0.02em;
 }
 
 .m-owner {
-  font-size: 9px;
-  color: #666;
+  font-size: 10px;
+  color: #777;
   font-family: ui-monospace;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .m-owner-meta,
 .m-published-at {
   font-size: 9px;
-  color: #8d8d8d;
+  color: #6a6a6a;
   font-family: ui-monospace;
+  margin-bottom: 4px;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: block;
 }
 
 .mission-empty-state {
@@ -1664,9 +1674,10 @@ async function makeCaptain(member) {
 .node-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
-  color: #444;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
   font-family: ui-monospace;
+  letter-spacing: 0.03em;
 }
 
 .captain-crown {
