@@ -21,6 +21,14 @@ let timeInterval = null;
 let reconnectTimer = null;
 let eventSource = null;
 
+const isWorkspaceSelectOpen = ref(false);
+const isPrioritySelectOpen = ref(false);
+
+const closeDropdowns = () => {
+  isWorkspaceSelectOpen.value = false;
+  isPrioritySelectOpen.value = false;
+};
+
 const data = ref({
   generatedAt: "",
   total: 0,
@@ -698,30 +706,52 @@ async function makeCaptain(member) {
             />
           </label>
 
-          <label class="task-field">
+          <div class="task-field">
             <span class="task-field-label">工作区</span>
-            <select v-model="createTaskForm.workspace" class="task-field-input task-field-select">
-              <option value="" disabled>{{ loadingWorkspaces ? '正在加载激活工作区...' : '请选择工作区' }}</option>
-              <option
-                v-for="workspace in workspaceOptions"
-                :key="workspace.workspace || workspace.rootPath"
-                :value="workspace.workspace || workspace.rootPath"
-              >
-                {{ workspace.name }} ｜ {{ workspace.workspace || workspace.rootPath }}
-              </option>
-            </select>
+            <div class="custom-select-container">
+              <div class="task-field-input custom-select-trigger" :class="{ 'is-open': isWorkspaceSelectOpen }" @click="isWorkspaceSelectOpen = !isWorkspaceSelectOpen; isPrioritySelectOpen = false">
+                <span class="cs-value text-ellipsis">{{ currentWorkspaceName ? `${currentWorkspaceName} ｜ ${createTaskForm.workspace}` : (loadingWorkspaces ? '正在加载激活工作区...' : '请选择工作区') }}</span>
+              </div>
+              <transition name="dropdown">
+                <div class="custom-options-panel" v-if="isWorkspaceSelectOpen">
+                  <div class="custom-option"
+                    v-for="workspace in workspaceOptions"
+                    :key="workspace.workspace || workspace.rootPath"
+                    :class="{ 'is-selected': createTaskForm.workspace === (workspace.workspace || workspace.rootPath) }"
+                    @click="createTaskForm.workspace = workspace.workspace || workspace.rootPath; isWorkspaceSelectOpen = false"
+                  >
+                    <div class="co-name">{{ workspace.name }}</div>
+                    <div class="co-path text-ellipsis">{{ workspace.workspace || workspace.rootPath }}</div>
+                  </div>
+                  <div v-if="workspaceOptions.length === 0" class="custom-option disabled">
+                    暂无已激活工作区
+                  </div>
+                </div>
+              </transition>
+            </div>
             <span class="task-field-hint">只有已激活工作区才能发布任务</span>
-          </label>
+          </div>
 
-          <label class="task-field">
+          <div class="task-field">
             <span class="task-field-label">优先级</span>
-            <select v-model="createTaskForm.priority" class="task-field-input task-field-select">
-              <option value="未标注">未标注</option>
-              <option value="高">高</option>
-              <option value="中">中</option>
-              <option value="低">低</option>
-            </select>
-          </label>
+            <div class="custom-select-container">
+              <div class="task-field-input custom-select-trigger" :class="{ 'is-open': isPrioritySelectOpen }" @click="isPrioritySelectOpen = !isPrioritySelectOpen; isWorkspaceSelectOpen = false">
+                <span class="cs-value">{{ createTaskForm.priority }}</span>
+              </div>
+              <transition name="dropdown">
+                <div class="custom-options-panel slim-panel" v-if="isPrioritySelectOpen">
+                  <div class="custom-option center-item"
+                    v-for="p in ['未标注', '高', '中', '低']"
+                    :key="p"
+                    :class="{ 'is-selected': createTaskForm.priority === p }"
+                    @click="createTaskForm.priority = p; isPrioritySelectOpen = false"
+                  >
+                    {{ p }}
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
 
           <div v-if="createTaskForm.workspace" class="task-workspace-preview">
             <span class="task-workspace-name">{{ currentWorkspaceName || '已选工作区' }}</span>
@@ -1020,7 +1050,7 @@ async function makeCaptain(member) {
 .aether-stage {
   display: flex;
   flex: 1;
-  padding: 24px;
+  padding: 24px 24px 160px 24px;
   gap: 24px;
   z-index: 10;
 }
@@ -1344,12 +1374,94 @@ async function makeCaptain(member) {
   box-shadow: 0 0 0 3px rgba(245, 200, 123, 0.15);
 }
 
-.task-field-select {
-  appearance: none;
+.dropdown-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 265;
+}
+
+.custom-select-container {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  z-index: 266;
+  position: relative;
   background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%23F5C87B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
+}
+
+.custom-select-trigger.is-open {
+  border-color: rgba(245, 200, 123, 0.5);
+  background-color: rgba(15, 18, 24, 0.9);
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5' stroke='%23F5C87B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.custom-options-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 270;
+  background: rgba(20, 24, 32, 0.95);
+  border: 1px solid rgba(245, 200, 123, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  transform-origin: top;
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-5px);
+}
+
+.custom-option {
+  padding: 10px 14px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+}
+
+.custom-option:last-child {
+  margin-bottom: 0;
+}
+
+.custom-option:hover {
+  background: rgba(245, 200, 123, 0.1);
+}
+
+.custom-option.is-selected {
+  background: rgba(245, 200, 123, 0.15);
+  color: var(--c-aureate-glow);
+}
+
+.co-name {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.co-path {
+  font-size: 11px;
+  color: #888;
+  font-family: ui-monospace;
 }
 
 .task-field-hint {
@@ -1922,7 +2034,7 @@ async function makeCaptain(member) {
 /* 🧪 CLI Health Footer Styles */
 .cli-health-footer {
   position: fixed;
-  bottom: 0;
+  bottom: 85px;  /* Raised to make room for command hub */
   left: 0;
   right: 0;
   z-index: 100;
