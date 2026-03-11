@@ -326,6 +326,37 @@ function getCurrentAgents() {
   return agents.slice().sort(compareAgentOrder)
 }
 
+function findAgentByIdentity(agents, { workspace, agentName, alias, nodeId = '', allowLegacyFallback = false }) {
+  const normalizedNodeId = stripMarkdown(nodeId)
+  const normalizedWorkspace = stripMarkdown(workspace)
+  const normalizedAgentName = normalizeAgent(agentName)
+  const normalizedAlias = stripMarkdown(alias || normalizedAgentName)
+  const identityKey = buildIdentityKey({
+    workspace: normalizedWorkspace,
+    agentName: normalizedAgentName,
+    alias: normalizedAlias
+  })
+
+  if (normalizedNodeId) {
+    const byNodeId = agents.find(row => row.memberId === normalizedNodeId)
+    if (byNodeId) return byNodeId
+  }
+
+  const byIdentityKey = agents.find(row => row.identityKey === identityKey)
+  if (byIdentityKey) return byIdentityKey
+
+  const byAlias = agents.find(row =>
+    row.workspace === normalizedWorkspace &&
+    row.agentName === normalizedAgentName &&
+    row.alias === normalizedAlias
+  )
+  if (byAlias) return byAlias
+
+  if (!allowLegacyFallback) return null
+
+  return agents.find(row => row.workspace === normalizedWorkspace && row.agentName === normalizedAgentName) || null
+}
+
 export function claimAiTeamMember({ workspace, task, agent, alias, role, status = '[ 执行中 ] 活跃' }) {
   const agents = getCurrentAgents().map(item => ({ ...item }))
   const normalizedWorkspace = stripMarkdown(workspace)
@@ -336,7 +367,12 @@ export function claimAiTeamMember({ workspace, task, agent, alias, role, status 
   const heartbeatAt = nowLocal()
 
   const sameWorkspaceRows = agents.filter(row => row.workspace === normalizedWorkspace)
-  const sameWorkspaceSameAgentRow = sameWorkspaceRows.find(row => row.agentName === normalizedAgent)
+  const sameWorkspaceSameAgentRow = findAgentByIdentity(agents, {
+    workspace: normalizedWorkspace,
+    agentName: normalizedAgent,
+    alias: normalizedAlias,
+    allowLegacyFallback: false
+  })
   const parallelRows = sameWorkspaceRows.filter(row => row.memberId !== sameWorkspaceSameAgentRow?.memberId)
   const warnings = []
   if (parallelRows.length > 0) {
@@ -415,27 +451,28 @@ export function claimAiTeamMember({ workspace, task, agent, alias, role, status 
   }
 }
 
-export function checkinAiTeamMember({ workspace, agent, role, task, status = '[ 执行中 ] 活跃', nodeId = '', heartbeatAt = nowLocal() }) {
+export function checkinAiTeamMember({ workspace, agent, alias = '', role, task, status = '[ 执行中 ] 活跃', nodeId = '', heartbeatAt = nowLocal() }) {
   const agents = getCurrentAgents().map(item => ({ ...item }))
   const normalizedWorkspace = stripMarkdown(workspace)
   const normalizedAgent = normalizeAgent(agent)
+  const normalizedAlias = stripMarkdown(alias || normalizedAgent)
   const normalizedRole = normalizeRole(role || inferRoleFromTask(task))
   const normalizedTask = stripMarkdown(task || '心跳打卡')
   const normalizedNodeId = stripMarkdown(nodeId)
 
-  let target = null
-  if (normalizedNodeId) {
-    target = agents.find(row => row.memberId === normalizedNodeId)
-  }
-  if (!target) {
-    target = agents.find(row => row.workspace === normalizedWorkspace && row.agentName === normalizedAgent)
-  }
+  let target = findAgentByIdentity(agents, {
+    workspace: normalizedWorkspace,
+    agentName: normalizedAgent,
+    alias: normalizedAlias,
+    nodeId: normalizedNodeId,
+    allowLegacyFallback: !alias && !normalizedNodeId
+  })
   if (!target) {
     const claimResult = claimAiTeamMember({
       workspace: normalizedWorkspace,
       task: normalizedTask,
       agent: normalizedAgent,
-      alias: normalizedAgent,
+      alias: normalizedAlias,
       role: normalizedRole,
       status
     })
@@ -445,6 +482,7 @@ export function checkinAiTeamMember({ workspace, agent, role, task, status = '[ 
     }
   }
 
+  target.alias = normalizedAlias
   target.role = normalizedRole
   target.task = normalizedTask
   target.identityKey = buildIdentityKey(target)

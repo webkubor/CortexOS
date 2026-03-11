@@ -44,6 +44,7 @@ function parseArgs(argv) {
   const args = {
     workspace: process.cwd(),
     agent: 'Unknown',
+    alias: '',
     role: '未分配',
     task: '心跳打卡',
     status: '[ 执行中 ] 活跃',
@@ -56,6 +57,7 @@ function parseArgs(argv) {
     const token = argv[i]
     if (token === '--workspace' && argv[i + 1]) args.workspace = argv[++i]
     else if (token === '--agent' && argv[i + 1]) args.agent = argv[++i]
+    else if (token === '--alias' && argv[i + 1]) args.alias = argv[++i]
     else if (token === '--role' && argv[i + 1]) args.role = argv[++i]
     else if (token === '--task' && argv[i + 1]) args.task = argv[++i]
     else if (token === '--status' && argv[i + 1]) args.status = argv[++i]
@@ -66,6 +68,7 @@ function parseArgs(argv) {
 
   args.workspace = path.resolve(args.workspace)
   args.agent = normalizeAgent(sanitize(args.agent))
+  args.alias = sanitize(args.alias)
   args.role = normalizeRole(sanitize(args.role))
   args.task = sanitize(args.task)
   args.status = sanitize(args.status)
@@ -76,7 +79,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log('用法:')
-  console.log('  node scripts/actions/fleet-checkin.mjs --workspace <path> --agent <Gemini|Codex|Claude> [--task "心跳打卡"]')
+  console.log('  node scripts/actions/fleet-checkin.mjs --workspace <path> --agent <Gemini|Codex|Claude> [--alias Candy] [--task "心跳打卡"]')
 }
 
 function main() {
