@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-11T01:26:35.178Z",
+  "generatedAt": "2026-03-11T01:40:34.006Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -24,8 +24,8 @@
     "nodeVersion": "v22.19.0",
     "skillsCount": 17
   },
-  "total": 2,
-  "active": 1,
+  "total": 3,
+  "active": 2,
   "offline": 1,
   "queued": 0,
   "members": [
@@ -40,6 +40,20 @@
       "type": "active",
       "progress": 60,
       "isCaptain": true,
+      "hasTodo": false,
+      "isStale": false
+    },
+    {
+      "member": "Candy-1 (Codex)",
+      "agent": "Codex",
+      "role": "后端",
+      "workspace": "~/Documents/memory",
+      "task": "梳理 Desktop/AI-tools 下的 Git 仓库并给出串联方案",
+      "since": "2026-03-11 09:40",
+      "status": "[ 执行中 ] 活跃",
+      "type": "active",
+      "progress": 55,
+      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     },

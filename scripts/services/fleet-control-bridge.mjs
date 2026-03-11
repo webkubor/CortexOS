@@ -6,7 +6,7 @@ import path from 'path'
 import { spawn } from 'child_process'
 import { fileURLToPath } from 'url'
 import { ensureAiTeamDb } from '../lib/ai-team-db.mjs'
-import { getAiTeamState, syncAiTeamState } from '../lib/ai-team-state.mjs'
+import { getAiTeamState, makeAiTeamCaptain, markAiTeamMemberOffline, syncAiTeamState } from '../lib/ai-team-state.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -73,30 +73,6 @@ function bootstrapAiTeamState() {
   } catch (error) {
     console.warn(`[fleet-control-bridge] 状态预热失败: ${error.message}`)
   }
-}
-
-function updateMemberStatus(memberId, nextStatus) {
-  const content = fs.readFileSync(fleetFile, 'utf8')
-  const lines = content.split('\n')
-  const tableStartIndex = lines.findIndex((line) => line.includes('| 节点 ID'))
-
-  if (tableStartIndex === -1) {
-    throw new Error('Table not found in fleet_status.md')
-  }
-
-  for (let i = tableStartIndex + 2; i < lines.length; i++) {
-    if (!lines[i].trim().startsWith('|')) break
-    if (!lines[i].includes(memberId)) continue
-
-    const cols = lines[i].split('|')
-    if (cols.length < 8) continue
-    cols[7] = ` ${nextStatus} `
-    lines[i] = cols.join('|')
-    fs.writeFileSync(fleetFile, lines.join('\n'), 'utf8')
-    return
-  }
-
-  throw new Error(`Member not found: ${memberId}`)
 }
 
 function readJsonBody(req) {
@@ -186,22 +162,24 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (action === 'kick-out') {
-      updateMemberStatus(memberId, '[ 已离线 ]')
-      syncAiTeamState({
-        action: 'kick-out',
+      const mutation = markAiTeamMemberOffline(memberId, {
         operator: 'bridge',
         reason: 'fleet-control-bridge',
         payload: { memberId }
       })
-      const result = await syncFleetDashboard()
-      writeJson(res, 200, { success: true, stdout: result.stdout, state: getAiTeamState() }, origin)
+      const syncResult = await syncFleetDashboard()
+      writeJson(res, 200, { success: true, stdout: syncResult.stdout, state: getAiTeamState(), result: mutation }, origin)
       return
     }
 
     if (action === 'make-captain') {
-      const result = await runCommand('pnpm', ['run', 'fleet:handover', '--', '--to-node', memberId])
+      const result = makeAiTeamCaptain(memberId, {
+        operator: 'bridge',
+        reason: 'fleet-control-bridge',
+        payload: { memberId }
+      })
       await syncFleetDashboard()
-      writeJson(res, 200, { success: true, stdout: result.stdout, state: getAiTeamState() }, origin)
+      writeJson(res, 200, { success: true, state: getAiTeamState(), result }, origin)
       return
     }
 
