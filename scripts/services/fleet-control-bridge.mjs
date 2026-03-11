@@ -5,6 +5,7 @@ import http from 'http'
 import path from 'path'
 import { spawn } from 'child_process'
 import { fileURLToPath } from 'url'
+import { ensureAiTeamDb } from '../lib/ai-team-db.mjs'
 import { getAiTeamState, syncAiTeamState } from '../lib/ai-team-state.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -56,6 +57,22 @@ function refreshAiTeamState() {
     persistLog: false
   })
   return getAiTeamState()
+}
+
+function bootstrapAiTeamState() {
+  const db = ensureAiTeamDb()
+  db.close()
+
+  try {
+    syncAiTeamState({
+      action: 'bridge-bootstrap',
+      operator: 'bridge',
+      reason: 'fleet-control-bridge',
+      persistLog: false
+    })
+  } catch (error) {
+    console.warn(`[fleet-control-bridge] 状态预热失败: ${error.message}`)
+  }
 }
 
 function updateMemberStatus(memberId, nextStatus) {
@@ -204,6 +221,8 @@ server.on('error', (error) => {
   console.error(error)
   process.exit(1)
 })
+
+bootstrapAiTeamState()
 
 server.listen(port, host, () => {
   console.log(`fleet-control-bridge listening on http://${host}:${port}`)

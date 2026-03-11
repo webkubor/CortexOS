@@ -100,6 +100,8 @@ CortexOS/
 uv run /你的物理路径/CortexOS/mcp_server/server.py
 ```
 
+AI Team 本地状态库会在 bridge 启动时自动初始化，不需要先手动执行 `pnpm run team:db:init`。
+
 ### 2. 在客户端挂载外脑
 
 ```json

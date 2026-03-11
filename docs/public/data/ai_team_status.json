@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T14:35:00.421Z",
+  "generatedAt": "2026-03-11T01:26:35.178Z",
   "version": "v5.6.5 (系统环境透显 + 工具链路监控)",
   "source": ".memory/fleet/fleet_status.md",
   "environment": {
@@ -24,11 +24,25 @@
     "nodeVersion": "v22.19.0",
     "skillsCount": 17
   },
-  "total": 1,
-  "active": 0,
+  "total": 2,
+  "active": 1,
   "offline": 1,
   "queued": 0,
   "members": [
+    {
+      "member": "Codex-Prime (0号机/Codex)",
+      "agent": "Codex",
+      "role": "后端",
+      "workspace": "~/Documents/CortexOS",
+      "task": "恢复 AI Team 实时化改造任务进度，确认上次停留阶段并继续执行",
+      "since": "2026-03-11 09:26",
+      "status": "[ 队长锁 ] 活跃",
+      "type": "active",
+      "progress": 60,
+      "isCaptain": true,
+      "hasTodo": false,
+      "isStale": false
+    },
     {
       "member": "栖月-Prime",
       "agent": "Lobster",
@@ -39,7 +53,7 @@
       "status": "已离线",
       "type": "offline",
       "progress": 100,
-      "isCaptain": true,
+      "isCaptain": false,
       "hasTodo": false,
       "isStale": false
     }
