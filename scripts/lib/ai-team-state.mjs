@@ -829,20 +829,25 @@ function isPrimeMemberId(memberId) {
   return text.includes('-prime') || text.includes('0号机')
 }
 
-function chooseWorkerMemberId(agent, agents, excludedIds = new Set()) {
+function chooseWorkerMemberId(agent, agents, occupiedIds = new Set()) {
   const baseAlias = agent.alias || 'Agent'
   const baseAgent = agent.agentName || 'Unknown'
   const current = stripMarkdown(agent.memberId)
-
-  if (current && !isPrimeMemberId(current) && !excludedIds.has(current)) {
-    return current
-  }
-
   const used = new Set(
     agents
+      .filter(item => item !== agent)
       .map(item => stripMarkdown(item.memberId))
-      .filter(memberId => memberId && !excludedIds.has(memberId))
+      .filter(Boolean)
   )
+
+  for (const memberId of occupiedIds) {
+    const normalized = stripMarkdown(memberId)
+    if (normalized) used.add(normalized)
+  }
+
+  if (current && !isPrimeMemberId(current) && !used.has(current)) {
+    return current
+  }
 
   for (let index = 1; index < 1000; index++) {
     const candidate = `${baseAlias}-${index} (${baseAgent})`
@@ -1033,8 +1038,38 @@ function loadAgentsFromDb() {
   return agents
 }
 
+function ensureUniqueAgentMemberIds(agents) {
+  const occupied = new Set()
+  const orderedAgents = agents
+    .slice()
+    .sort((a, b) => Number(b.isCaptain) - Number(a.isCaptain))
+
+  for (const agent of orderedAgents) {
+    if (agent.isCaptain) {
+      const preferredPrimeId = buildPrimeMemberId(agent)
+      if (!occupied.has(preferredPrimeId)) {
+        agent.memberId = preferredPrimeId
+        agent.nodeId = agent.memberId
+        occupied.add(agent.memberId)
+        continue
+      }
+      agent.isCaptain = 0
+      if (agent.type !== 'offline') {
+        agent.type = 'active'
+        agent.status = '[ 执行中 ] 活跃'
+      }
+    }
+
+    agent.memberId = chooseWorkerMemberId(agent, orderedAgents, occupied)
+    agent.nodeId = agent.memberId
+    occupied.add(agent.memberId)
+  }
+
+  return agents
+}
+
 function persistAiTeamAgents(agents, { action = 'sync', operator = 'system', payload = null, reason = '', persistLog = true } = {}) {
-  const normalizedAgents = agents.map(normalizeStoredAgent)
+  const normalizedAgents = ensureUniqueAgentMemberIds(agents.map(normalizeStoredAgent))
   const db = ensureAiTeamDb()
   syncTaskRecordsFromAgents(db, normalizedAgents)
 
