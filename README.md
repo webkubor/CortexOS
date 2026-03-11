@@ -7,6 +7,13 @@
     <img src="https://img.shields.io/badge/MCP-v1.0-blue.svg?style=flat-square" alt="MCP v1.0">
     <img src="https://img.shields.io/badge/License-MIT-d4a017.svg?style=flat-square" alt="License MIT">
   </p>
+  <p>
+    <img src="https://img.shields.io/badge/Codex-supported-111827.svg?style=flat-square&logo=openai&logoColor=white" alt="Codex supported">
+    <img src="https://img.shields.io/badge/Gemini_CLI-supported-1a73e8.svg?style=flat-square&logo=google-gemini&logoColor=white" alt="Gemini CLI supported">
+    <img src="https://img.shields.io/badge/Claude-supported-b5651d.svg?style=flat-square" alt="Claude supported">
+    <img src="https://img.shields.io/badge/OpenClaw-supported-7c3aed.svg?style=flat-square" alt="OpenClaw supported">
+    <img src="https://img.shields.io/badge/AI_Team-local_control_plane-0f766e.svg?style=flat-square" alt="AI Team local control plane">
+  </p>
 </div>
 
 > CortexOS 不是聊天壳子，而是一套把规则、项目、日志、协作状态锚定在本地磁盘上的个人外部大脑。

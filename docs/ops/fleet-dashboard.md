@@ -1,5 +1,13 @@
 # 🚦 舰队态势板（运行态）
 
+![AI Team](https://img.shields.io/badge/AI_Team-local_only-0f766e?style=flat-square)
+![SQLite](https://img.shields.io/badge/Runtime-SQLite-1f2937?style=flat-square)
+![SSE](https://img.shields.io/badge/Channel-SSE-1d4ed8?style=flat-square)
+![Codex](https://img.shields.io/badge/Codex-supported-111827?style=flat-square&logo=openai&logoColor=white)
+![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-supported-1a73e8?style=flat-square&logo=google-gemini&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-supported-b5651d?style=flat-square)
+![OpenClaw](https://img.shields.io/badge/OpenClaw-supported-7c3aed?style=flat-square)
+
 > 迁移版本：计划归入 `v5.7.1`
 >
 > 迁移原因：
