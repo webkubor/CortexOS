@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-09T01:47:17.171Z",
-  "generatedAtLocal": "2026-03-09 09:47",
+  "generatedAt": "2026-03-11T15:58:26.650Z",
+  "generatedAtLocal": "2026-03-11 23:58",
   "nativeSkills": [
     {
       "name": "omni-publisher-skill",
@@ -119,61 +119,16 @@
       "brokenPaths": []
     },
     {
-      "name": "audio-music-engineer-skill",
-      "canonical": "audio-music-engineer",
+      "name": "baoyu-post-to-wechat",
+      "canonical": "baoyu-post-to-wechat",
       "sources": [
         "~/.agents/skills"
       ],
       "paths": [
-        "/Users/webkubor/.agents/skills/audio-music-engineer-skill"
+        "/Users/webkubor/.agents/skills/baoyu-post-to-wechat"
       ],
       "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/audio-music-engineer-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "brain-sentinel-skill",
-      "canonical": "brain-sentinel",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/brain-sentinel-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/brain-sentinel-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "cinematic-storyboard-skill",
-      "canonical": "cinematic-storyboard",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/cinematic-storyboard-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/cinematic-storyboard-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "code-aureate-skill",
-      "canonical": "code-aureate",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/code-aureate-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/code-aureate-skill"
+        "/Users/webkubor/.agents/skills/baoyu-post-to-wechat"
       ],
       "hasSkillFile": true,
       "brokenPaths": []
@@ -181,19 +136,13 @@
     {
       "name": "feishu-writer",
       "canonical": "feishu-writer",
-      "sources": [
-        "~/.agents/skills",
-        "~/.codex/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/feishu-writer",
+      "sources": [],
+      "paths": [],
+      "resolvedPaths": [],
+      "hasSkillFile": false,
+      "brokenPaths": [
         "/Users/webkubor/.codex/skills/feishu-writer"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/feishu-writer"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
+      ]
     },
     {
       "name": "figma",
@@ -290,21 +239,6 @@
       "brokenPaths": []
     },
     {
-      "name": "knowledge-navigator-skill",
-      "canonical": "knowledge-navigator",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/knowledge-navigator-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/knowledge-navigator-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
       "name": "logo-designer",
       "canonical": "logo-designer",
       "sources": [
@@ -335,36 +269,15 @@
       "brokenPaths": []
     },
     {
-      "name": "omni-publisher-skill",
-      "canonical": "omni-publisher",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/omni-publisher-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/omni-publisher-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "pwa-master-skill",
+      "name": "pwa-master",
       "canonical": "pwa-master",
-      "sources": [
-        "~/.agents/skills",
-        "~/.codex/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/pwa-master-skill",
+      "sources": [],
+      "paths": [],
+      "resolvedPaths": [],
+      "hasSkillFile": false,
+      "brokenPaths": [
         "/Users/webkubor/.codex/skills/pwa-master"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/pwa-master-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
+      ]
     },
     {
       "name": "r2-uploader",
@@ -384,49 +297,13 @@
     {
       "name": "remotion-best-practices",
       "canonical": "remotion-best-practices",
-      "sources": [
-        "~/.agents/skills",
-        "~/.codex/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/remotion-best-practices",
+      "sources": [],
+      "paths": [],
+      "resolvedPaths": [],
+      "hasSkillFile": false,
+      "brokenPaths": [
         "/Users/webkubor/.codex/skills/remotion-best-practices"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/remotion-best-practices"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "scm-ops-skill",
-      "canonical": "scm-ops",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/scm-ops-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/scm-ops-skill"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "snippet-master",
-      "canonical": "snippet-master",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/snippet-master"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/snippet-master"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
+      ]
     },
     {
       "name": "start",
@@ -471,21 +348,6 @@
       ],
       "resolvedPaths": [
         "/Users/webkubor/.codex/skills/ui-ux-pro-max"
-      ],
-      "hasSkillFile": true,
-      "brokenPaths": []
-    },
-    {
-      "name": "visual-studio-skill",
-      "canonical": "visual-studio",
-      "sources": [
-        "~/.agents/skills"
-      ],
-      "paths": [
-        "/Users/webkubor/.agents/skills/visual-studio-skill"
-      ],
-      "resolvedPaths": [
-        "/Users/webkubor/.agents/skills/visual-studio-skill"
       ],
       "hasSkillFile": true,
       "brokenPaths": []

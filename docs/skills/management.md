@@ -4,7 +4,7 @@ description: Skills 管理页（安装位置 + 使用方式 + 扫描结果）
 # Skills 管理台
 
 > 本页由脚本自动生成：`node scripts/tools/sync-skills-management.mjs`  
-> 最近生成时间：2026-03-09 09:47
+> 最近生成时间：2026-03-11 23:58
 
 ## 0. 先做这 3 步（实操）
 
@@ -39,19 +39,19 @@ ln -s "$HOME/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skill"
 
 | Skill | 仓库 | 已安装 | 已安装路径 | 安装命令 |
 | :--- | :--- | :---: | :--- | :--- |
-| omni-publisher-skill | https://github.com/webkubor/omni-publisher-skill | 是 | /Users/webkubor/.agents/skills/omni-publisher-skill | `gemini skills install https://github.com/webkubor/omni-publisher-skill` |
+| omni-publisher-skill | https://github.com/webkubor/omni-publisher-skill | 否 | - | `gemini skills install https://github.com/webkubor/omni-publisher-skill` |
 | ai-modification-skill | https://github.com/webkubor/ai-modification-skill | 是 | /Users/webkubor/.agents/skills/ai-modification-skill | `gemini skills install https://github.com/webkubor/ai-modification-skill` |
-| audio-music-engineer-skill | https://github.com/webkubor/audio-music-engineer-skill | 是 | /Users/webkubor/.agents/skills/audio-music-engineer-skill | `gemini skills install https://github.com/webkubor/audio-music-engineer-skill` |
-| cinematic-storyboard-skill | https://github.com/webkubor/cinematic-storyboard-skill | 是 | /Users/webkubor/.agents/skills/cinematic-storyboard-skill | `gemini skills install https://github.com/webkubor/cinematic-storyboard-skill` |
-| pwa-master-skill | https://github.com/webkubor/pwa-master-skill | 是 | /Users/webkubor/.agents/skills/pwa-master-skill<br>/Users/webkubor/.codex/skills/pwa-master | `gemini skills install https://github.com/webkubor/pwa-master-skill` |
+| audio-music-engineer-skill | https://github.com/webkubor/audio-music-engineer-skill | 否 | - | `gemini skills install https://github.com/webkubor/audio-music-engineer-skill` |
+| cinematic-storyboard-skill | https://github.com/webkubor/cinematic-storyboard-skill | 否 | - | `gemini skills install https://github.com/webkubor/cinematic-storyboard-skill` |
+| pwa-master-skill | https://github.com/webkubor/pwa-master-skill | 是 | - | `gemini skills install https://github.com/webkubor/pwa-master-skill` |
 | persona-generator-skill | https://github.com/webkubor/persona-generator-skill | 否 | - | `gemini skills install https://github.com/webkubor/persona-generator-skill` |
 | web-ui-skill | https://github.com/webkubor/web-ui-skill | 否 | - | `gemini skills install https://github.com/webkubor/web-ui-skill` |
 | vitepress-init-skill | https://github.com/webkubor/vitepress-init-skill | 是 | /Users/webkubor/.agents/skills/vitepress-init-skill<br>/Users/webkubor/.codex/skills/vitepress-init | `gemini skills install https://github.com/webkubor/vitepress-init-skill` |
-| brain-sentinel-skill | https://github.com/webkubor/brain-sentinel-skill | 是 | /Users/webkubor/.agents/skills/brain-sentinel-skill | `gemini skills install https://github.com/webkubor/brain-sentinel-skill` |
-| code-aureate-skill | https://github.com/webkubor/code-aureate-skill | 是 | /Users/webkubor/.agents/skills/code-aureate-skill | `gemini skills install https://github.com/webkubor/code-aureate-skill` |
-| knowledge-navigator-skill | https://github.com/webkubor/knowledge-navigator-skill | 是 | /Users/webkubor/.agents/skills/knowledge-navigator-skill | `gemini skills install https://github.com/webkubor/knowledge-navigator-skill` |
+| brain-sentinel-skill | https://github.com/webkubor/brain-sentinel-skill | 否 | - | `gemini skills install https://github.com/webkubor/brain-sentinel-skill` |
+| code-aureate-skill | https://github.com/webkubor/code-aureate-skill | 否 | - | `gemini skills install https://github.com/webkubor/code-aureate-skill` |
+| knowledge-navigator-skill | https://github.com/webkubor/knowledge-navigator-skill | 否 | - | `gemini skills install https://github.com/webkubor/knowledge-navigator-skill` |
 | file-hosting-master-skill | https://github.com/webkubor/file-hosting-master-skill | 否 | - | `gemini skills install https://github.com/webkubor/file-hosting-master-skill` |
-| scm-ops-skill | https://github.com/webkubor/scm-ops-skill | 是 | /Users/webkubor/.agents/skills/scm-ops-skill | `gemini skills install https://github.com/webkubor/scm-ops-skill` |
+| scm-ops-skill | https://github.com/webkubor/scm-ops-skill | 否 | - | `gemini skills install https://github.com/webkubor/scm-ops-skill` |
 | xhs-manager-skill | https://github.com/webkubor/xhs-manager-skill | 是 | /Users/webkubor/.agents/skills/xhs-manager-skill | `gemini skills install https://github.com/webkubor/xhs-manager-skill` |
 
 ## 3. 本机已安装 Skills（自动扫描）
@@ -60,36 +60,30 @@ ln -s "$HOME/Desktop/skills/your-skill" "$HOME/.codex/skills/your-skill"
 | :--- | :--- | :---: | :--- |
 | agent-reach | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/agent-reach |
 | ai-modification-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/ai-modification-skill |
-| audio-music-engineer-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/audio-music-engineer-skill |
-| brain-sentinel-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/brain-sentinel-skill |
-| cinematic-storyboard-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/cinematic-storyboard-skill |
-| code-aureate-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/code-aureate-skill |
-| feishu-writer | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/feishu-writer<br>/Users/webkubor/.codex/skills/feishu-writer |
+| baoyu-post-to-wechat | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/baoyu-post-to-wechat |
+| feishu-writer |  | 否 | - |
 | figma | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/figma |
 | figma-implement-design | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/figma-implement-design |
 | find-skills | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/find-skills |
 | frontend-design | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/frontend-design<br>/Users/webkubor/.codex/skills/frontend-design |
 | github-uploader | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/github-uploader |
 | juejin-writer | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/juejin-writer<br>/Users/webkubor/.codex/skills/juejin-writer |
-| knowledge-navigator-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/knowledge-navigator-skill |
 | logo-designer | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/logo-designer |
 | obsidian | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/obsidian |
-| omni-publisher-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/omni-publisher-skill |
-| pwa-master-skill | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/pwa-master-skill<br>/Users/webkubor/.codex/skills/pwa-master |
+| pwa-master |  | 否 | - |
 | r2-uploader | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/r2-uploader |
-| remotion-best-practices | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/remotion-best-practices<br>/Users/webkubor/.codex/skills/remotion-best-practices |
-| scm-ops-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/scm-ops-skill |
-| snippet-master | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/snippet-master |
+| remotion-best-practices |  | 否 | - |
 | start | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/start |
 | think-skill | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/think-skill<br>/Users/webkubor/.codex/skills/think |
 | ui-ux-pro-max | ~/.codex/skills | 是 | /Users/webkubor/.codex/skills/ui-ux-pro-max |
-| visual-studio-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/visual-studio-skill |
 | vitepress-init-skill | ~/.agents/skills, ~/.codex/skills | 是 | /Users/webkubor/.agents/skills/vitepress-init-skill<br>/Users/webkubor/.codex/skills/vitepress-init |
 | xhs-manager-skill | ~/.agents/skills | 是 | /Users/webkubor/.agents/skills/xhs-manager-skill |
 
 ## 3.1 失效 alias / 悬空链接
 
-- 无
+- feishu-writer: /Users/webkubor/.codex/skills/feishu-writer
+- pwa-master: /Users/webkubor/.codex/skills/pwa-master
+- remotion-best-practices: /Users/webkubor/.codex/skills/remotion-best-practices
 
 ## 4. 怎么使用（落地步骤）
 
