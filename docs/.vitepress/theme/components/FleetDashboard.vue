@@ -2328,8 +2328,9 @@ async function makeCaptain(member) {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
-  min-height: 0;
+  flex: 0 0 232px;
+  height: 232px;
+  min-height: 232px;
 }
 
 .task-history-head {
@@ -2682,6 +2683,12 @@ async function makeCaptain(member) {
 
   .agent-glass-node {
     min-height: auto;
+  }
+
+  .task-reveal-box {
+    flex-basis: 208px;
+    height: 208px;
+    min-height: 208px;
   }
 
   .aether-stage {
