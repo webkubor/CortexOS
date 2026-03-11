@@ -44,7 +44,7 @@
 - **状态巡检**: `pnpm run fleet:status` (来自 `CortexOS` 根目录)
 
 ### 📝 记忆同步
-- **操作留痕**: 每一项基础设施变动必须记入 `logs/YYYY-MM-DD-infra.md`。
+- **操作留痕**: 每一项基础设施变动现统一记入 `.memory/logs/YYYY-MM-DD.md`。
 - **兵器谱同步**: 每次安装/卸载后必须更新本指挥中心文档。
 
 ---

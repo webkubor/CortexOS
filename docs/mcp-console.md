@@ -78,7 +78,7 @@
 
 - **查看所有扩展**: `gemini extensions list`
 - **更新 MCP 配置**: `gemini extensions update <name>`
-- **操作留痕**: 基础设施变动记录于 `logs/YYYY-MM-DD-infra.md`。
+- **操作留痕**: 基础设施变动记录于 `.memory/logs/YYYY-MM-DD.md`。
 
 ---
 *Managed by Brain Sentinel | Little Candle (小烛) | 2026-03-04*
