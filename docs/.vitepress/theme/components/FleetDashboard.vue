@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import MissionCard from "./MissionCard.vue";
 import AgentNode from "./AgentNode.vue";
+import CliHealthFooter from "./CliHealthFooter.vue";
 
 const loading = ref(true);
 const error = ref("");
@@ -101,6 +102,23 @@ const stateEndpoint = 'http://127.0.0.1:18790/api/fleet/state';
 const eventsEndpoint = 'http://127.0.0.1:18790/api/fleet/events';
 const workspacesEndpoint = 'http://127.0.0.1:18790/api/fleet/workspaces';
 const RECONNECT_DELAY = 3000;
+
+async function postAction(payload, errorMessage = "操作失败") {
+  const response = await fetch(actionEndpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const resPayload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(resPayload.error || errorMessage);
+  }
+  if (resPayload.state) {
+    applyBridgeState(resPayload.state);
+  } else {
+    await loadData();
+  }
+}
 
 function memberStatusToType(status, fallback = "active") {
   const text = String(status || "").trim();
@@ -368,26 +386,13 @@ async function submitTask() {
   creatingTask.value = true;
   error.value = "";
   try {
-    const response = await fetch(actionEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: taskCreatorTargetMember.value ? "create-member-task" : "create-task",
-        title: createTaskForm.value.title.trim(),
-        workspace: createTaskForm.value.workspace.trim(),
-        priority: createTaskForm.value.priority,
-        memberId: taskCreatorTargetMember.value?.member || ""
-      })
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(payload.error || "任务发布失败");
-    }
-    if (payload.state) {
-      applyBridgeState(payload.state);
-    } else {
-      await loadData();
-    }
+    await postAction({
+      action: taskCreatorTargetMember.value ? "create-member-task" : "create-task",
+      title: createTaskForm.value.title.trim(),
+      workspace: createTaskForm.value.workspace.trim(),
+      priority: createTaskForm.value.priority,
+      memberId: taskCreatorTargetMember.value?.member || ""
+    }, "任务发布失败");
     closeTaskCreator();
   } catch (e) {
     error.value = e.message || "任务发布失败";
@@ -402,24 +407,11 @@ async function completeMemberTask(member, task) {
   completingTaskId.value = task.taskId;
   error.value = "";
   try {
-    const response = await fetch(actionEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "complete-task",
-        taskId: task.taskId,
-        memberId: member.member
-      })
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(payload.error || "标记完成失败");
-    }
-    if (payload.state) {
-      applyBridgeState(payload.state);
-    } else {
-      await loadData();
-    }
+    await postAction({
+      action: "complete-task",
+      taskId: task.taskId,
+      memberId: member.member
+    }, "标记完成失败");
   } catch (e) {
     error.value = e.message || "标记完成失败";
   } finally {
@@ -435,23 +427,10 @@ async function removeTask(task) {
   data.value.missions = data.value.missions.filter((item) => item.taskId !== task.taskId);
 
   try {
-    const response = await fetch(actionEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "delete-task",
-        taskId: task.taskId
-      })
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(payload.error || "删除任务失败");
-    }
-    if (payload.state) {
-      applyBridgeState(payload.state);
-    } else {
-      await loadData();
-    }
+    await postAction({
+      action: "delete-task",
+      taskId: task.taskId
+    }, "删除任务失败");
   } catch (e) {
     data.value.missions = previousMissions;
     error.value = e.message || "删除任务失败";
@@ -466,18 +445,7 @@ async function removeMember(member) {
   // Optimistic UI Update
   data.value.members = data.value.members.filter(m => m.member !== member.member);
   try {
-    const response = await fetch(actionEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "kick-out", memberId: member.member })
-    });
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(payload.error || "移出节点失败");
-    }
-    const payload = await response.json().catch(() => ({}));
-    if (payload.state) applyBridgeState(payload.state);
-    else await loadData();
+    await postAction({ action: "kick-out", memberId: member.member }, "移出节点失败");
   } catch (e) {
     data.value.members = previousMembers;
     error.value = e.message || "移出节点失败";
@@ -498,18 +466,7 @@ async function makeCaptain(member) {
   });
 
   try {
-    const response = await fetch(actionEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "make-captain", memberId: member.member })
-    });
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(payload.error || "移交最高指令失败");
-    }
-    const payload = await response.json().catch(() => ({}));
-    if (payload.state) applyBridgeState(payload.state);
-    else await loadData();
+    await postAction({ action: "make-captain", memberId: member.member }, "移交最高指令失败");
   } catch (e) {
     data.value.members = previousMembers;
     error.value = e.message || "移交最高指令失败";
