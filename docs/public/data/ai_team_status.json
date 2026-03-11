@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-11T01:55:00.437Z",
+  "generatedAt": "2026-03-11T02:11:47.727Z",
   "version": "v5.6.5 (系统环境透显 + 数据库舰队状态)",
   "source": ".memory/sqlite/ai-team.db",
   "environment": {
@@ -35,8 +35,8 @@
       "agent": "Codex",
       "role": "后端",
       "workspace": "~/Documents/memory",
-      "task": "梳理 Desktop/AI-tools 下的 Git 仓库并给出串联方案",
-      "since": "2026-03-11 09:40",
+      "task": "批量检查并修正 AI-tools 本地 Git remote 与 GitHub 现状的映射，收敛历史仓库名残留。",
+      "since": "2026-03-11 10:11",
       "status": "[ 队长锁 ] 活跃",
       "type": "active",
       "progress": 60,
