@@ -143,6 +143,11 @@ const currentWorkspaceName = computed(() => {
   const current = workspaceOptions.value.find((item) => item.workspace === createTaskForm.value.workspace);
   return current?.name || "";
 });
+const displayVersion = computed(() => {
+  const raw = String(data.value.version || "").trim();
+  const match = raw.match(/v\d+(?:\.\d+){0,2}(?:-[a-z0-9.]+)?/i);
+  return match?.[0] || "v0";
+});
 
 let requestId = 0;
 const actionEndpoint = 'http://127.0.0.1:18790/api/fleet/action';
@@ -500,20 +505,24 @@ async function makeCaptain(member) {
 
     <!-- 2. 沉浸式 HUD -->
     <header class="aether-hud">
-      <div class="hud-group">
-        <div class="hud-main-title">
-          星际舰队中枢
-          <span class="hud-divider">//</span>
-          <span class="hud-version-badge">V5</span>
+      <div class="hud-left">
+        <div class="hud-kicker">AI TEAM LOCAL COMMAND</div>
+        <div class="hud-title-row">
+          <div class="hud-main-title">星际舰队中枢</div>
+          <span class="hud-version-badge">{{ displayVersion }}</span>
         </div>
+        <div class="hud-subtitle">本地舰队协同 · {{ data.active }}/{{ data.total }} 在线节点 · {{ data.missions.length }} 条任务</div>
       </div>
       <div class="hud-center">
         <div class="live-status">
           <div class="live-scanner"></div>
-          <span class="live-text">监控运行中</span>
+          <span class="live-text">SSE 实时同步</span>
+          <span class="live-divider"></span>
+          <span class="live-meta">{{ realtimeStatus }}</span>
         </div>
       </div>
       <div class="hud-right">
+        <div class="hud-source-pill">SOURCE · {{ data.source?.includes('sqlite') ? 'SQLITE' : 'LOCAL' }}</div>
         <div class="quantum-clock">
           <span class="q-time q-hour">{{ currentTime.getHours().toString().padStart(2, '0') }}</span>
           <span class="q-colon">:</span>
@@ -2077,7 +2086,9 @@ async function makeCaptain(member) {
 
 .health-items {
   display: flex;
+  align-items: center;
   gap: 16px;
+  white-space: nowrap;
 }
 
 .health-item {
@@ -2172,15 +2183,28 @@ async function makeCaptain(member) {
 
 .footer-meta {
   display: flex;
-  gap: 20px;
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.5);
-  font-family: ui-monospace;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: ui-monospace, sans-serif;
+  white-space: nowrap;
+}
+
+.sync-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  letter-spacing: 0.05em;
 }
 
 .footer-system-stats {
   display: flex;
-  gap: 24px;
+  gap: 12px;
   align-items: center;
   margin-left: auto;
   margin-right: 40px;
@@ -2192,20 +2216,26 @@ async function makeCaptain(member) {
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  white-space: nowrap;
 }
 
 .stat-label {
-  font-size: 9px;
-  color: #555;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
   font-size: 11px;
   color: var(--c-aureate-glow);
-  font-family: ui-monospace;
+  font-weight: bold;
+  font-family: ui-monospace, sans-serif;
   text-shadow: 0 0 8px rgba(245, 200, 123, 0.3);
 }
 
