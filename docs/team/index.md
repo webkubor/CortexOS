@@ -33,11 +33,17 @@ import FleetDashboard from '../.vitepress/theme/components/FleetDashboard.vue'
   padding: 0 !important;
 }
 
-/* 强制 Body 溢出隐藏，像个真正的 App */
+/* 保留沉浸背景，但允许页面自然滚动，避免低高度屏幕被截断 */
 html.team-dashboard-page,
 body.team-dashboard-page {
-  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   background: #000 !important;
+}
+
+.immersive-wrapper {
+  min-height: 100vh;
+  background: #000;
 }
 </style>
 
