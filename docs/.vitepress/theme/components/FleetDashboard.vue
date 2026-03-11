@@ -161,7 +161,11 @@ function normalizeBridgeState(state) {
       id: task.id || `任务-${String(index + 1).padStart(2, "0")}`,
       title: task.title || task.taskId || `任务-${String(index + 1).padStart(2, "0")}`,
       status: task.status || '待启动',
-      owner: task.owner || task.assignee || '待分配'
+      owner: task.owner || task.assignee || '待分配',
+      assigneeAgent: task.assigneeAgent || '',
+      assigneeRole: task.assigneeRole || '',
+      workspace: task.workspace || '',
+      publishedAt: task.publishedAt || ''
     }))
     : members
       .filter((member) => member.task)
@@ -170,7 +174,11 @@ function normalizeBridgeState(state) {
         id: `任务-${String(index + 1).padStart(2, "0")}`,
         title: member.task,
         status: getMissionStatus(member),
-        owner: member.alias || member.member
+        owner: member.alias || member.member,
+        assigneeAgent: member.agent || '',
+        assigneeRole: member.role || '',
+        workspace: member.workspace || '',
+        publishedAt: ''
       }));
 
   return {
@@ -418,7 +426,14 @@ async function makeCaptain(member) {
                 </div>
               </div>
               <p class="m-title">{{ task.title }}</p>
-              <div class="m-owner">{{ task.owner }}</div>
+              <div class="m-owner">
+                <span>{{ task.owner }}</span>
+                <span v-if="task.assigneeAgent || task.assigneeRole" class="m-owner-meta">
+                  {{ [task.assigneeAgent, task.assigneeRole].filter(Boolean).join(' / ') }}
+                </span>
+              </div>
+              <div v-if="task.workspace" class="m-published-at">工作路径 {{ task.workspace }}</div>
+              <div v-if="task.publishedAt" class="m-published-at">发布时间 {{ task.publishedAt }}</div>
             </div>
           </div>
         </aside>
@@ -841,6 +856,7 @@ async function makeCaptain(member) {
   padding: 24px;
   gap: 24px;
   z-index: 10;
+  position: relative;
 }
 
 /* 🧊 任务清单 - 玻璃态 */
@@ -962,16 +978,26 @@ async function makeCaptain(member) {
   font-size: 9px;
   color: #666;
   font-family: ui-monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-owner-meta,
+.m-published-at {
+  font-size: 9px;
+  color: #8d8d8d;
+  font-family: ui-monospace;
 }
 
 /* ⚡️ 主令输入枢纽 (Command Input Hub) */
 .command-hub-overlay {
-  position: fixed;
-  bottom: 80px; /* 浮于 footer 之上 */
+  position: absolute;
+  bottom: 0px; /* 沉浸在 stage 底部 */
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;
-  width: 90%;
+  width: 100%;
   max-width: 800px;
   pointer-events: none; /* 让外层不阻挡点击，子元素自身开启 */
 }

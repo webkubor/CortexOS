@@ -64,12 +64,23 @@ function priorityRank(priority) {
   if (['low', '低', '🟢'].some(token => text.includes(token))) return 2
   return 3
 }
+
+function extractTaskIds(text) {
+  const matches = String(text || '').match(/\b(?:task[-#]?\d{1,8}(?:-[a-z0-9-]+)?|\d{4}-\d{2}-\d{2}-[a-z0-9-]+)\b/ig) || []
+  return matches.map(match => match.toLowerCase())
+}
+
 function buildTaskQueue(db) {
   const rows = db.prepare(`
     SELECT
       task_id AS taskId,
       title,
       assignee,
+      assignee_member_id AS assigneeMemberId,
+      assignee_agent AS assigneeAgent,
+      assignee_role AS assigneeRole,
+      workspace,
+      published_at AS publishedAt,
       status,
       priority,
       priority_rank AS priorityRank,
@@ -90,7 +101,12 @@ function buildTaskQueue(db) {
     title: task.title || task.taskId,
     status: task.completed ? '已完成' : (task.status || '待启动'),
     owner: task.assignee || '待分配',
-    priority: task.priority || '未标注'
+    priority: task.priority || '未标注',
+    assigneeMemberId: task.assigneeMemberId || '',
+    assigneeAgent: task.assigneeAgent || '',
+    assigneeRole: task.assigneeRole || '',
+    workspace: task.workspace || '',
+    publishedAt: task.publishedAt || ''
   }))
 }
 
@@ -102,6 +118,11 @@ function normalizeTaskRecord(task, index = 0) {
     taskId: stripMarkdown(task.taskId || task.id || `task-${Date.now()}-${index + 1}`),
     title: stripMarkdown(task.title || task.taskId || `任务-${index + 1}`),
     assignee: stripMarkdown(task.owner || task.assignee || '待分配'),
+    assigneeMemberId: stripMarkdown(task.assigneeMemberId || ''),
+    assigneeAgent: stripMarkdown(task.assigneeAgent || ''),
+    assigneeRole: stripMarkdown(task.assigneeRole || ''),
+    workspace: stripMarkdown(task.workspace || ''),
+    publishedAt: stripMarkdown(task.publishedAt || nowIso()),
     status,
     priority,
     priorityRank: priorityRank(priority),
@@ -121,6 +142,11 @@ export function replaceAiTeamTasks(tasks = [], { operator = 'system', reason = '
       task_id,
       title,
       assignee,
+      assignee_member_id,
+      assignee_agent,
+      assignee_role,
+      workspace,
+      published_at,
       status,
       priority,
       priority_rank,
@@ -132,6 +158,11 @@ export function replaceAiTeamTasks(tasks = [], { operator = 'system', reason = '
       @taskId,
       @title,
       @assignee,
+      @assigneeMemberId,
+      @assigneeAgent,
+      @assigneeRole,
+      @workspace,
+      @publishedAt,
       @status,
       @priority,
       @priorityRank,
@@ -232,6 +263,54 @@ function chooseWorkerMemberId(agent, agents, excludedIds = new Set()) {
   }
 
   return `${baseAlias}-9999 (${baseAgent})`
+}
+
+function syncTaskClaimsFromAgents(db, agents) {
+  const tasks = db.prepare(`
+    SELECT
+      task_id AS taskId,
+      assignee,
+      assignee_member_id AS assigneeMemberId,
+      assignee_agent AS assigneeAgent,
+      assignee_role AS assigneeRole
+    FROM tasks
+  `).all()
+
+  const claims = new Map()
+  for (const agent of agents) {
+    if (agent.type === 'offline') continue
+    for (const taskId of extractTaskIds(agent.task)) {
+      claims.set(taskId, {
+        assignee: agent.alias || agent.memberId,
+        assigneeMemberId: agent.memberId,
+        assigneeAgent: agent.agentName,
+        assigneeRole: agent.role,
+        workspace: agent.workspace
+      })
+    }
+  }
+
+  const updateClaim = db.prepare(`
+    UPDATE tasks
+    SET
+      assignee = @assignee,
+      assignee_member_id = @assigneeMemberId,
+      assignee_agent = @assigneeAgent,
+      assignee_role = @assigneeRole,
+      workspace = @workspace,
+      synced_at = @syncedAt
+    WHERE task_id = @taskId
+  `)
+
+  for (const task of tasks) {
+    const claim = claims.get(String(task.taskId || '').toLowerCase())
+    if (!claim) continue
+    updateClaim.run({
+      taskId: task.taskId,
+      ...claim,
+      syncedAt: nowIso()
+    })
+  }
 }
 
 function normalizeStoredAgent(agent) {
@@ -361,6 +440,7 @@ function persistAiTeamAgents(agents, { action = 'sync', operator = 'system', pay
   })
 
   syncAgents(normalizedAgents)
+  syncTaskClaimsFromAgents(db, normalizedAgents)
 
   const nextCaptain = db.prepare(`
     SELECT member_id

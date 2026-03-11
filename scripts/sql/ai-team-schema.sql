@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   assignee_member_id TEXT,
   assignee_agent TEXT,
   assignee_role TEXT,
+  workspace TEXT,
+  published_at TEXT,
   status TEXT,
   priority TEXT,
   priority_rank INTEGER NOT NULL DEFAULT 3,
