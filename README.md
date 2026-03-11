@@ -58,7 +58,7 @@ CortexOS 的做法是把这三类信息落在本地：
 - 任务完成后自动回写状态
 
 <div align="center">
-  <img src="./docs/public/images/ai_team_dashboard_lobster.png" width="800" alt="AI Team 面板与小龙虾接入状态">
+  <img src="https://cdn.jsdelivr.net/gh/webkubor/upic-images@main/assets/img_1773212700.png" width="800" alt="AI Team 面板与小龙虾接入状态">
   <p><i>▲ 实时展示当前项目的工作 Agent 流转，现已完整支持 <b>小龙虾 (Lobster) / 栖月</b> 接入本地中枢。</i></p>
 </div>
 
