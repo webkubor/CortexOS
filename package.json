@@ -24,6 +24,7 @@
     "fleet:post-task": "node scripts/actions/fleet-post-task.mjs",
     "fleet:checkin": "node scripts/actions/fleet-checkin.mjs",
     "fleet:bridge": "node scripts/services/fleet-control-bridge.mjs",
+    "team:local": "node scripts/actions/team-local.mjs",
     "projects:sync": "node scripts/actions/project-registry.mjs",
     "fleet:sync-dashboard": "node scripts/actions/sync-fleet-dashboard.mjs",
     "feishu:bot": "node scripts/services/feishu-bot-bridge.mjs",

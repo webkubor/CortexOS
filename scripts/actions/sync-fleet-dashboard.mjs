@@ -77,8 +77,7 @@ function getComparablePayload(payload) {
   return clone
 }
 
-export function syncFleetDashboard() {
-  const state = getAiTeamState()
+export function buildFleetDashboardPayload(state = getAiTeamState()) {
   const rows = state.agents.map((agent) => {
     const workspace = sanitizeWorkspaceForOutput(agent.workspace)
     const todoProgress = getProgressFromTodo(agent.workspace)
@@ -99,7 +98,7 @@ export function syncFleetDashboard() {
     }
   })
 
-  const payload = {
+  return {
     generatedAt: new Date().toISOString(),
     version: 'v5.7.1-local (本地 AI Team 状态快照)',
     source: '.memory/sqlite/ai-team.db',
@@ -127,6 +126,10 @@ export function syncFleetDashboard() {
     queued: state.queued,
     members: rows
   }
+}
+
+export function syncFleetDashboard() {
+  const payload = buildFleetDashboardPayload()
 
   let shouldWrite = true
   if (fs.existsSync(outputFile)) {
@@ -161,4 +164,6 @@ function main() {
   }
 }
 
-main()
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main()
+}

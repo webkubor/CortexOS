@@ -103,6 +103,19 @@ uv run /你的物理路径/CortexOS/mcp_server/server.py
 AI Team 本地状态库会在 bridge 启动时自动初始化，不需要先手动执行 `pnpm run team:db:init`。
 `AI Team` 页面只在本地启动文档站时显示，运行态数据不会发布到线上文档站。
 
+### 1.5 一条命令启动本地 AI Team
+
+```bash
+pnpm run team:local
+```
+
+它会自动：
+- 启动本地 bridge
+- 启动带本地菜单的 VitePress
+- 直接打开 `/CortexOS/team/`
+
+用户不需要再单独理解 `fleet:bridge`、`team:db:init` 或文档站启动细节。
+
 ### 2. 在客户端挂载外脑
 
 ```json

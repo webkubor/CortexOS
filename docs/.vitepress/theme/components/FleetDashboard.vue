@@ -103,18 +103,36 @@ function getMissionStatus(member) {
 }
 
 function normalizeBridgeState(state) {
-  const members = (state?.agents || []).map((agent) => ({
-    member: agent.memberId,
-    alias: agent.alias,
-    agent: agent.agentName,
-    role: agent.role,
-    workspace: agent.workspace,
-    task: agent.task,
-    since: agent.heartbeatAt || agent.updatedAt || "-",
-    status: agent.status,
-    type: agent.type || memberStatusToType(agent.status),
-    progress: memberStatusToProgress(agent.status, agent.isCaptain),
-    isCaptain: Boolean(agent.isCaptain)
+  const sourceMembers = Array.isArray(state?.members)
+    ? state.members
+    : Array.isArray(state?.agents)
+      ? state.agents.map((agent) => ({
+        member: agent.memberId,
+        alias: agent.alias,
+        agent: agent.agentName,
+        role: agent.role,
+        workspace: agent.workspace,
+        task: agent.task,
+        since: agent.heartbeatAt || agent.updatedAt || "-",
+        status: agent.status,
+        type: agent.type || memberStatusToType(agent.status),
+        progress: memberStatusToProgress(agent.status, agent.isCaptain),
+        isCaptain: Boolean(agent.isCaptain)
+      }))
+      : [];
+
+  const members = sourceMembers.map((member) => ({
+    member: member.member || member.memberId,
+    alias: member.alias,
+    agent: member.agent || member.agentName,
+    role: member.role,
+    workspace: member.workspace || '-',
+    task: member.task,
+    since: member.since || member.heartbeatAt || member.updatedAt || "-",
+    status: member.status,
+    type: member.type || memberStatusToType(member.status),
+    progress: member.progress ?? memberStatusToProgress(member.status, member.isCaptain),
+    isCaptain: Boolean(member.isCaptain)
   }));
 
   const missions = members
@@ -129,6 +147,9 @@ function normalizeBridgeState(state) {
 
   return {
     generatedAt: state?.generatedAt || "",
+    source: state?.source || data.value.source || '',
+    version: state?.version || data.value.version,
+    environment: state?.environment || data.value.environment || {},
     total: state?.total ?? members.length,
     active: state?.active ?? members.filter((member) => member.type === "active").length,
     offline: state?.offline ?? members.filter((member) => member.type === "offline").length,

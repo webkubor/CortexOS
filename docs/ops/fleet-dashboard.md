@@ -27,6 +27,7 @@
 常用命令：
 
 ```bash
+pnpm run team:local
 pnpm run fleet:status
 pnpm run fleet:claim -- --workspace "$PWD" --task "你的任务" --agent "Codex" --alias "Codex" --role "后端"
 pnpm run fleet:sync-dashboard
@@ -34,6 +35,7 @@ pnpm run fleet:sync-dashboard
 
 说明：
 
+- `pnpm run team:local` 是本地 AI Team 中枢统一入口，会自动拉起 bridge + 本地文档站并打开 `/CortexOS/team/`
 - `AI Team` 页面本地运行时直接读取 bridge：`http://127.0.0.1:18790/api/fleet/state`
 - `pnpm run fleet:sync-dashboard` 现在只会把数据库状态投影到 `.memory/cache/ai_team_status.local.json`
 - 线上文档站不再承载 `AI Team` 运行态数据，也不再展示本地中枢菜单

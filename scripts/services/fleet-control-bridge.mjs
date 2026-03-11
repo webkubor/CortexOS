@@ -6,6 +6,7 @@ import { spawn } from 'child_process'
 import { fileURLToPath } from 'url'
 import { ensureAiTeamDb } from '../lib/ai-team-db.mjs'
 import { getAiTeamState, makeAiTeamCaptain, markAiTeamMemberOffline } from '../lib/ai-team-state.mjs'
+import { buildFleetDashboardPayload } from '../actions/sync-fleet-dashboard.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,7 +21,7 @@ let lastStateSignature = ''
 let lastBroadcastState = null
 
 function getSerializableState() {
-  const state = getAiTeamState()
+  const state = buildFleetDashboardPayload(getAiTeamState())
   const comparable = JSON.parse(JSON.stringify(state))
   delete comparable.generatedAt
   return { state, signature: JSON.stringify(comparable) }
@@ -72,7 +73,7 @@ function writeSse(res, event, payload) {
 
 function broadcastState(event = 'state') {
   if (sseClients.size === 0) return
-  const payload = lastBroadcastState || getAiTeamState()
+  const payload = lastBroadcastState || buildFleetDashboardPayload(getAiTeamState())
   for (const client of sseClients.values()) {
     writeSse(client.res, event, { ok: true, state: payload })
   }
@@ -107,7 +108,7 @@ function attachSseClient(req, res, origin) {
 
   sseClients.set(clientId, { res, pingTimer })
   writeSse(res, 'ready', { ok: true, clientId })
-  writeSse(res, 'state', { ok: true, state: getAiTeamState() })
+  writeSse(res, 'state', { ok: true, state: buildFleetDashboardPayload(getAiTeamState()) })
 
   req.on('close', () => {
     clearInterval(pingTimer)
@@ -177,7 +178,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && req.url === '/api/fleet/state') {
-    writeJson(res, 200, { ok: true, state: getAiTeamState() }, origin)
+    writeJson(res, 200, { ok: true, state: buildFleetDashboardPayload(getAiTeamState()) }, origin)
     return
   }
 
