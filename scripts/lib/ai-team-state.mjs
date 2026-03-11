@@ -107,12 +107,11 @@ function findExistingOpenTask(db, { taskId = '', title = '', memberId = '', agen
         assignee_member_id AS assigneeMemberId,
         assignee_agent AS assigneeAgent,
         assignee_role AS assigneeRole,
-        workspace,
-        published_at AS publishedAt,
-        status,
-        priority,
-        completed,
-        source_file AS sourceFile
+      workspace,
+      published_at AS publishedAt,
+      status,
+      priority,
+      completed
       FROM tasks
       WHERE lower(task_id) = lower(?)
       LIMIT 1
@@ -134,8 +133,7 @@ function findExistingOpenTask(db, { taskId = '', title = '', memberId = '', agen
       published_at AS publishedAt,
       status,
       priority,
-      completed,
-      source_file AS sourceFile
+      completed
     FROM tasks
     WHERE completed = 0
       AND lower(title) = lower(?)
@@ -245,7 +243,6 @@ function normalizeTaskRecord(task, index = 0) {
     priority,
     priorityRank: priorityRank(priority),
     completed,
-    sourceFile: '',
     updatedAt: nowIso(),
     syncedAt: nowIso()
   }
@@ -271,7 +268,6 @@ function insertTaskRecord(db, normalized, { operator = 'system', reason = 'tasks
       priority,
       priority_rank,
       completed,
-      source_file,
       updated_at,
       synced_at
     ) VALUES (
@@ -287,7 +283,6 @@ function insertTaskRecord(db, normalized, { operator = 'system', reason = 'tasks
       @priority,
       @priorityRank,
       @completed,
-      @sourceFile,
       @updatedAt,
       @syncedAt
     )
@@ -306,10 +301,6 @@ function insertTaskRecord(db, normalized, { operator = 'system', reason = 'tasks
       priority = excluded.priority,
       priority_rank = excluded.priority_rank,
       completed = excluded.completed,
-      source_file = CASE
-        WHEN tasks.source_file IS NULL OR tasks.source_file = '' THEN excluded.source_file
-        ELSE tasks.source_file
-      END,
       updated_at = excluded.updated_at,
       synced_at = excluded.synced_at
   `).run(normalized)
@@ -365,7 +356,6 @@ function bindLiveTaskToFormalRecord(db, agent) {
     priority,
     priorityRank: priorityRank(priority),
     completed: 0,
-    sourceFile: stripMarkdown(existing?.sourceFile || ''),
     updatedAt: nowIso(),
     syncedAt: nowIso()
   }, {
@@ -399,7 +389,6 @@ export function replaceAiTeamTasks(tasks = [], { operator = 'system', reason = '
       priority,
       priority_rank,
       completed,
-      source_file,
       updated_at,
       synced_at
     ) VALUES (
@@ -415,7 +404,6 @@ export function replaceAiTeamTasks(tasks = [], { operator = 'system', reason = '
       @priority,
       @priorityRank,
       @completed,
-      @sourceFile,
       @updatedAt,
       @syncedAt
     )

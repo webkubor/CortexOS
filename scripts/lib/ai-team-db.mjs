@@ -40,7 +40,6 @@ const taskColumns = {
   priority: 'TEXT',
   priority_rank: 'INTEGER NOT NULL DEFAULT 3',
   completed: 'INTEGER NOT NULL DEFAULT 0',
-  source_file: 'TEXT',
   updated_at: 'TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP',
   synced_at: 'TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP'
 }
