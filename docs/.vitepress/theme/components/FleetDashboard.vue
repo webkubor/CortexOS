@@ -1127,139 +1127,159 @@ async function makeCaptain(member) {
   font-family: ui-monospace;
 }
 
-/* ⚡️ 主令输入枢纽 (Command Input Hub) */
-.command-hub-overlay {
-  position: fixed;
-  bottom: 80px; /* 浮于 footer 之上 */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 200;
-  width: calc(100% - 48px);
-  max-width: 800px;
-  pointer-events: none; /* 让外层不阻挡点击，子元素自身开启 */
-  display: flex;
-  justify-content: center;
-}
-
-.command-input-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(10, 12, 16, 0.75);
-  backdrop-filter: blur(24px) saturate(150%);
-  border: 1px solid rgba(245, 200, 123, 0.2);
-  border-radius: 20px;
-  padding: 8px 12px 8px 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  pointer-events: auto; /* 恢复子元素交互 */
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-sizing: border-box;
-  width: 100%;
-  overflow: hidden; /* 防止 glow 溢出容器 */
-}
-
-.command-input-container:focus-within {
-  background: rgba(15, 18, 24, 0.85);
-  border-color: rgba(245, 200, 123, 0.5);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(245, 200, 123, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-
-.input-glow {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 200%;
-  height: 100%;
-  border-radius: 21px;
-  background: linear-gradient(90deg, transparent, rgba(245, 200, 123, 0.15), transparent);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-}
-
-.command-input-container:focus-within .input-glow {
-  opacity: 1;
-  animation: slide-glow 4s linear infinite;
-}
-
-@keyframes slide-glow {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(50%); }
-}
-
-.input-icon {
-  color: var(--c-aureate-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  filter: drop-shadow(0 0 8px rgba(245, 200, 123, 0.4));
-}
-
-.input-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.aether-command-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #fff;
-  font-size: 16px;
-  font-family: "Geist", "Inter", sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  padding: 12px 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.aether-command-input::placeholder {
-  color: rgba(255, 255, 255, 0.25);
-  font-weight: 400;
-  transition: color 0.3s ease;
-}
-
-.aether-command-input:focus::placeholder {
-  color: rgba(255, 255, 255, 0.1);
-}
-
-.command-submit-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--c-aureate-base), var(--c-aureate-dim));
-  color: #090A0E;
-  border: none;
+.mission-empty-state {
+  padding: 18px 16px;
+  border: 1px dashed rgba(245, 200, 123, 0.22);
   border-radius: 14px;
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.15em;
+  background: rgba(255, 255, 255, 0.02);
+  color: #9a9a9a;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.task-creator-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 7, 10, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.task-creator-panel {
+  width: min(560px, calc(100vw - 32px));
+  padding: 22px;
+  border: 1px solid rgba(245, 200, 123, 0.18);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(10, 12, 16, 0.96), rgba(15, 18, 24, 0.94));
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+
+.task-creator-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.task-creator-kicker {
+  margin-bottom: 6px;
+  color: var(--c-aureate-dim);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.task-creator-header h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #fff;
+}
+
+.task-creator-close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #cfcfcf;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 15px rgba(245, 200, 123, 0.2);
 }
 
-.command-submit-btn:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(245, 200, 123, 0.4);
-  background: linear-gradient(135deg, var(--c-aureate-glow), var(--c-aureate-base));
-}
-
-.command-submit-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(245, 200, 123, 0.2);
-}
-
-.command-submit-btn svg {
+.task-creator-close svg {
   width: 16px;
   height: 16px;
-  stroke-width: 2.5px;
+}
+
+.task-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.task-field-label {
+  color: #d6d6d6;
+  font-size: 13px;
+}
+
+.task-field-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.task-field-select {
+  appearance: none;
+}
+
+.task-field-hint {
+  color: #7f7f7f;
+  font-size: 11px;
+}
+
+.task-workspace-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.task-workspace-name {
+  color: #f3f3f3;
+  font-size: 13px;
+}
+
+.task-workspace-path {
+  color: #8d8d8d;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.task-creator-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.task-secondary-btn,
+.task-primary-btn {
+  min-width: 104px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.task-secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #e4e4e4;
+}
+
+.task-primary-btn {
+  border: none;
+  background: linear-gradient(135deg, var(--c-aureate-base), var(--c-aureate-dim));
+  color: #0b0d10;
+}
+
+.task-primary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* 💎 Agent 矩阵 - 液态玻璃节点 */
