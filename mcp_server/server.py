@@ -813,16 +813,19 @@ def task_handoff_check(task_id: str = "", agent: str = "Codex", summary: str = "
 
     if task_id.strip():
         task_file = _resolve_task_file(task_id)
-        if not task_file:
-            messages.append(f"未找到任务文件: {task_id}")
-        else:
+        db_result = _complete_ai_team_db_task(task_id, normalized_agent, summary)
+
+        if task_file:
             result = _upsert_task_completed(task_file, normalized_agent, summary)
             if result.get("already_done"):
                 messages.append(f"任务已是完成状态: {result['task_id']}")
             else:
                 messages.append(f"已标记完成: {result['task_id']}")
+        elif db_result.get("found"):
+            messages.append(f"未找到任务书文件，已按数据库任务收工: {db_result['task_id']}")
+        else:
+            messages.append(f"未找到任务文件: {task_id}")
 
-        db_result = _complete_ai_team_db_task(task_id, normalized_agent, summary)
         if db_result.get("found"):
             if db_result.get("already_done"):
                 messages.append(f"数据库任务已是完成状态: {db_result['task_id']}")
