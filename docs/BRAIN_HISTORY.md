@@ -5,9 +5,34 @@
 
 ---
 
-## 🏗️ 当前智力档位: v5.6.0 (舰队协同成熟期 · 记忆统一)
+## 🏗️ 当前智力档位: v5.7.1 (AI Team 本地实时化 · 状态主库收口)
 
 ---
+
+## [v5.7.1] - 2026-03-11（当前：AI Team 本地实时化 · 状态主库收口）
+
+### 问题
+v5.7.0 完成了项目自动登记，但 AI Team 的运行态仍有三类根问题：
+1. **状态链路过长**：`fleet_status.md -> ai_team_status.json -> 前端轮询` 仍是主路径，队长切换和节点上下线存在延迟，页面看到的是投影，不是真实状态。
+2. **运行态与产品边界冲突**：AI Team 本质上是本地中枢服务，却还把状态投影进 `docs/public/`，等于把本地运行态和线上静态文档混在一起。
+3. **队长与人格识别不稳定**：队长切换时 `member_id` 会变化，cleanup 还会按最新心跳把人工移交抢回；同模型不同人格在同一路径下也可能被错误合并。
+
+### 修复方式
+- **状态主库收口**：将 AI Team 的运行态统一收口到 `.memory/sqlite/ai-team.db`，由 `scripts/lib/ai-team-state.mjs` 负责 claim/checkin/handover/cleanup 的唯一状态读写。
+- **稳定身份键**：为 `agents` 增加 `identity_key`，身份由 `agentName + alias + workspace` 构成，队长切换不再依赖可变的 `member_id` 作为唯一主键。
+- **本地服务边界强化**：`FleetDashboard.vue` 改为只读本地 bridge；`docs/.vitepress/config.mjs` 通过 `CORTEXOS_LOCAL_TEAM` 控制菜单，AI Team 入口只在本地启动文档站时出现。
+- **投影降级**：`fleet:sync-dashboard` 不再写 `docs/public/data/ai_team_status.json`，而是仅写 `.memory/cache/ai_team_status.local.json` 作为本地辅助快照。
+- **继任规则修正**：`cleanupAiTeamState()` 仅在当前队长离线或过期时才选继任者，不再按“最新心跳”覆盖人工移交。
+- **人格匹配修正**：`claim/checkin` 优先按 `identityKey` / `alias` 识别节点，仅在完全缺少 alias 与 nodeId 时才退回旧兜底。
+
+### 解决了什么
+- **实时性**：AI Team 页面主链路从“文件投影”改为“SQLite -> bridge -> 本地页面”，不再依赖公开 JSON 快照。
+- **边界清晰**：AI Team 明确成为本地服务，线上文档站不再承载本地运行态。
+- **一致性**：队长、节点、心跳、操作记录统一落库，旧 `fleet_status.md / fleet_meta.json` 退出运行链路，状态源不再分裂。
+- **稳定性**：手动移交的队长不再被 cleanup 抢回；同模型不同人格在同路径下也能独立存在。
+
+### 影响
+大脑从“能展示舰队状态”进化为“本地实时运行的 AI 指挥中枢”。这一步不是界面优化，而是状态基础设施升级：AI Team 的对话、审计、继任、日志、后续小数据库能力，终于有了稳定主库和清晰边界。
 
 ## [v5.6.0] - 2026-03-05（当前：舰队协同成熟 · 记忆统一 · 生态扩张）
 
