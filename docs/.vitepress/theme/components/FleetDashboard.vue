@@ -7,7 +7,10 @@ import codexIcon from "../assets/codex.svg";
 const loading = ref(true);
 const error = ref("");
 const currentTime = ref(new Date());
+const realtimeStatus = ref("连接中");
 let timeInterval = null;
+let reconnectTimer = null;
+let eventSource = null;
 
 const data = ref({
   generatedAt: "",
@@ -70,11 +73,11 @@ const currentMembers = computed(() =>
   data.value.members.filter((m) => m.type === "active" || m.type === "queued" || m.type === "offline")
 );
 
-const REFRESH_INTERVAL = 8000;
-let refreshTimer = null;
 let requestId = 0;
 const actionEndpoint = 'http://127.0.0.1:18790/api/fleet/action';
 const stateEndpoint = 'http://127.0.0.1:18790/api/fleet/state';
+const eventsEndpoint = 'http://127.0.0.1:18790/api/fleet/events';
+const RECONNECT_DELAY = 3000;
 
 function memberStatusToType(status, fallback = "active") {
   const text = String(status || "").trim();
@@ -138,7 +141,6 @@ function normalizeBridgeState(state) {
 async function loadData() {
   const currentRequestId = ++requestId;
   if (!data.value.generatedAt) loading.value = true;
-  error.value = "";
   try {
     const bridgeResponse = await fetch(stateEndpoint, { cache: "no-store" });
     if (!bridgeResponse.ok) throw new Error("bridge-state-failed");
@@ -146,29 +148,84 @@ async function loadData() {
     const json = normalizeBridgeState(payload.state || {});
     if (currentRequestId !== requestId) return;
     data.value = { ...data.value, ...json };
+    realtimeStatus.value = "在线"
+    error.value = ""
   } catch (e) {
     if (currentRequestId !== requestId) return;
     error.value = "本地 AI Team bridge 未连接"
+    realtimeStatus.value = "断线"
   } finally {
     if (currentRequestId === requestId) loading.value = false;
   }
 }
 
-function startAutoRefresh() {
-  if (refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = window.setInterval(() => {
-    if (document.hidden) return;
-    loadData();
-  }, REFRESH_INTERVAL);
+function clearRealtimeTimers() {
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+}
+
+function disconnectRealtime() {
+  if (eventSource) {
+    eventSource.close();
+    eventSource = null;
+  }
+}
+
+function scheduleRealtimeReconnect() {
+  if (reconnectTimer) return;
+  reconnectTimer = window.setTimeout(() => {
+    reconnectTimer = null;
+    connectRealtime();
+  }, RECONNECT_DELAY);
+}
+
+function connectRealtime() {
+  disconnectRealtime();
+  clearRealtimeTimers();
+  realtimeStatus.value = "连接中";
+
+  const source = new EventSource(eventsEndpoint);
+  eventSource = source;
+
+  source.addEventListener("ready", () => {
+    realtimeStatus.value = "在线";
+    error.value = "";
+  });
+
+  source.addEventListener("state", (event) => {
+    try {
+      const payload = JSON.parse(event.data || "{}");
+      if (payload.state) {
+        applyBridgeState(payload.state);
+        loading.value = false;
+        realtimeStatus.value = "在线";
+        error.value = "";
+      }
+    } catch (e) {
+      console.error("Failed to parse fleet SSE payload", e);
+    }
+  });
+
+  source.onerror = async () => {
+    realtimeStatus.value = "断线";
+    disconnectRealtime();
+    await loadData();
+    scheduleRealtimeReconnect();
+  };
 }
 
 function handleVisibilityRefresh() {
-  if (!document.hidden) loadData();
+  if (!document.hidden) {
+    loadData();
+    if (!eventSource) connectRealtime();
+  }
 }
 
 onMounted(() => {
   loadData();
-  startAutoRefresh();
+  connectRealtime();
   window.addEventListener("focus", handleVisibilityRefresh);
   document.addEventListener("visibilitychange", handleVisibilityRefresh);
 
@@ -178,8 +235,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (refreshTimer) clearInterval(refreshTimer);
   if (timeInterval) clearInterval(timeInterval);
+  disconnectRealtime();
+  clearRealtimeTimers();
   window.removeEventListener("focus", handleVisibilityRefresh);
   document.removeEventListener("visibilitychange", handleVisibilityRefresh);
 });
@@ -423,7 +481,7 @@ async function makeCaptain(member) {
           </div>
 
           <div class="footer-meta">
-            <span class="sync-info">同步周期: {{ REFRESH_INTERVAL / 1000 }}s</span>
+            <span class="sync-info">实时通道: SSE · {{ realtimeStatus }}</span>
             <span class="version-tag">{{ data.version || 'V5.6.5' }}</span>
           </div>
         </div>

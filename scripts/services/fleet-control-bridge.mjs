@@ -12,6 +12,19 @@ const __dirname = path.dirname(__filename)
 const projectRoot = path.join(__dirname, '../../')
 const port = Number(process.env.FLEET_CONTROL_PORT || 18790)
 const host = process.env.FLEET_CONTROL_HOST || '127.0.0.1'
+const STATE_POLL_INTERVAL = 2000
+const SSE_PING_INTERVAL = 15000
+const sseClients = new Map()
+let nextClientId = 1
+let lastStateSignature = ''
+let lastBroadcastState = null
+
+function getSerializableState() {
+  const state = getAiTeamState()
+  const comparable = JSON.parse(JSON.stringify(state))
+  delete comparable.generatedAt
+  return { state, signature: JSON.stringify(comparable) }
+}
 
 function runCommand(command, args) {
   return new Promise((resolve, reject) => {
@@ -50,6 +63,56 @@ async function syncFleetDashboard() {
 function bootstrapAiTeamState() {
   const db = ensureAiTeamDb()
   db.close()
+}
+
+function writeSse(res, event, payload) {
+  res.write(`event: ${event}\n`)
+  res.write(`data: ${JSON.stringify(payload)}\n\n`)
+}
+
+function broadcastState(event = 'state') {
+  if (sseClients.size === 0) return
+  const payload = lastBroadcastState || getAiTeamState()
+  for (const client of sseClients.values()) {
+    writeSse(client.res, event, { ok: true, state: payload })
+  }
+}
+
+function refreshStateCache({ forceBroadcast = false, event = 'state' } = {}) {
+  const { state, signature } = getSerializableState()
+  const changed = signature !== lastStateSignature
+  lastStateSignature = signature
+  lastBroadcastState = state
+  if (forceBroadcast || changed) {
+    broadcastState(event)
+  }
+  return { state, changed }
+}
+
+function attachSseClient(req, res, origin) {
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Vary', 'Origin')
+  }
+  res.setHeader('Cache-Control', 'no-cache, no-transform')
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Connection', 'keep-alive')
+  res.setHeader('X-Accel-Buffering', 'no')
+  res.flushHeaders?.()
+
+  const clientId = nextClientId++
+  const pingTimer = setInterval(() => {
+    res.write(': ping\n\n')
+  }, SSE_PING_INTERVAL)
+
+  sseClients.set(clientId, { res, pingTimer })
+  writeSse(res, 'ready', { ok: true, clientId })
+  writeSse(res, 'state', { ok: true, state: getAiTeamState() })
+
+  req.on('close', () => {
+    clearInterval(pingTimer)
+    sseClients.delete(clientId)
+  })
 }
 
 function readJsonBody(req) {
@@ -118,6 +181,11 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  if (req.method === 'GET' && req.url === '/api/fleet/events') {
+    attachSseClient(req, res, origin)
+    return
+  }
+
   if (req.method !== 'POST' || req.url !== '/api/fleet/action') {
     writeJson(res, 404, { error: 'Not Found' }, origin)
     return
@@ -139,7 +207,8 @@ const server = http.createServer(async (req, res) => {
         payload: { memberId }
       })
       const syncResult = await syncFleetDashboard()
-      writeJson(res, 200, { success: true, stdout: syncResult.stdout, state: getAiTeamState(), result }, origin)
+      const { state } = refreshStateCache({ forceBroadcast: true, event: 'state' })
+      writeJson(res, 200, { success: true, stdout: syncResult.stdout, state, result }, origin)
       return
     }
 
@@ -150,7 +219,8 @@ const server = http.createServer(async (req, res) => {
         payload: { memberId }
       })
       await syncFleetDashboard()
-      writeJson(res, 200, { success: true, state: getAiTeamState(), result }, origin)
+      const { state } = refreshStateCache({ forceBroadcast: true, event: 'state' })
+      writeJson(res, 200, { success: true, state, result }, origin)
       return
     }
 
@@ -172,6 +242,15 @@ server.on('error', (error) => {
 })
 
 bootstrapAiTeamState()
+refreshStateCache()
+
+setInterval(() => {
+  try {
+    refreshStateCache({ forceBroadcast: false, event: 'state' })
+  } catch (error) {
+    console.error(`fleet-control-bridge state watcher failed: ${error?.message || error}`)
+  }
+}, STATE_POLL_INTERVAL)
 
 server.listen(port, host, () => {
   console.log(`fleet-control-bridge listening on http://${host}:${port}`)
