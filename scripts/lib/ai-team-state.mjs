@@ -813,10 +813,6 @@ function compareAgentOrder(a, b) {
   return parseDate(b.updatedAt || b.heartbeatAt) - parseDate(a.updatedAt || a.heartbeatAt)
 }
 
-function buildPrimeMemberId(agent) {
-  return `${agent.alias}-Prime (0号机/${agent.agentName})`
-}
-
 function buildIdentityKey(agent) {
   const agentName = stripMarkdown(agent.agentName || 'Unknown')
   const alias = stripMarkdown(agent.alias || agentName)
@@ -824,12 +820,16 @@ function buildIdentityKey(agent) {
   return `${agentName}::${alias}::${workspace}`
 }
 
-function isPrimeMemberId(memberId) {
+function extractMemberIndex(memberId) {
+  return Number((stripMarkdown(memberId).match(/-(\d+) \(/) || [])[1] || 0)
+}
+
+function isLegacyPrimeMemberId(memberId) {
   const text = stripMarkdown(memberId).toLowerCase()
   return text.includes('-prime') || text.includes('0号机')
 }
 
-function chooseWorkerMemberId(agent, agents, occupiedIds = new Set()) {
+function chooseStableMemberId(agent, agents, occupiedIds = new Set()) {
   const baseAlias = agent.alias || 'Agent'
   const baseAgent = agent.agentName || 'Unknown'
   const current = stripMarkdown(agent.memberId)
@@ -845,7 +845,7 @@ function chooseWorkerMemberId(agent, agents, occupiedIds = new Set()) {
     if (normalized) used.add(normalized)
   }
 
-  if (current && !isPrimeMemberId(current) && !used.has(current)) {
+  if (current && !isLegacyPrimeMemberId(current) && !used.has(current)) {
     return current
   }
 
@@ -1007,7 +1007,6 @@ function normalizeStoredAgent(agent) {
   if (normalized.isCaptain) {
     normalized.type = 'active'
     normalized.status = '[ 队长锁 ] 活跃'
-    normalized.memberId = buildPrimeMemberId(normalized)
   }
 
   if (!normalized.nodeId) normalized.nodeId = normalized.memberId
@@ -1040,27 +1039,10 @@ function loadAgentsFromDb() {
 
 function ensureUniqueAgentMemberIds(agents) {
   const occupied = new Set()
-  const orderedAgents = agents
-    .slice()
-    .sort((a, b) => Number(b.isCaptain) - Number(a.isCaptain))
+  const orderedAgents = agents.slice()
 
   for (const agent of orderedAgents) {
-    if (agent.isCaptain) {
-      const preferredPrimeId = buildPrimeMemberId(agent)
-      if (!occupied.has(preferredPrimeId)) {
-        agent.memberId = preferredPrimeId
-        agent.nodeId = agent.memberId
-        occupied.add(agent.memberId)
-        continue
-      }
-      agent.isCaptain = 0
-      if (agent.type !== 'offline') {
-        agent.type = 'active'
-        agent.status = '[ 执行中 ] 活跃'
-      }
-    }
-
-    agent.memberId = chooseWorkerMemberId(agent, orderedAgents, occupied)
+    agent.memberId = chooseStableMemberId(agent, orderedAgents, occupied)
     agent.nodeId = agent.memberId
     occupied.add(agent.memberId)
   }
@@ -1207,8 +1189,6 @@ function refreshCaptainPresentation(agent) {
   agent.isCaptain = 1
   agent.type = 'active'
   agent.status = '[ 队长锁 ] 活跃'
-  agent.memberId = buildPrimeMemberId(agent)
-  agent.nodeId = agent.memberId
   agent.updatedAt = nowLocal()
 }
 
@@ -1218,7 +1198,7 @@ function refreshWorkerPresentation(agent, agents, excludedIds = new Set()) {
     agent.type = 'active'
     agent.status = '[ 执行中 ] 活跃'
   }
-  agent.memberId = chooseWorkerMemberId(agent, agents, excludedIds)
+  agent.memberId = chooseStableMemberId(agent, agents, excludedIds)
   agent.nodeId = agent.memberId
   agent.updatedAt = nowLocal()
 }
@@ -1330,11 +1310,7 @@ export function claimAiTeamMember({ workspace, task, agent, alias, role, status 
   }
 
   const usedIds = new Set(agents.filter(row => row !== target).map(row => row.memberId))
-  if (target.isCaptain) {
-    target.memberId = buildPrimeMemberId(target)
-  } else {
-    target.memberId = chooseWorkerMemberId(target, agents, usedIds)
-  }
+  target.memberId = chooseStableMemberId(target, agents, usedIds)
   target.nodeId = target.memberId
 
   const result = persistAiTeamAgents(agents, {
@@ -1346,7 +1322,7 @@ export function claimAiTeamMember({ workspace, task, agent, alias, role, status 
 
   return {
     ...result,
-    machineNumber: target.isCaptain ? 0 : Number((target.memberId.match(/-(\d+) \(/) || [])[1] || 0),
+    machineNumber: target.isCaptain ? 0 : extractMemberIndex(target.memberId),
     nodeId: target.memberId,
     warnings
   }
@@ -1429,7 +1405,7 @@ export function makeAiTeamCaptain(memberId, { operator = 'bridge', reason = 'bri
       agent.type = 'active'
       agent.status = '[ 执行中 ] 活跃'
     }
-    agent.memberId = chooseWorkerMemberId(agent, agents, new Set([targetOriginalId]))
+    agent.memberId = chooseStableMemberId(agent, agents, new Set([targetOriginalId]))
     agent.nodeId = agent.memberId
     agent.updatedAt = nowLocal()
   }
@@ -1437,7 +1413,11 @@ export function makeAiTeamCaptain(memberId, { operator = 'bridge', reason = 'bri
   target.isCaptain = 1
   target.type = 'active'
   target.status = '[ 队长锁 ] 活跃'
-  target.memberId = buildPrimeMemberId(target)
+  target.memberId = chooseStableMemberId(
+    target,
+    agents,
+    new Set(agents.filter(agent => agent !== target).map(agent => agent.memberId))
+  )
   target.nodeId = target.memberId
   target.updatedAt = nowLocal()
 
@@ -1471,8 +1451,8 @@ export function markAiTeamMemberOffline(memberId, { operator = 'bridge', reason 
   target.type = 'offline'
   target.status = '[ 已离线 ]'
   target.updatedAt = nowLocal()
-  if (isPrimeMemberId(target.memberId)) {
-    target.memberId = chooseWorkerMemberId(target, agents)
+  if (isLegacyPrimeMemberId(target.memberId)) {
+    target.memberId = chooseStableMemberId(target, agents)
     target.nodeId = target.memberId
   }
 
@@ -1483,7 +1463,11 @@ export function markAiTeamMemberOffline(memberId, { operator = 'bridge', reason 
       successor.isCaptain = 1
       successor.type = 'active'
       successor.status = '[ 队长锁 ] 活跃'
-      successor.memberId = buildPrimeMemberId(successor)
+      successor.memberId = chooseStableMemberId(
+        successor,
+        agents,
+        new Set(agents.filter(agent => agent !== successor).map(agent => agent.memberId))
+      )
       successor.nodeId = successor.memberId
       successor.updatedAt = nowLocal()
     }

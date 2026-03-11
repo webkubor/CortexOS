@@ -609,6 +609,146 @@ async function makeCaptain(member) {
               @kick-out="removeMember"
               @complete-task="completeMemberTask"
             />
+          </div>
+        </main>
+      </div>
+
+      <!-- 5. 可视化工具链健康状态栏 (CLI Health Footer) -->
+      <CliHealthFooter :environment="data.environment" :realtime-status="realtimeStatus" :version="data.version" />
+
+      <div v-if="showTaskCreator" class="task-creator-backdrop" @click.self="closeTaskCreator">
+        <div class="task-creator-panel">
+          <div class="task-creator-header">
+            <div>
+              <div class="task-creator-kicker">任务发布</div>
+              <h3>{{ taskCreatorTargetMember ? `给 ${taskCreatorTargetMember.alias || taskCreatorTargetMember.member} 新增任务` : '发布到真实任务池' }}</h3>
+            </div>
+            <button class="task-creator-close" @click="closeTaskCreator" title="关闭">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Invisible backdrop to close dropdowns -->
+          <div v-if="isWorkspaceSelectOpen || isPrioritySelectOpen" class="dropdown-backdrop" @click="closeDropdowns"></div>
+
+          <label class="task-field">
+            <span class="task-field-label">任务标题</span>
+            <input
+              v-model="createTaskForm.title"
+              type="text"
+              class="task-field-input"
+              placeholder="输入任务标题"
+              @keyup.enter="submitTask"
+            />
+          </label>
+
+          <div class="task-field">
+            <span class="task-field-label">工作区</span>
+            <div class="custom-select-container">
+              <div class="task-field-input custom-select-trigger" :class="{ 'is-open': isWorkspaceSelectOpen }" @click="isWorkspaceSelectOpen = !isWorkspaceSelectOpen; isPrioritySelectOpen = false">
+                <span class="cs-value text-ellipsis">{{ currentWorkspaceName ? `${currentWorkspaceName} ｜ ${createTaskForm.workspace}` : (loadingWorkspaces ? '正在加载激活工作区...' : '请选择工作区') }}</span>
+              </div>
+              <transition name="dropdown">
+                <div class="custom-options-panel" v-if="isWorkspaceSelectOpen">
+                  <div class="custom-option"
+                    v-for="workspace in workspaceOptions"
+                    :key="workspace.workspace || workspace.rootPath"
+                    :class="{ 'is-selected': createTaskForm.workspace === (workspace.workspace || workspace.rootPath) }"
+                    @click="createTaskForm.workspace = workspace.workspace || workspace.rootPath; isWorkspaceSelectOpen = false"
+                  >
+                    <div class="co-name">{{ workspace.name }}</div>
+                    <div class="co-path text-ellipsis">{{ workspace.workspace || workspace.rootPath }}</div>
+                  </div>
+                  <div v-if="workspaceOptions.length === 0" class="custom-option disabled">
+                    暂无已激活工作区
+                  </div>
+                </div>
+              </transition>
+            </div>
+            <span class="task-field-hint">只有已激活工作区才能发布任务</span>
+          </div>
+
+          <div class="task-field">
+            <span class="task-field-label">优先级</span>
+            <div class="custom-select-container">
+              <div class="task-field-input custom-select-trigger" :class="{ 'is-open': isPrioritySelectOpen }" @click="isPrioritySelectOpen = !isPrioritySelectOpen; isWorkspaceSelectOpen = false">
+                <span class="cs-value">{{ createTaskForm.priority }}</span>
+              </div>
+              <transition name="dropdown">
+                <div class="custom-options-panel slim-panel" v-if="isPrioritySelectOpen">
+                  <div class="custom-option center-item"
+                    v-for="p in ['高', '中', '低']"
+                    :key="p"
+                    :class="{ 'is-selected': createTaskForm.priority === p }"
+                    @click="createTaskForm.priority = p; isPrioritySelectOpen = false"
+                  >
+                    {{ p }}
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <div v-if="createTaskForm.workspace" class="task-workspace-preview">
+            <span class="task-workspace-name">{{ currentWorkspaceName || '已选工作区' }}</span>
+            <span class="task-workspace-path">{{ createTaskForm.workspace }}</span>
+          </div>
+
+          <div class="task-creator-actions">
+            <button class="task-secondary-btn" @click="closeTaskCreator">取消</button>
+            <button class="task-primary-btn" @click="submitTask" :disabled="creatingTask || loadingWorkspaces">
+              {{ creatingTask ? '发布中...' : '发布任务' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- 加载动画 -->
+    <div v-if="loading" class="aether-loading">
+      <div class="aether-spinner"></div>
+      <div class="aether-text">系统底层金丝直连初始化...</div>
+    </div>
+
+    <div v-if="error" class="action-error-banner">{{ error }}</div>
+
+    <!-- 全局悬浮气泡 -->
+    <transition name="tooltip-fade">
+      <div v-if="hoveredMission" class="global-mission-tooltip" :style="missionTooltipStyle">
+        <h4 class="gmt-title">{{ hoveredMission.title }}</h4>
+        
+        <div class="gmt-meta-item" v-if="hoveredMission.workspace">
+          <span class="gmt-label">工作路径</span>
+          <span class="gmt-value">{{ hoveredMission.workspace }}</span>
+        </div>
+        
+        <div class="gmt-meta-divider"></div>
+        
+        <div class="gmt-owner-row">
+          <div class="gmt-meta-item">
+            <span class="gmt-label">所有者</span>
+            <span class="gmt-value">{{ hoveredMission.owner }}</span>
+          </div>
+          
+          <div class="gmt-meta-item" v-if="hoveredMission.assigneeAgent || hoveredMission.assigneeRole">
+            <span class="gmt-label">执行方</span>
+            <span class="gmt-value">{{ [hoveredMission.assigneeAgent, hoveredMission.assigneeRole].filter(Boolean).join(' / ') }}</span>
+          </div>
+        </div>
+
+        <div class="gmt-meta-item" v-if="hoveredMission.publishedAt" style="margin-top: 10px;">
+          <span class="gmt-label">发布时间</span>
+          <span class="gmt-value">{{ hoveredMission.publishedAt }}</span>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<style scoped>
+/* 🔴 核心：现代高奢 Aether 设计系统 (Aureate Void) */
 .aether-stage {
   display: flex;
   flex: 1;
