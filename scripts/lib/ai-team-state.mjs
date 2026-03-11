@@ -806,16 +806,15 @@ export function claimAiTeamMember({ workspace, task, agent, alias, role, status 
     target.status = status
   }
 
-  const normalizedAgents = agents.map(row => ({ ...row }))
-  const usedIds = new Set(normalizedAgents.filter(row => row.memberId !== target.memberId).map(row => row.memberId))
+  const usedIds = new Set(agents.filter(row => row !== target).map(row => row.memberId))
   if (target.isCaptain) {
     target.memberId = buildPrimeMemberId(target)
   } else {
-    target.memberId = chooseWorkerMemberId(target, normalizedAgents, usedIds)
+    target.memberId = chooseWorkerMemberId(target, agents, usedIds)
   }
   target.nodeId = target.memberId
 
-  const result = persistAiTeamAgents(normalizedAgents, {
+  const result = persistAiTeamAgents(agents, {
     action: 'claim',
     operator: normalizedAgent,
     reason: 'fleet:claim',
