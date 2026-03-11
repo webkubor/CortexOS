@@ -10,7 +10,7 @@ import { getAiTeamState } from '../lib/ai-team-state.mjs'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.join(__dirname, '../../')
-const outputFile = path.join(projectRoot, 'docs/public/data/ai_team_status.json')
+const outputFile = path.join(projectRoot, '.memory/cache/ai_team_status.local.json')
 const HOME_DIR = os.homedir()
 
 function checkCLI(cmd, dirPath = null) {
@@ -101,7 +101,7 @@ export function syncFleetDashboard() {
 
   const payload = {
     generatedAt: new Date().toISOString(),
-    version: 'v5.6.5 (系统环境透显 + 数据库舰队状态)',
+    version: 'v5.7.1-local (本地 AI Team 状态快照)',
     source: '.memory/sqlite/ai-team.db',
     environment: {
       tools: {

@@ -11,9 +11,6 @@ hero:
     - theme: brand
       text: 🚀 快速开始
       link: /guide/
-    - theme: alt
-      text: 🛰️ 打开 AI Team 面板
-      link: /team/
 
 features:
   - icon: 🧠

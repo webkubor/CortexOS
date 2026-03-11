@@ -15,6 +15,8 @@ const data = ref({
   active: 0,
   offline: 0,
   queued: 0,
+  environment: {},
+  version: 'v5.7.1-local',
   members: [],
   missions: [
     { id: "任务-01", title: "外脑反馈链路校准", status: "执行中", owner: "Codex-主机" },
@@ -73,7 +75,6 @@ let refreshTimer = null;
 let requestId = 0;
 const actionEndpoint = 'http://127.0.0.1:18790/api/fleet/action';
 const stateEndpoint = 'http://127.0.0.1:18790/api/fleet/state';
-const staticDataPath = '/CortexOS/data/ai_team_status.json';
 
 function memberStatusToType(status, fallback = "active") {
   const text = String(status || "").trim();
@@ -134,20 +135,6 @@ function normalizeBridgeState(state) {
   };
 }
 
-async function loadStaticShell() {
-  const url = new URL(staticDataPath, window.location.origin);
-  url.searchParams.set("t", String(Date.now()));
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) throw new Error("static-shell-failed");
-  const payload = await response.json();
-  data.value = {
-    ...data.value,
-    environment: payload.environment || data.value.environment,
-    version: payload.version || data.value.version,
-    missions: payload.missions || data.value.missions
-  };
-}
-
 async function loadData() {
   const currentRequestId = ++requestId;
   if (!data.value.generatedAt) loading.value = true;
@@ -160,19 +147,8 @@ async function loadData() {
     if (currentRequestId !== requestId) return;
     data.value = { ...data.value, ...json };
   } catch (e) {
-    try {
-      const url = new URL(staticDataPath, window.location.origin);
-      url.searchParams.set("t", String(Date.now()));
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("json-fallback-failed");
-      const json = await res.json();
-      if (currentRequestId !== requestId) return;
-      data.value = { ...data.value, ...json };
-      error.value = "实时桥暂不可用，已切回静态看板";
-    } catch {
-      if (currentRequestId !== requestId) return;
-      error.value = "Neural Link Fault";
-    }
+    if (currentRequestId !== requestId) return;
+    error.value = "本地 AI Team bridge 未连接"
   } finally {
     if (currentRequestId === requestId) loading.value = false;
   }
@@ -191,7 +167,6 @@ function handleVisibilityRefresh() {
 }
 
 onMounted(() => {
-  loadStaticShell().catch(() => {});
   loadData();
   startAutoRefresh();
   window.addEventListener("focus", handleVisibilityRefresh);

@@ -74,7 +74,7 @@ CortexOS 的做法是把这三类信息落在本地：
 
 现在文档与运行态已经分开：
 - `docs/` 只承载 DOC
-- `docs/team/` 是 AI Team 独立大面板入口
+- `docs/team/` 是 AI Team 本地独立大面板入口
 - `.memory/` 承载真实运行数据，不再和文档混写
 
 ## 目录结构
@@ -101,6 +101,7 @@ uv run /你的物理路径/CortexOS/mcp_server/server.py
 ```
 
 AI Team 本地状态库会在 bridge 启动时自动初始化，不需要先手动执行 `pnpm run team:db:init`。
+`AI Team` 页面只在本地启动文档站时显示，运行态数据不会发布到线上文档站。
 
 ### 2. 在客户端挂载外脑
 

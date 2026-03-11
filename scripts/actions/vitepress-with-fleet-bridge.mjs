@@ -24,7 +24,10 @@ const bridge = spawn('node', ['scripts/services/fleet-control-bridge.mjs'], {
 const vitepress = spawn('pnpm', ['exec', 'vitepress', ...vitepressArgs], {
   cwd: projectRoot,
   stdio: 'inherit',
-  env: process.env
+  env: {
+    ...process.env,
+    CORTEXOS_LOCAL_TEAM: '1'
+  }
 })
 
 function shutdown(code = 0) {

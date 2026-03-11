@@ -1,6 +1,28 @@
 import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
-import { fleetApiPlugin } from "../../scripts/actions/fleet-api-plugin.mjs";
+
+const enableLocalTeam = process.env.CORTEXOS_LOCAL_TEAM === '1'
+
+const nav = [
+  { text: "📚 DOC", link: "/" },
+  { text: "🚀 使用指引", link: "/guide/" },
+  { text: "🤖 Agent 配置", link: "/agents/" }
+]
+
+if (enableLocalTeam) {
+  nav.splice(1, 0, { text: "🛰️ AI Team", link: "/team/" })
+}
+
+const opsItems = [
+  { text: "🚦 舰队态势板", link: "/ops/fleet-dashboard" },
+  { text: "🔁 自动巡航", link: "/ops/auto-pilot" },
+  { text: "🧪 健康检查", link: "/ops/external-health-check" },
+  { text: "🧭 协作工作流", link: "/ops/workflow" }
+]
+
+if (enableLocalTeam) {
+  opsItems.unshift({ text: "🛰️ AI Team 大面板", link: "/team/" })
+}
 
 export default defineConfig({
   lang: "zh-CN",
@@ -19,8 +41,7 @@ export default defineConfig({
       llmstxt({
         title: "CortexOS",
         description: "Standardized AI Context Engineering & Long-term Memory Infrastructure.",
-      }),
-      fleetApiPlugin()
+      })
     ]
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],
@@ -44,12 +65,7 @@ export default defineConfig({
       },
     },
     // 顶部导航：文档入口与独立面板入口分离
-    nav: [
-      { text: "📚 DOC", link: "/" },
-      { text: "🛰️ AI Team", link: "/team/" },
-      { text: "🚀 使用指引", link: "/guide/" },
-      { text: "🤖 Agent 配置", link: "/agents/" },
-    ],
+    nav,
     // 强化左侧边栏，增加饱满度
     sidebar: [
       {
@@ -93,13 +109,7 @@ export default defineConfig({
       {
         text: "🖥 运行与运维 (Ops)",
         collapsed: false,
-        items: [
-          { text: "🛰️ AI Team 大面板", link: "/team/" },
-          { text: "🚦 舰队态势板", link: "/ops/fleet-dashboard" },
-          { text: "🔁 自动巡航", link: "/ops/auto-pilot" },
-          { text: "🧪 健康检查", link: "/ops/external-health-check" },
-          { text: "🧭 协作工作流", link: "/ops/workflow" },
-        ]
+        items: opsItems
       },
       {
         text: "👋 关于",

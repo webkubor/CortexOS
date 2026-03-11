@@ -35,7 +35,7 @@ const UV_PATH = (() => {
 })();
 const ROUTER_PATH = path.join(PROJECT_ROOT, 'docs/router.md');
 const HISTORY_PATH = path.join(PROJECT_ROOT, 'docs/BRAIN_HISTORY.md');
-const TEAM_STATUS_JSON_PATH = path.join(PROJECT_ROOT, 'docs/public/data/ai_team_status.json');
+const TEAM_STATUS_JSON_PATH = path.join(ASSISTANT_MEMORY_HOME, 'cache/ai_team_status.local.json');
 
 function shouldPrintLarkSkip(reason) {
   if (reason !== 'missing_lark_env') return true;
