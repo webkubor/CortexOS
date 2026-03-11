@@ -4,8 +4,9 @@
  * @file fleet-post-task.mjs
  * @description 大脑自动化结项钩子。负责在任务完成后自动执行：
  * 1. 错误复盘与记忆收割 (error-retro)
- * 2. 舰队看板同步 (fleet:sync)
- * 3. 冗余节点清理 (fleet:cleanup)
+ * 2. 任务状态纠偏 (tasks:reconcile)
+ * 3. 舰队看板同步 (fleet:sync)
+ * 4. 冗余节点清理 (fleet:cleanup)
  */
 
 import { execSync } from 'child_process';
@@ -37,7 +38,10 @@ async function main() {
   // 2. 舰队阵列清理 (保持整洁)
   await runStep('舰队阵列维护 (Fleet Cleanup)', 'npm run fleet:cleanup');
 
-  // 3. 看板同步 (对外同步大脑状态)
+  // 3. 任务状态纠偏 (修正已结束但仍悬挂执行中的任务)
+  await runStep('任务池纠偏 (Task Reconcile)', 'npm run tasks:reconcile');
+
+  // 4. 看板同步 (对外同步大脑状态)
   await runStep('看板同步 (Sync Dashboard)', 'npm run fleet:sync-dashboard');
 
   success(chalk.bold('✨ 大脑已完成本轮任务后的进化与同步。'));

@@ -16,6 +16,7 @@
     "memory:query": "python3 scripts/ingest/query_brain.py",
     "memory:refresh": "python3 scripts/ingest/chroma_ingest.py && python3 scripts/ingest/build_memory_index.py",
     "memory:retro": "node scripts/maintenance/error-retro.mjs",
+    "tasks:reconcile": "node scripts/maintenance/reconcile-ai-team-tasks.mjs",
     "fleet:claim": "node scripts/actions/fleet-claim.mjs",
     "fleet:status": "node scripts/actions/fleet-status.mjs",
     "fleet:handover": "node scripts/actions/fleet-handover.mjs",
