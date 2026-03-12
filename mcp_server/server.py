@@ -80,6 +80,51 @@ def _priority_rank(priority: str) -> int:
     return 3
 
 
+def _sanitize_cell(value: str) -> str:
+    return str(value or "").replace("|", "｜").strip()
+
+
+def _normalize_agent(value: str) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return "Unknown"
+    lower = raw.lower()
+    if "gemini" in lower:
+        return "Gemini"
+    if "codex" in lower:
+        return "Codex"
+    if "claude" in lower:
+        return "Claude"
+    if "lobster" in lower:
+        return "Lobster"
+    if "opencode" in lower:
+        return "OpenCode"
+    return raw
+
+
+def _normalize_role(value: str) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return "未分配"
+    lower = raw.lower()
+    if re.search(r"(前端|frontend|front-end|fe)", lower, re.IGNORECASE):
+        return "前端"
+    if re.search(r"(后端|backend|back-end|be)", lower, re.IGNORECASE):
+        return "后端"
+    return raw
+
+
+def _infer_role_from_task(task: str) -> str:
+    text = str(task or "").lower()
+    if not text:
+        return "未分配"
+    if re.search(r"(前端|frontend|react|vue|页面|样式|css|ui|ux|h5|web)", text, re.IGNORECASE):
+        return "前端"
+    if re.search(r"(后端|backend|api|服务|接口|数据库|db|sql|redis|中间件|server)", text, re.IGNORECASE):
+        return "后端"
+    return "未分配"
+
+
 def _complete_ai_team_db_task(task_id: str, agent: str = "Codex", summary: str = "") -> dict[str, object]:
     normalized_task_id = (task_id or "").strip()
     if not normalized_task_id or not AI_TEAM_DB.exists():
@@ -163,6 +208,269 @@ def _strip_md(text: str) -> str:
     return re.sub(r"\s+", " ", cleaned).strip()
 
 
+def _status_to_type(status: str) -> str:
+    text = str(status or "")
+    if "已离线" in text:
+        return "offline"
+    if "等待分配" in text or "待处理" in text:
+        return "queued"
+    if "执行中" in text or "队长锁" in text:
+        return "active"
+    return "unknown"
+
+
+def _is_idle_task_text(text: str) -> bool:
+    return _strip_md(text).replace(" ", "") in {
+        "",
+        "待分配任务",
+        "待分配",
+        "待命状态",
+        "待命",
+        "空闲",
+        "无任务",
+        "心跳打卡",
+    }
+
+
+def _parse_live_task_record(agent_row: sqlite3.Row) -> dict | None:
+    text = _strip_md(agent_row["task"] or "")
+    if _is_idle_task_text(text):
+        return None
+
+    parts = [part.strip() for part in text.split("｜") if part.strip()]
+    has_task_id = len(parts) > 1 and re.match(r"^(task[-#]?\d|\d{4}-\d{2}-\d{2}-)", parts[0], re.IGNORECASE)
+
+    return {
+        "taskId": parts[0] if has_task_id else "",
+        "title": "｜".join(parts[1:] if has_task_id else parts) or text,
+        "status": "执行中",
+        "priority": "当前",
+        "publishedAt": "",
+        "updatedAt": agent_row["heartbeatAt"] or agent_row["updatedAt"] or "",
+        "isLive": True,
+    }
+
+
+def _build_recent_tasks(conn: sqlite3.Connection, agent_row: sqlite3.Row, limit: int = 6) -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT
+          task_id AS taskId,
+          title,
+          status,
+          priority,
+          published_at AS publishedAt,
+          updated_at AS updatedAt,
+          completed
+        FROM tasks
+        WHERE lower(assignee_member_id) = lower(?)
+           OR (
+                (assignee_member_id IS NULL OR assignee_member_id = '')
+            AND lower(assignee_agent) = lower(?)
+            AND lower(workspace) = lower(?)
+            AND lower(assignee) = lower(?)
+           )
+        ORDER BY completed ASC, updated_at DESC, id DESC
+        LIMIT ?
+        """,
+        (
+            _strip_md(agent_row["memberId"] or ""),
+            _strip_md(agent_row["agentName"] or ""),
+            _strip_md(agent_row["workspace"] or ""),
+            _strip_md(agent_row["alias"] or agent_row["memberId"] or ""),
+            limit,
+        ),
+    ).fetchall()
+
+    recent_tasks = [
+        {
+            "taskId": row["taskId"],
+            "title": row["title"] or row["taskId"],
+            "status": "已完成" if int(row["completed"] or 0) == 1 else (row["status"] or "待启动"),
+            "priority": row["priority"] or "中",
+            "publishedAt": row["publishedAt"] or "",
+            "updatedAt": row["updatedAt"] or "",
+            "isLive": False,
+        }
+        for row in rows
+    ]
+
+    live_task = _parse_live_task_record(agent_row)
+    if not live_task:
+        return recent_tasks
+
+    for task in recent_tasks:
+        if live_task["taskId"] and task["taskId"] and live_task["taskId"].lower() == task["taskId"].lower():
+            task["isLive"] = True
+            task["status"] = live_task["status"]
+            return recent_tasks
+        if task["title"] == live_task["title"]:
+            task["isLive"] = True
+            task["status"] = live_task["status"]
+            return recent_tasks
+
+    return [live_task, *recent_tasks][:limit]
+
+
+def _build_fleet_state_payload() -> dict:
+    if not AI_TEAM_DB.exists():
+        return {
+            "generatedAt": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            "total": 0,
+            "active": 0,
+            "offline": 0,
+            "queued": 0,
+            "captain": None,
+            "agents": [],
+            "missions": [],
+            "recentCaptainEvents": [],
+            "recentOperations": [],
+        }
+
+    with sqlite3.connect(AI_TEAM_DB) as conn:
+        conn.row_factory = sqlite3.Row
+        agent_rows = conn.execute(
+            """
+            SELECT
+              identity_key AS identityKey,
+              member_id AS memberId,
+              node_id AS nodeId,
+              agent_name AS agentName,
+              alias,
+              role,
+              workspace,
+              task,
+              type,
+              is_captain AS isCaptain,
+              status,
+              heartbeat_at AS heartbeatAt,
+              updated_at AS updatedAt
+            FROM agents
+            ORDER BY is_captain DESC, updated_at DESC, agent_name ASC
+            """
+        ).fetchall()
+
+        agents = []
+        for row in agent_rows:
+            agent = {
+                "identityKey": row["identityKey"] or "",
+                "memberId": row["memberId"] or "",
+                "nodeId": row["nodeId"] or row["memberId"] or "",
+                "agentName": row["agentName"] or "",
+                "alias": row["alias"] or "",
+                "role": row["role"] or "",
+                "workspace": row["workspace"] or "",
+                "task": row["task"] or "待分配任务",
+                "type": row["type"] or _status_to_type(row["status"] or ""),
+                "isCaptain": int(row["isCaptain"] or 0),
+                "status": row["status"] or "",
+                "heartbeatAt": row["heartbeatAt"] or "",
+                "updatedAt": row["updatedAt"] or "",
+            }
+            agent["recentTasks"] = _build_recent_tasks(conn, agent)
+            agents.append(agent)
+
+        missions = []
+        task_rows = conn.execute(
+            """
+            SELECT
+              task_id AS taskId,
+              title,
+              assignee,
+              assignee_member_id AS assigneeMemberId,
+              assignee_agent AS assigneeAgent,
+              assignee_role AS assigneeRole,
+              workspace,
+              published_at AS publishedAt,
+              status,
+              priority,
+              priority_rank AS priorityRank,
+              completed
+            FROM tasks
+            ORDER BY completed ASC, priority_rank ASC, updated_at DESC, task_id ASC
+            LIMIT 20
+            """
+        ).fetchall()
+        for index, row in enumerate(task_rows, start=1):
+            missions.append(
+                {
+                    "id": f"任务-{index:02d}",
+                    "taskId": row["taskId"],
+                    "title": row["title"] or row["taskId"],
+                    "status": "已完成" if int(row["completed"] or 0) == 1 else (row["status"] or "待启动"),
+                    "owner": row["assignee"] or "待分配",
+                    "priority": row["priority"] or "中",
+                    "assigneeMemberId": row["assigneeMemberId"] or "",
+                    "assigneeAgent": row["assigneeAgent"] or "",
+                    "assigneeRole": row["assigneeRole"] or "",
+                    "workspace": row["workspace"] or "",
+                    "publishedAt": row["publishedAt"] or "",
+                }
+            )
+
+        recent_captain_events = [
+            {
+                "id": row["id"],
+                "fromMemberId": row["fromMemberId"],
+                "toMemberId": row["toMemberId"],
+                "reason": row["reason"],
+                "operator": row["operator"],
+                "createdAt": row["createdAt"],
+            }
+            for row in conn.execute(
+                """
+                SELECT
+                  id,
+                  from_member_id AS fromMemberId,
+                  to_member_id AS toMemberId,
+                  reason,
+                  operator,
+                  created_at AS createdAt
+                FROM captain_events
+                ORDER BY id DESC
+                LIMIT 10
+                """
+            ).fetchall()
+        ]
+
+        recent_operations = [
+            {
+                "id": row["id"],
+                "action": row["action"],
+                "targetType": row["targetType"],
+                "targetId": row["targetId"],
+                "createdAt": row["createdAt"],
+            }
+            for row in conn.execute(
+                """
+                SELECT
+                  id,
+                  action,
+                  target_type AS targetType,
+                  target_id AS targetId,
+                  created_at AS createdAt
+                FROM operation_logs
+                ORDER BY id DESC
+                LIMIT 20
+                """
+            ).fetchall()
+        ]
+
+    captain = next((agent["memberId"] for agent in agents if agent["isCaptain"]), None)
+    return {
+        "generatedAt": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "total": len(agents),
+        "active": sum(1 for agent in agents if agent["type"] == "active"),
+        "offline": sum(1 for agent in agents if agent["type"] == "offline"),
+        "queued": sum(1 for agent in agents if agent["type"] == "queued"),
+        "captain": captain,
+        "agents": agents,
+        "missions": missions,
+        "recentCaptainEvents": recent_captain_events,
+        "recentOperations": recent_operations,
+    }
+
+
 # ─────────────────────────────────────────────
 # Tool 1: 读取路由协议（大脑宪法）
 # ─────────────────────────────────────────────
@@ -184,16 +492,11 @@ def get_fleet_status() -> str:
     """获取当前所有 AI Agent 的实时状态（JSON 格式）。
     返回进行中的任务、队长节点、工作路径信息，用于感知当前是否存在并行冲突。
     """
-    cmd = ["pnpm", "run", "fleet:status", "--", "--json"]
     try:
-        result = subprocess.run(cmd, cwd=str(BRAIN_ROOT), capture_output=True, text=True, timeout=30)
-        if result.returncode != 0:
-            return json.dumps({"error": result.stderr.strip() or result.stdout.strip() or "fleet:status 执行失败"}, ensure_ascii=False)
-        return result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        return json.dumps({"error": "fleet:status 执行超时"}, ensure_ascii=False)
+        payload = _build_fleet_state_payload()
+        return json.dumps({"ok": True, **payload}, ensure_ascii=False, indent=2)
     except Exception as e:
-        return json.dumps({"error": f"fleet:status 执行异常: {e}"}, ensure_ascii=False)
+        return json.dumps({"ok": False, "error": f"fleet 状态读取异常: {e}"}, ensure_ascii=False)
 
 
 # ─────────────────────────────────────────────
@@ -611,6 +914,8 @@ def _collect_task_queue() -> list[dict]:
                   task_id,
                   title,
                   assignee,
+                  assignee_member_id,
+                  assignee_agent,
                   completed,
                   status,
                   priority,
@@ -624,6 +929,8 @@ def _collect_task_queue() -> list[dict]:
                 "task_id": str(row["task_id"]).lower(),
                 "title": row["title"] or "",
                 "assignee": row["assignee"] or "",
+                "assignee_member_id": row["assignee_member_id"] or "",
+                "assignee_agent": row["assignee_agent"] or "",
                 "completed": bool(row["completed"]),
                 "status": row["status"] or ("已完成" if row["completed"] else "待启动"),
                 "priority": row["priority"] or "未标注",
@@ -633,6 +940,15 @@ def _collect_task_queue() -> list[dict]:
         ]
     except Exception:
         return []
+
+
+def _is_structurally_claimed(task: dict) -> bool:
+    assignee_member_id = str(task.get("assignee_member_id") or "").strip()
+    assignee_agent = str(task.get("assignee_agent") or "").strip()
+    assignee = str(task.get("assignee") or "").strip()
+    if assignee_member_id or assignee_agent:
+        return True
+    return assignee not in {"", "待分配", "待分配任务", "未指定执行人"}
 
 
 @mcp.tool()
@@ -659,7 +975,10 @@ def task_handoff_check(task_id: str = "", agent: str = "Codex", summary: str = "
     queue = _collect_task_queue()
     claimed_ids = _extract_active_claimed_task_ids()
     pending = [item for item in queue if not item["completed"]]
-    unclaimed = [item for item in pending if item["task_id"] not in claimed_ids]
+    unclaimed = [
+        item for item in pending
+        if not _is_structurally_claimed(item) and item["task_id"] not in claimed_ids
+    ]
     high_pending = [item for item in pending if item["priority_rank"] == 0]
 
     messages.append(
