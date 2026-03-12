@@ -74,7 +74,7 @@ bash scripts/core/init-project.sh
 
 - [运行命令总表（SSOT）](/ops/runtime-command-reference)
 
-详细规则见：`docs/rules/auto-pilot.md`
+详细规则见：[运行命令总表（SSOT）](/ops/runtime-command-reference) 与 [工程基线](/rules/engineering_baseline)
 
 ---
 
@@ -108,7 +108,7 @@ bash scripts/core/init-project.sh
 | 扩展技能 | `docs/skills/`、`~/.codex/skills/` | 增加可复用工作流 |
 | 扩展知识 | `memory/knowledge/` | 沉淀复盘、经验、方案 |
 | Agent 配置 | `docs/agents/` | Gemini/Codex/Claude/OpenCode 配置位 |
-| 隐私与秘钥 | `docs/rules/privacy_secret_protection_protocol.md` | 秘钥存放与安全边界 |
+| 隐私与秘钥 | `docs/rules/security_boundary.md` | 秘钥存放、隐私边界与红线 |
 
 ---
 

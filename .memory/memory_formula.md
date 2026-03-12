@@ -1,82 +1,76 @@
-# CortexOS Memory Formula (记忆法则)
+# CortexOS Memory Formula（记忆法则）
 
-> 定义助手私有记忆（`.memory`）与用户长期记忆（`~/Documents/memory`）的边界，避免混写与误读。
+> 定义助手私有记忆（`.memory`）与用户长期记忆（`~/Documents/memory`）的边界，避免混写、误读和历史残留回流。
 
-## 1. 目录结构（Assistant Private Memory）
+## 1. 当前目录结构
 
 ```text
 $CODEX_HOME/.memory/
-├─ memory_formula.md                # 本规则（必读）
-├─ fleet/
-│  ├─ fleet_status.md               # 多 Agent 运行态
-│  └─ fleet_meta.json               # 看板元数据
-├─ logs/
-│  └─ YYYY-MM-DD*.md                # 助手操作日志
-├─ persona/
-│  ├─ candy_manifest.md             # 人格主定义（冷启动读）
-│  ├─ prompt_strategy.md            # 提示策略与输出偏好
-│  └─ retry_patterns.md             # 失败重试模式
-└─ identity/
-   └─ owner_profile.md              # 用户偏好（称呼/语言/节奏）
+├─ memory_formula.md                # 本规则
+├─ cache/                           # 本地快照与缓存
+├─ identity/                        # 用户偏好与称呼规则
+├─ index/                           # 检索索引状态
+├─ logs/                            # 助手操作日志
+├─ meta/                            # 守护与复盘元信息
+├─ persona/                         # 助手私有策略文件（历史目录名，非公开人格绑定）
+├─ plans/                           # 项目计划与指挥中心
+├─ projects/                        # 项目索引
+├─ retros/                          # 错误复盘
+└─ sqlite/                          # 本地主库
 ```
 
-## 2. 存放边界（放哪里）
+## 2. 存放边界
 
 | 内容类型 | 存放路径 | 说明 |
 | :--- | :--- | :--- |
-| 助手偏好、提示策略、思维习惯、失败重试 | `$CODEX_HOME/.memory/persona/` | 仅助手可用，不写入用户长期记忆 |
+| 助手私有策略、提示策略、失败重试模式 | `$CODEX_HOME/.memory/persona/` | 仅助手使用，不是项目公开人格定义 |
 | 运行日志 | `$CODEX_HOME/.memory/logs/` | 仅记录操作轨迹，不写密钥 |
-| 舰队协作状态 | `$CODEX_HOME/.memory/fleet/` | 多 Agent 协同运行态 |
-| 用户技术知识/复盘/分享素材 | `~/Documents/memory/{knowledge,shares,publish}/` | 属于用户资产，不写入 `.memory` |
-| 与 CortexOS / 大脑系统无关的个人资料、个人脚本、个人素材、个人项目备忘 | `~/Documents/memory/` | 只要属于用户个人资产且不服务于大脑运行，一律放用户提供的记忆文件夹 |
-| 项目索引/协作计划索引 | `$CODEX_HOME/.memory/{projects,plans}/` | 由小烛维护，作为控制层入口 |
+| 项目索引与协作计划 | `$CODEX_HOME/.memory/{projects,plans}/` | 作为控制层入口 |
+| 系统运行状态 | `$CODEX_HOME/.memory/sqlite/`、`$CODEX_HOME/.memory/cache/` | 主库与本地快照 |
+| 用户技术知识、复盘、方案、素材 | `~/Documents/memory/{knowledge,shares,publish}/` | 属于用户资产，不写入 `.memory` |
+| 与 CortexOS 运行无关的个人资料、脚本、素材、项目备忘 | `~/Documents/memory/` | 属于用户个人资产 |
 | 用户高敏凭证 | `~/Documents/memory/secrets/` | 永不进入 Git 仓库 |
 
-## 3. 读取触发矩阵（什么时候读）
+## 3. 读取触发矩阵
 
-| 触发场景 | 必读文件 | 读取策略 |
+| 触发场景 | 必读文件 / 工具 | 读取策略 |
 | :--- | :--- | :--- |
-| 会话冷启动 | `docs/router.md` + `.memory/persona/candy_manifest.md` | 强制读取 |
-| 多 Agent 开工前 | `.memory/fleet/fleet_status.md` | 强制读取（防冲突） |
-| 需要对齐用户称呼/风格 | `.memory/identity/owner_profile.md` | 按需懒加载 |
+| 会话冷启动 | `docs/router.md` | 强制读取 |
+| 多 Agent 开工前 | `get_fleet_status()` | 强制读取 |
+| 需要对齐用户称呼/节奏 | `.memory/identity/owner_profile.md` | 按需懒加载 |
 | 输出质量下降、重复犯错 | `.memory/persona/retry_patterns.md` | 按需懒加载 |
-| 需要统一提示策略 | `.memory/persona/prompt_strategy.md` | 按需懒加载 |
-| 写日志前 | 当日日志文件（不存在则新建） | 只追加，不全量回读 |
+| 需要统一私有提示策略 | `.memory/persona/prompt_strategy.md` | 按需懒加载 |
+| 查询项目历史计划 | `.memory/plans/`、`.memory/projects/` | 按需懒加载 |
 
-## 4. 写入触发矩阵（什么时候写）
+## 4. 写入触发矩阵
 
 | 触发场景 | 写入位置 | 规则 |
 | :--- | :--- | :--- |
 | 每次完成一个明确任务 | `.memory/logs/YYYY-MM-DD.md` | 1-5 句，记录动作与结果 |
 | 发现稳定可复用的提示策略 | `.memory/persona/prompt_strategy.md` | 只写可复用规则，不写项目私密 |
 | 出现可复现失败并找到解法 | `.memory/persona/retry_patterns.md` | 记录“症状-原因-重试步骤” |
-| 用户偏好发生变化 | `.memory/identity/owner_profile.md` | 仅维护偏好，不写隐私密钥 |
-| AI Team 进入某个项目路径执行任务 | `.memory/projects/index.md` + `.memory/plans/projects/*-command-center.md` | 自动登记或刷新项目入口 |
+| 用户偏好变化 | `.memory/identity/owner_profile.md` | 只维护偏好与称呼，不写密钥 |
+| AI Team 进入项目执行任务 | `.memory/projects/index.md` + `.memory/plans/projects/*-command-center.md` | 自动登记或刷新 |
 
 ## 5. 防污染规则
 
-- 禁止把用户长期知识写进 `.memory`。
-- 禁止把与 CortexOS 运行无关的个人内容写进 `.memory`。
-- 禁止把助手运行日志写进 `~/Documents/memory/`。
-- 禁止在 `.memory` 根目录散落临时碎片文件。
-- 任何密钥一律只进 `~/Documents/memory/secrets/`。
+- 禁止把用户长期知识写进 `.memory`
+- 禁止把与 CortexOS 运行无关的个人内容写进 `.memory`
+- 禁止把助手运行日志写进 `~/Documents/memory/`
+- 禁止在 `.memory` 根目录散落临时碎片文件
+- 任何密钥一律只进 `~/Documents/memory/secrets/`
 
-### 5.1 新增硬规则（个人内容归用户记忆）
-
-- 只要内容**不直接服务于 CortexOS 运行、AI Team 协作、项目索引、日志、提示策略、健康检查**，就不属于 `.memory`。
-- 凡是**和用户个人有关**的内容，例如个人脚本、个人资料、个人项目素材、个人备忘、个人分享草稿，统一写入用户提供的记忆文件夹：`~/Documents/memory/`。
-- `.memory` 只保留 CortexOS 控制层、运行态、协作态、助手私有策略，不承接个人资产正文。
-
-## 6. 全舰队记忆访问规则（2026-03-05 新增）
+## 6. 访问边界
 
 | 记忆类型 | 路径 | 所有 Agent 可读 | 只有 CortexOS 写 |
 | :--- | :--- | :--- | :--- |
-| 王爷知识/复盘/素材 | `~/Documents/memory/` | ✅ | — |
-| 小烛运行日志 | `.memory/logs/` | — | ✅ |
-| 小烛舰队状态 | `.memory/fleet/` | — | ✅ |
-| 小烛人格/策略 | `.memory/persona/` | — | ✅ |
+| 用户知识 / 复盘 / 素材 | `~/Documents/memory/` | ✅ | — |
+| 助手运行日志 | `.memory/logs/` | — | ✅ |
+| 助手私有策略 | `.memory/persona/` | — | ✅ |
+| 项目索引与计划 | `.memory/projects/`、`.memory/plans/` | — | ✅ |
+| 系统运行状态 | `.memory/sqlite/`、`.memory/cache/` | — | ✅ |
 
-**obsidian MCP 统一指向 `~/Documents/memory/`**：
-- Gemini CLI: `~/.gemini/settings.json` obsidian → `~/Documents/memory/`
-- Codex: `~/.codex/config.toml` obsidian → `~/Documents/memory/`
-- Claude Code: `~/.claude/settings.json` obsidian → `~/Documents/memory/`
+**Obsidian MCP 统一指向 `~/Documents/memory/`**：
+- Gemini CLI: `~/.gemini/settings.json`
+- Codex: `~/.codex/config.toml`
+- Claude Code: `~/.claude/settings.json`

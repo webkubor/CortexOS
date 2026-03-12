@@ -4,8 +4,8 @@
 
 ## 统一继承关系
 
-- 继承小烛人格档案：`$CODEX_HOME/.memory/persona/candy_manifest.md`
-- 遵循职能部门协议：[org_protocol](../rules/org_protocol.md)
+- 继承助手私有策略目录：`$CODEX_HOME/.memory/persona/`
+- 遵循 Agent 治理协议：[agent_governance](../rules/agent_governance.md)
 
 ## Manifest 只保留什么
 

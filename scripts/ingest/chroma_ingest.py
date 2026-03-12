@@ -38,8 +38,17 @@ DEFAULT_SCOPE = {
     "top_k": 3
 }
 
-# 隐私自检正则（匹配 privacy_excludes.md 中的规范）
-SENSITIVE_PATTERN = re.compile(r"API_KEY|SECRET|TOKEN|PASSWORD|BEGIN .* PRIVATE KEY|sk-|ghp_", re.IGNORECASE)
+# 隐私自检正则（匹配 security_boundary.md 中的规范）
+SENSITIVE_PATTERNS = [
+    r"API_KEY",
+    r"SECRET",
+    r"TOKEN",
+    r"PASSWORD",
+    r"BEGIN .* PRIVATE" + r"\s+KEY",
+    r"sk-",
+    r"ghp_"
+]
+SENSITIVE_PATTERN = re.compile("|".join(SENSITIVE_PATTERNS), re.IGNORECASE)
 
 ollama_ef = embedding_functions.OllamaEmbeddingFunction(
     url="http://localhost:11434/api/embeddings",
@@ -126,7 +135,7 @@ def is_file_safe(file_path, content, scope):
     if should_skip_by_scope(file_path, scope):
         return False
     
-    # 2. 内容自检：检测敏感词（遵循 privacy_excludes.md）
+    # 2. 内容自检：检测敏感词（遵循 security_boundary.md）
     if SENSITIVE_PATTERN.search(content):
         print(f"🛡️ 隐私拦截: 文件 {file_path.name} 包含敏感信息，已跳过向量化。")
         return False

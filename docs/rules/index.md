@@ -1,58 +1,32 @@
 ---
-description: 核心研发、运维与协作规则集，确保 Agent 输出的一致性。
+description: CortexOS 统一规则入口。只保留稳定主规则，不保留模板型、专题型、路由型规则文件。
 ---
 # 规则中心
 
-> **定义**: `rules/` 只存放**约束、禁令与价值观**——告诉 Agent 能做什么、不能做什么。  
-> SOP 操作手册 → `docs/sops/`，系统运维文档 → `docs/ops/`，人格参考 → `docs/persona/`。
+`docs/rules/` 现在只保留 4 份主规则文件：
 
-## 先看这 6 条
+1. [engineering_baseline](./engineering_baseline) — 工程基线：编码、Review、提交、环境
+2. [security_boundary](./security_boundary) — 安全边界：秘钥、隐私、红线、公开边界
+3. [agent_governance](./agent_governance) — Agent 治理：授权、记忆、协作、权限
+4. [skill_governance](./skill_governance) — Skill 治理：使用触发、安装前审查、风险裁决
 
-如果你只想快速掌握 CortexOS 的开发规则，先读下面这 6 条：
+## 默认阅读顺序
 
-1. [coding_rules](./coding_rules) — 编码规范约束，定义什么叫可用代码
-2. [review_rules](./review_rules) — Code Review 规则，定义如何按风险审查
-3. [red_lines](./red_lines) — 红线禁令，定义哪些行为直接算事故
-4. [local_environment_constraints](./local_environment_constraints) — 本地环境与运行时边界
-5. [privacy_secret_protection_protocol](./privacy_secret_protection_protocol) — 秘钥与敏感信息存放规则
-6. [org_protocol](./org_protocol) — 多 Agent 协作协议
+1. `engineering_baseline`
+2. `security_boundary`
+3. `agent_governance`
+4. `skill_governance`
 
-## 按场景找规则
+## 和其他目录的边界
 
-### 开发必读
-
-- [coding_rules](./coding_rules) — 编码规范约束
-- [review_rules](./review_rules) — Code Review 规则
-- [git_commit_rules](./git_commit_rules) — Commit 规则
-- [local_environment_constraints](./local_environment_constraints) — 本地环境约束
-
-### 安全与边界
-
-- [red_lines](./red_lines) — 红线禁令
-- [privacy_excludes](./privacy_excludes) — 隐私排除规则
-- [privacy_secret_protection_protocol](./privacy_secret_protection_protocol) — 私钥保护协议
-- [permission_matrix_template](./permission_matrix_template) — 权限矩阵模板
-
-### Agent 协作
-
-- [org_protocol](./org_protocol) — 组织协作协议
-- [soul_contract_standard](./soul_contract_standard) — Agent 行为合同边界
-- [skill_vetting_gate](./skill_vetting_gate) — Skill 准入门禁与红线
-
-### 风格与表达
-
-- [vibe_rules](./vibe_rules) — 审美风格约束
-
-## 规则和别的文档有什么区别
-
-- `docs/rules/`：约束、禁令、边界、判断标准
+- `docs/rules/`：稳定规则、禁令、判断标准
 - `docs/sops/`：具体操作步骤
-- `docs/ops/`：系统运行、维护、后台任务
-- `docs/guide/`：给用户的上手与说明
+- `docs/ops/`：系统运行与维护
+- `docs/guide/`：给用户的使用说明
 
-如果你在改代码时不知道先读什么，默认顺序是：
+不再放在 `docs/rules/` 的内容类型：
 
-1. `coding_rules`
-2. `review_rules`
-3. `red_lines`
-4. `local_environment_constraints`
+- 模板型文件
+- 专题型说明
+- 路由型占位页
+- 兼容跳转页

@@ -4,7 +4,7 @@ aside: false
 
 # 🎮 CortexOS 指挥中心 (AI Fleet Control Center)
 
-> **“感知全量武装，掌控协议矩阵。这是外部大脑的唯一真理来源。”**
+> **“感知全量武装，掌控协议矩阵。这是当前能力入口页之一。”**
 
 ---
 
@@ -32,4 +32,4 @@ aside: false
 | **`brain-sentinel-skill`** | **记忆哨兵** | 🚨 激活中 | `.agents/skills/brain-sentinel-skill` |
 
 ---
-*Managed by Little Candle (小烛) | Last Updated: 2026-03-04*
+*Managed by CortexOS | Last Updated: 2026-03-12*

@@ -30,7 +30,7 @@
 
 - 大脑宪法：`docs/router.md`
 - 规则库：`docs/rules/`（按需加载，不要一次全读）
-- 秘钥规范：`docs/rules/privacy_secret_protection_protocol.md`（私钥外置，不落仓库）
+- 安全边界：`docs/rules/security_boundary.md`（私钥外置，不落仓库）
 - 技能库：`docs/skills/`
 - 日志：`$CODEX_HOME/.memory/logs/`（用 `log_task()` MCP Tool 写入）
 - MCP Server：`mcp_server/server.py`（12 个 Tool）

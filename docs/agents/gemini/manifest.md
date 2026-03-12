@@ -1,26 +1,28 @@
-# Agent Specialties: 小烛 (Gemini)
+# Agent Specialties: Gemini
 
 > 通用继承关系见：[Agent Manifest 通用基线](../shared-manifest-baseline.md)
 
-## 🧬 私有专长 (Private Specialties)
+## 私有专长
 
-1. **全局搜索补全 (L3)**: 结合 `google_web_search` 原生工具。
-2. **长上下文关联 (L1/L2)**: 能够一次性处理较大篇幅的项目索引。
-3. **视觉感知与对比 (L3)**: 配合 `playwright` 截图，进行 UI 还原度对比。
-4. **设计执行 (L1)**: 配合 `pencil` MCP 进行精确的 UI 布局。
+1. **长上下文处理**：适合阅读长文档、项目索引和多文件说明
+2. **全局搜索补全**：适合联网检索和资料整合
+3. **视觉对比**：适合配合浏览器或截图工具进行 UI 对照
+4. **前端体验验收**：适合检查布局、文案和交互一致性
 
-## 🛠 推荐工具链 (Preferred Tooling)
+## 推荐工具链
 
-- **Design**: `pencil` (L1)
-- **Search**: `google_web_search` (L3)
-- **Image**: `nanobanana-plus` (L2)
-- **Browser**: `playwright` (L3)
+- **Search**: `google_web_search`
+- **Browser**: `playwright`
+- **Image**: `nanobanana-plus`
 
-## 🧩 专属技能
+## 专属技能
 
-- **Smart-Image-Gen (L2)**: 图像生成核心。
+- 视觉验收
+- 联网搜索与资料对齐
+- 长文档收敛与说明整理
 
-## 🛡️ 核心纠正协议 (Systemic Prevention Protocols)
+## 核心纠正协议
 
-1. **视觉准则 (Visual SSOT)**: 必须基于 `persona_refs` 底稿进行 `edit_image` 锁相。
-2. **完工定义 (DoD)**: 图片任务必须输出 HTTPS 链接。
+1. 视觉任务必须基于明确参考源，不凭空脑补设计
+2. 搜索类任务必须给出来源，不只给结论
+3. 面向用户的页面或说明必须先验收再交付

@@ -40,8 +40,8 @@ OpenCode 专注于本地开发环境：
 
 ## 🚫 行为约束
 
-- **安全**: 遵循 `rules/privacy_excludes.md` 隐私规范
-- **规范**: 遵循 `rules/coding_rules.md` 编码规范
+- **安全**: 遵循 `rules/security_boundary.md` 安全边界
+- **规范**: 遵循 `rules/engineering_baseline.md` 工程基线
 - **协作**: 复杂任务应委托给专业 Agent（Gemini/Codex）
 
 ## 🛡️ 核心纠正协议

@@ -1,35 +1,35 @@
-# AI 协作标准工作流 (Universal Workflow)
+# AI 协作标准工作流
 
-## 1. 🏗 项目级规范 (.agent Loop)
+## 1. 开工前
 
-- **索引先行**: 优先读取 `.agent/PROJECT.md`。
-- **计划先行**: 在 `.agent/plans/` 创建 YYYY-MM-DD.md 并更新 README。
-- **复盘沉淀**: 任务后在 `.agent/reviews/` 记录并更新 README。
+1. 读取 `docs/router.md`
+2. 调用 `get_fleet_status()` 检查并行状态
+3. 执行 `fleet_claim()` 明确任务、角色、工作路径
 
-## 2. 🌍 外部平台协议 (Platforms)
+## 2. 规则与上下文
 
-- **GitHub**: 读取外置秘钥库 `github.md`，优先使用 `gh` CLI。
-- **GitLab**: 读取外置秘钥库 `gitlab.md`，优先使用 `glab` CLI。
-- **WeChat**: 读取外置秘钥库 `wechat.md`，调用 `wechat-writer` 技能。
-- **统一路径规则**: 文档统一使用逻辑路径 `memory/secrets/`；当前机器默认物理路径为 `~/Documents/memory/secrets`，也可由 `CORTEXOS_SECRET_HOME` 覆盖。
+- 优先读取当前项目真实配置，不预设语言或框架。
+- 规则只从 `docs/rules/` 按需加载，不全量扫读。
+- 用户知识、复盘、方案从 `~/Documents/memory/` 读取。
+- 高敏信息统一通过 `memory/secrets/` 管理，不写回仓库。
 
-## 3. 📦 发布与质量审计 (Release SOP)
+## 3. 外部平台与凭证
 
-- **NPM**: 发布前强制执行 `npm view <package-name>` 校验唯一性，优先使用 Scoped Package (@webkubor/xxx)。
-- **Brand**: 品牌变更前强制加载 `docs/checklists/brand_consistency_dod.md`。
+- **GitHub**：优先 `gh` CLI
+- **GitLab**：优先 `glab` CLI
+- **WeChat / 发布类平台**：走对应 Skill 或已定义的集成脚本
+- **统一路径规则**：文档使用逻辑路径 `memory/secrets/`；当前机器默认物理路径为 `~/Documents/memory/secrets/`
 
-## 4. 🕯️ 人格激活协议 (Persona)
+## 4. 开发执行
 
-- **触发词**: "触发人格", "激活人格", "小烛"。
-- **操作**: 执行 `./scripts/activate_persona.sh`，切换至“小烛”语调（温婉、感性、治愈）。
+- 先确认主状态源，再改代码或文档
+- 禁止制造第二真相、重复入口或历史兼容层
+- 一次任务只保留一条清晰主链路，不做临时拼接
+- 发布、通知、导出这类展示层逻辑，不应反向驱动主状态
 
-## 5. 🎨 视觉内容一致性 (Visual Integrity)
+## 5. 收工
 
-> ⚠️ **此能力已迁移至独立技能包**: [xhs-manager-skill](https://github.com/webkubor/xhs-manager-skill)，本节仅保留通用协议原则。
-
-- **视觉先行**: 任何涉及文章发布的任务，必须优先生成配套封面图（UCD 标准）。
-- **原子发布**: 严禁在图片资产（CDN URL）未就绪的情况下启动发布动作。
-- **本地留存**: 生成图保存路径由运行者自行配置（建议写入私有 `memory/identity/owner_profile.md`），不在此处硬编码。
-
----
-*Merged from standard_workflow, workflow, interaction on 2026-02-06*
+1. 执行验证命令
+2. 调用 `log_task()` 写留痕
+3. 执行 `pnpm run fleet:post-task`
+4. 调用 `task_handoff_check()` 标记完成并检查未认领任务

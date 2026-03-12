@@ -7,7 +7,7 @@
     { "pattern": "docs/ops/*.md", "tier": "L2" },
     { "pattern": "docs/skills/*.md", "tier": "L2" },
     { "pattern": "docs/guide/*.md", "tier": "L2" },
-    { "pattern": "docs/mcp-console.md", "tier": "L2" },
+    { "pattern": "docs/intel/*.md", "tier": "L2" },
     { "pattern": "docs/agents/*/mcp.md", "tier": "L2" },
     { "pattern": "../memory/projects/*.md", "tier": "L2" },
     { "pattern": "../memory/skills/*.md", "tier": "L2" },

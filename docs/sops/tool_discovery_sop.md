@@ -10,18 +10,18 @@
 
 ### Step 1: 能力对齐 (Capability Alignment)
 
-- 强制读取 `docs/intel/tooling_inventory.md`。
-- **禁止** 在未读取 Inventory 的情况下执行 `ls ~/.agents/skills`。
+- 强制读取 `docs/guide/feature-matrix.md`。
+- **禁止** 在未读取能力总表的情况下执行 `ls ~/.agents/skills`。
 
 ### Step 2: 决策路由 (Router Decision)
 
-- **私有优先**: 如果 `tooling_inventory` 中存在相同职能的 Private 脚本，无视 Public 插件。
-- **路径锁定**: 获取脚本的绝对路径（如 `CortexOS/scripts/tools/...`）。
+- **私有优先**: 如果功能总表中存在同职能的本地脚本或本地 MCP，优先使用本地能力。
+- **路径锁定**: 获取脚本或文档里给出的稳定入口路径。
 
 ### Step 3: 指令执行 (Execution)
 
-- 直接调用 Inventory 中注明的命令模板。
-- 若 Inventory 缺失细节，联动查阅 `docs/mcp-console.md`。
+- 直接调用功能总表中注明的命令模板或工具入口。
+- 若功能总表缺少细节，再联动查阅对应 `docs/agents/*`、`docs/skills/*` 或相关 SOP。
 
 ## 3. DoD (完工定义)
 

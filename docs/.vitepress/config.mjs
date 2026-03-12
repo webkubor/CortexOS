@@ -81,7 +81,7 @@ export default defineConfig({
         text: "🧩 技能矩阵 (Skills)",
         items: [
           { text: "🎮 技能指挥部", link: "/skills" },
-          { text: "🛠️ MCP 控制台", link: "/mcp-console" },
+          { text: "🧭 功能总表", link: "/guide/feature-matrix" },
           { text: "📊 Skills 管理台", link: "/skills/management" },
           { text: "🌍 开源技能库 (GitHub)", link: "/skills/github_repos" },
           { text: "🏠 本地集成能力", link: "/skills/index" },
@@ -91,14 +91,10 @@ export default defineConfig({
         text: "📏 核心准则 (Rules)",
         items: [
           { text: "📏 规则中心", link: "/rules/" },
-          { text: "📝 编码规范", link: "/rules/coding_rules" },
-          { text: "🔍 Review 规范", link: "/rules/review_rules" },
-          { text: "🚫 红线禁令", link: "/rules/red_lines" },
-          { text: "🧱 环境约束", link: "/rules/local_environment_constraints" },
-          { text: "🛡 Skill 准入门禁", link: "/rules/skill_vetting_gate" },
-          { text: "🤝 组织协作协议", link: "/rules/org_protocol" },
-          { text: "🔒 隐私排除规范", link: "/rules/privacy_excludes" },
-          { text: "🔐 秘钥保护协议", link: "/rules/privacy_secret_protection_protocol" },
+          { text: "🛠 工程基线", link: "/rules/engineering_baseline" },
+          { text: "🔐 安全边界", link: "/rules/security_boundary" },
+          { text: "🤝 Agent 治理", link: "/rules/agent_governance" },
+          { text: "🛡 Skill 治理", link: "/rules/skill_governance" },
         ],
       },
       {
