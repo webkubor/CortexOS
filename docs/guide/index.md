@@ -233,6 +233,28 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 - 一篇文档只讲一个主题。
 - 标题明确写场景，便于检索。
 
+### 6.1.1 开发 / 日志 / 复盘 / 知识沉淀分流表
+
+你可以把它理解成 4 层：
+
+- `日志`：这次做了什么
+- `retry`：下次再遇到怎么快速重试
+- `retros`：这次为什么会出大问题
+- `knowledge`：这次沉淀出了什么长期经验
+
+具体分流：
+
+- 一次性试错、临时排障、当次任务动作：写 `CortexOS/.memory/logs/`
+- 可重复技术坑、稳定修法：写 `CortexOS/.memory/persona/retry_patterns.md`
+- 高代价错误、系统性问题：写 `CortexOS/.memory/retros/`
+- 项目经验、方案判断、业务复盘：写 `memory/knowledge/`
+
+原则：
+
+- AI 可以大胆试，但不能让试错白费
+- 不是每次都写大复盘，而是把可复用的错误模式升级出来
+- 同类问题重复出现时，应优先读取已有 `retry` / `retros`，不再从零猜
+
 ### 6.2 扩展规则库
 
 适合：团队新增约束、流程、标准。

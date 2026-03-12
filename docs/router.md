@@ -148,7 +148,7 @@ python3 scripts/ingest/query_brain.py "查询" --mode deep --budget 3200
 
 ### Metadata
 
-*Last Updated: 2026-03-06*
+*Last Updated: 2026-03-12*
 
-- **版本**: v5.6.0（Intelligence Interface & Asset Hosting）
+- **版本**: v5.8.0（规则系统收口 · MCP 热路径 Python 化）
 - **变更日志**: [查看大脑演化史](./BRAIN_HISTORY.md)

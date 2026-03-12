@@ -5,9 +5,36 @@
 
 ---
 
-## 🏗️ 当前智力档位: v5.7.2 (AI Team 本地控制台收口 · 成员视图可用性修正)
+## 🏗️ 当前智力档位: v5.8.0 (规则系统收口 · MCP 热路径 Python 化)
 
 ---
+
+## [v5.8.0] - 2026-03-12（当前：规则系统收口 · MCP 热路径 Python 化）
+
+### 问题
+v5.7.2 解决了 AI Team 本地控制台的可用性，但大脑本体还存在四类结构性问题：
+1. **规则边界重复且难以注入**：`docs/rules/` 下长期混杂编码规范、Review 规范、隐私协议、人格合同、专题说明与模板文件。文件很多，但边界不清，Agent 冷启动后不知道该优先读哪份，用户也难以从主入口看清开发规则。
+2. **文档与历史残留仍在制造第二真相**：`mcp-console.md`、`tooling_inventory.md`、旧 onboarding、历史审查报告、零散迁移说明与人格/声音绑定素材仍散落仓库，系统已经切换到新结构，但旧文件还在暗中提供过期认知。
+3. **MCP 热路径过度依赖 Node CLI**：`get_fleet_status()`、`fleet_claim()`、`fleet_handover()` 等核心 MCP Tool 仍通过 `pnpm run ...` 触发 Node 脚本再落到 SQLite。链路长、跨 runtime、多一层 shell/文本输出解析，导致 `better-sqlite3` ABI 漂移时直接表现为 `Transport closed`，排障成本过高。
+4. **试错经验没有升级协议**：开发中虽然已经有日志、`retry_patterns`、`retros`、`memory/knowledge` 四层存储，但没有一份清晰规则告诉 Agent “什么只记日志，什么要升格成可复用经验”，导致 AI 容易要么过度保守，要么每次都从零再试。
+
+### 修复方式
+- **规则系统收口**：将 `docs/rules/` 收敛为四个稳定主规则文件：`engineering_baseline.md`、`agent_governance.md`、`security_boundary.md`、`skill_governance.md`；删除模板型、专题型、路由型与重复边界文件，并把规则入口前置到首页、导航和上手指南。
+- **文档与记忆边界清理**：删除历史控制台、旧工具清单、旧 onboarding、历史审查报告和不再承担系统职责的文档；把 `.memory`、`.memory/projects`、`.memory/plans/projects` 的说明层收口为“系统控制层”，不再把历史人格设定写成默认产品规则；安装模型改成“最小运行配置 + 可选助手形象”。
+- **来源透明化恢复**：在 `agent_governance.md` 中恢复 `[📂 规则] / [🧠 RAG] / [🧠 历史复盘]` 的引用透明化标准，明确显式规则优先于隐式召回。
+- **MCP 热路径 Python 化（第一、二阶段）**：`get_fleet_status()` 改为 Python 直接读取 `.memory/sqlite/ai-team.db` 并组装状态；`fleet_claim()` 与 `fleet_handover()` 改为 Python 直写 AI Team 主库，只把项目索引同步与看板同步保留为旁路 Node 脚本；`task_handoff_check()` 的“未认领任务”判定改为优先读取 `tasks` 表中的结构化 assignee 字段。
+- **试错与复盘升级协议**：在 `engineering_baseline.md`、`.memory/memory_formula.md` 与 `docs/guide/index.md` 中写入统一分流规则，明确“日志 / retry / retros / knowledge”四层升级与回注机制。
+
+### 解决了什么
+- **规则可读性**：大脑从“规则很多但难定位”变成“规则少而稳定，入口清楚，按场景注入”。
+- **文档一致性**：历史说明不再散落活文档区，仓库中的说明层开始真正围绕当前结构组织，旧人格、旧控制台、旧工具清单退出主认知区。
+- **运行时稳态**：MCP 的核心状态读取、挂牌与队长移交不再依赖 Node CLI 文本输出，`Transport closed` 这类“表面是 Python，根因却在 Node 子链路”的问题开始被系统性削弱。
+- **任务统计准确性**：执行中的任务不再因为只看 `agent.task` 文本而被误判成“未认领”，AI Team 的任务池口径更接近真实运行态。
+- **经验资产化**：AI 不需要因为怕错而保守，试错现在有了明确升级路径，开发中的问题能沉淀为可回注的重试模式、错误复盘和长期知识。
+
+### 影响
+这一步不是单纯的文档整理，而是 CortexOS 从“功能不断叠加的协作仓库”继续收口成“边界清楚、热路径更短、试错可积累的产品系统”。  
+对内，它降低了 Agent 冷启动和排障时的认知噪音；对外，它让规则、文档、记忆和运行时主链路开始围绕同一套产品边界工作。v5.8.0 也为后续把 `fleet_checkin()`、更多任务流和状态写入完全收进 Python 链路打下了基础。
 
 ## [v5.7.2] - 2026-03-11（当前：AI Team 本地控制台收口 · 成员视图可用性修正）
 

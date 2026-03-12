@@ -52,7 +52,23 @@ $CODEX_HOME/.memory/
 | 用户偏好变化 | `.memory/identity/owner_profile.md` | 只维护偏好与称呼，不写密钥 |
 | AI Team 进入项目执行任务 | `.memory/projects/index.md` + `.memory/plans/projects/*-command-center.md` | 自动登记或刷新 |
 
-## 5. 防污染规则
+## 5. 开发问题分流规则
+
+| 问题类型 | 落点 | 说明 |
+| :--- | :--- | :--- |
+| 一次性试错、短期排障、当次任务动作 | `.memory/logs/YYYY-MM-DD.md` | 只留最小事实，不升格 |
+| 可重复技术坑、稳定重试套路 | `.memory/persona/retry_patterns.md` | 记录“症状-根因-重试步骤” |
+| 高代价错误、系统性缺陷、关键链路事故 | `.memory/retros/` | 作为错误复盘资产长期保留 |
+| 项目经验、架构判断、业务结论、方案复盘 | `~/Documents/memory/knowledge/` | 属于用户长期知识资产 |
+
+升级规则：
+
+- 只出现一次且无复用价值：记日志
+- 重复 2 次以上：升格到 `retry_patterns`
+- 一次就足够高代价：直接进 `retros`
+- 对未来项目有指导价值：进入 `memory/knowledge`
+
+## 6. 防污染规则
 
 - 禁止把用户长期知识写进 `.memory`
 - 禁止把与 CortexOS 运行无关的个人内容写进 `.memory`
@@ -60,7 +76,7 @@ $CODEX_HOME/.memory/
 - 禁止在 `.memory` 根目录散落临时碎片文件
 - 任何密钥一律只进 `~/Documents/memory/secrets/`
 
-## 6. 访问边界
+## 7. 访问边界
 
 | 记忆类型 | 路径 | 所有 Agent 可读 | 只有 CortexOS 写 |
 | :--- | :--- | :--- | :--- |
