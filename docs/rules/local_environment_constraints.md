@@ -17,11 +17,16 @@
 
 ## 3. 秘钥与敏感信息
 
-- 秘钥外置目录：`~/Documents/memory/secrets`
+- 秘钥逻辑目录：`memory/secrets/`
+- 物理路径由本机环境决定，不在仓库文档中硬编码
 - 禁止将真实秘钥写入仓库文档、脚本或配置示例
-- 强烈建议从项目内 `docs/secrets/_templates/` 复制模板到 `~/Documents/memory/secrets`
+- 强烈建议从项目内 `docs/secrets/_templates/` 复制模板到外置秘钥目录
 
-## 4. 维护建议
+## 4. Node 运行时基线
+
+- 仓库 Node 基线：`.nvmrc`
+- 若出现 `better-sqlite3` ABI 不匹配，先执行 `nvm use`，再执行 `npm rebuild better-sqlite3`
+## 5. 维护建议
 
 - 该文档仅记录“稳定环境事实”，不记录一次性故障排查细节
 - 环境变更（如包管理策略切换）应直接更新本文件

@@ -38,10 +38,15 @@
 
 - **定位**: 生产级 AI 视觉生成（增强版）。
 - **神技**: `generate_image` (支持多模型/宽高比) + `edit_image` (局部精修)。
-- **核心升级**:
-  - **Per-call 模型切换**: 支持 `model` 参数（flash/pro/v1），无需重启服务。
-  - **布局控制**: 支持 `aspectRatio` 参数（1:1, 16:9, 9:16 等）。
-  - **更稳健**: OAuth 回退机制与配置向导。
+- **🚀 核心模型矩阵 (Model Matrix)**:
+  - **💎 Imagen 4 Ultra** (`imagen-4.0-ultra-generate-001`): 顶级写实体验，支持 8K 级摄影效果（需 Pro API Key）。
+  - **🚀 Imagen 4 Fast** (`imagen-4.0-fast-generate-001`): 性能与质量的黄金平衡，极速出图。
+  - **⚡ Nano Banana 2** (`gemini-3.1-flash-image-preview`): 默认模型，适用于极速日常创意与草图。
+  - **Other**: `gemini-3-pro-image-preview`, `gemini-2.5-flash-image`.
+- **核心功能**:
+  - **动态模型切换**: 支持 `model` 参数，无需重启 MCP 服务即可在不同任务间切换。
+  - **多维比例控制**: 支持 `aspectRatio` (1:1, 16:9, 9:16, 4:3, 3:4)。
+  - **OAuth & API Key 双模**: 支持 Google ADC 登录态或独立 API Key 验证。
 - **场景**: 《沸腾之雪》分镜、高保真角色 Persona 锁死。
 
 ### 🧠 **mcp-obsidian** (由 `mcp-obsidian` 提供)

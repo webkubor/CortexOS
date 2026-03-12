@@ -15,7 +15,7 @@ aside: false
 | 工具名称 | 核心能力 (About) | 装载时间 | 调用方式 (Method) |
 | :--- | :--- | :--- | :--- |
 | **`chrome-devtools-mcp`** | **agent-browser**：浏览器自动化、A11y 语义识别。 | 2026-03-04 | `browser_*` / `chrome-devtools` |
-| **`nanobanana-plus`** | **视觉画师**：AI 图像生成、编辑、修复与 Story 设计（支持模型动态切换）。 | 2026-03-05 | `generate_image` / `G()` |
+| **`nanobanana-plus`** | **视觉画师**：AI 图像生成与 Story 设计（支持 Imagen 4 Ultra/Fast 等模型动态切换）。 | 2026-03-05 | `generate_image` / `G()` |
 | **`context7`** | **文档库** | 2026-02-24 | `query-docs` |
 
 ---

@@ -14,6 +14,9 @@
 ### B. 纯技术/工程化封面 (Technical Covers)
 
 - **工具**: `generate_image` (nanobanana-plus)
+- **模型建议**: 
+  - 极速预览: `gemini-3.1-flash-image-preview` (Nano Banana 2)
+  - 高质归档: `imagen-4.0-fast-generate-001` (Imagen 4 Fast)
 - **规范**: 统一遵循 `zero humans, zero faces` 与技术主题一致性。
 - **红线**: 必须包含 `zero humans, zero faces`。采用 3D Isometric 风格。
 - **归档**: 私有素材目录（由本机环境决定）。

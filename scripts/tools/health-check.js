@@ -186,6 +186,29 @@ function checkVectorStore() {
   return issues;
 }
 
+function checkSecretsTemplatesOnly() {
+  log(colors.blue, '\n🔍 检查仓库秘钥目录是否只保留模板...');
+  const secretsDir = path.join(DOCS_DIR, 'secrets');
+  if (!checkFileExists(secretsDir) || !fs.statSync(secretsDir).isDirectory()) {
+    log(colors.red, '❌ docs/secrets 目录缺失');
+    return ['docs/secrets 缺失'];
+  }
+
+  const disallowedFiles = fs.readdirSync(secretsDir)
+    .filter(name => name !== '_templates' && name !== 'README.md')
+    .map(name => path.join(secretsDir, name))
+    .filter(file => fs.statSync(file).isFile())
+
+  if (disallowedFiles.length > 0) {
+    log(colors.red, `❌ docs/secrets 存在 ${disallowedFiles.length} 个非模板文件`)
+    disallowedFiles.forEach(file => log(colors.red, `  • ${path.relative(PROJECT_ROOT, file)}`))
+    return disallowedFiles.map(file => `非模板秘钥文件: ${path.relative(PROJECT_ROOT, file)}`)
+  }
+
+  log(colors.green, '✅ docs/secrets 仅保留模板与说明文件')
+  return []
+}
+
 function runHealthCheck() {
   const strictMode = process.argv.includes('--strict');
   const failOnWarning = process.argv.includes('--fail-on-warning');
@@ -200,6 +223,7 @@ function runHealthCheck() {
 
   issues.critical.push(...checkCriticalDirectories());
   issues.critical.push(...verifyRouterPaths());
+  issues.critical.push(...checkSecretsTemplatesOnly());
   issues.warnings.push(...checkVectorStore());
 
   log(colors.cyan, '\n' + '='.repeat(50));

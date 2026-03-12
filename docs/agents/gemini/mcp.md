@@ -10,7 +10,7 @@
 | **agent-browser** | (Global CLI) | **(NEW)** 独立的高级浏览器自动化工具，用于语义快照与深度文档检索。 | ✓ Available |
 | **github** | github | GitHub 仓库管理、Issue/PR 操作与代码审查。 | ✓ Connected |
 | **huggingface-skills** | huggingface-skills | **(NEW)** HF 模型训练、数据集管理与 Gradio UI 开发。 | ✓ Connected |
-| **nanobanana-plus** | nanobanana-plus | **(UPGRADED)** 增强型 AI 图像生成，支持 per-call 模型切换 (flash/pro) 与宽高比控制。 | ✓ Connected |
+| **nanobanana-plus** | nanobanana-plus | **(UPGRADED)** 增强型 AI 图像生成，支持 per-call 模型切换（Imagen 4 Ultra/Fast, Nano Banana 2）与宽高比控制。 | ✓ Connected |
 | **figma** | (Built-in/MCP) | Figma 设计稿像素级读取与组件解析。 | ✓ Connected |
 | **browser-use** | (Built-in/MCP) | 基于自然语言的自主浏览器代理操作。 | ✓ Connected |
 

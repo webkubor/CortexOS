@@ -2,6 +2,10 @@
   "name": "cortexos",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "22.x",
+    "pnpm": "10.x"
+  },
   "scripts": {
     "dev": "node scripts/actions/vitepress-with-fleet-bridge.mjs dev",
     "docs:build": "vitepress build docs",

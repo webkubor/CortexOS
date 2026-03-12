@@ -149,7 +149,7 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 | `pnpm run fleet:status` | 看 AI 队列和冲突风险 |
 | `pnpm run fleet:claim -- --workspace "$PWD" --task "任务名" --agent "Codex" --alias "Codex" --role "后端"` | 开工前打卡并声明角色 |
 | `pnpm run fleet:sync-dashboard` | 同步舰队看板 |
-| `cp docs/secrets/_templates/github.md <memory-secrets-path>/github.md` | 从项目模板复制一份到外置秘钥目录 |
+| `cp docs/secrets/_templates/github.md <memory-secrets-path>/github.md` | 从仓库模板生成外置秘钥文件 |
 
 ---
 
@@ -190,6 +190,7 @@ args = ["-y", "@mauricio.wolff/mcp-obsidian@latest", "/你的/memory-vault-path"
 - `docs/rules/`：规则库（工程规范、协作协议、隐私协议）。重点看 `coding_rules.md` 与 `review_rules.md`。
 - `memory/knowledge/`：长期知识库（复盘、方案、经验）。
 - `memory/secrets/`：高敏凭证区（不进 Git）。
+- `docs/secrets/_templates/`：仓库内模板区，只放占位模板，不放真实凭证。
 - `$CODEX_HOME/.memory/logs/`：助手私有操作日志（不属于用户记忆）。
 
 ---
@@ -250,6 +251,7 @@ npx -y clawhub@latest inspect <slug> --file SKILL.md --no-input
 
 - 凭证目录：`memory/secrets/`（物理位置由你的环境配置决定）。
 - 不要把密钥写进仓库或 `docs/`。
+- `docs/secrets/` 现在只允许保留模板与说明文件，不允许保留真实凭证文档。
 - 强烈建议直接从项目模板复制后再填值：
 
 ```bash
@@ -280,6 +282,15 @@ uv pip install ollama
 ### `fleet:claim` 冲突警告
 
 表示同路径已有 Agent 在跑，不是致命错误。先 `pnpm run fleet:status` 看清当前占用，再决定并行还是切路径。
+
+### `better-sqlite3` / `NODE_MODULE_VERSION` 不匹配
+
+说明当前 Node 版本和本地原生模块编译版本不一致。先切到仓库基线 Node，再重编译：
+
+```bash
+nvm use
+npm rebuild better-sqlite3
+```
 
 ---
 
