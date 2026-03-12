@@ -11,6 +11,9 @@ hero:
     - theme: brand
       text: 🚀 快速开始
       link: /guide/
+    - theme: alt
+      text: 📏 开发规则
+      link: /rules/
 
 features:
   - icon: 🧠
@@ -36,4 +39,8 @@ features:
   - icon: 🛡️
     title: Pre-commit 安全门禁，防止私密信息泄漏
     details: 内置 git pre-commit hook，每次提交自动扫描硬编码绝对路径、API Key、个人称呼等敏感内容。Level 1 直接拦截提交，Level 2 警告提示，白名单精细配置。
+
+  - icon: 📏
+    title: 开发规则直接暴露，不藏在深目录
+    details: 编码规范、Review 规范、环境约束、红线禁令都直接挂到首页、导航和侧边栏。用户与 Agent 不需要猜规则在哪，打开文档就能看到主入口。
 ---

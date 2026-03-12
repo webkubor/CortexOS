@@ -6,6 +6,7 @@ const enableLocalTeam = process.env.CORTEXOS_LOCAL_TEAM === '1'
 const nav = [
   { text: "📚 DOC", link: "/" },
   { text: "🚀 使用指引", link: "/guide/" },
+  { text: "📏 规则中心", link: "/rules/" },
   { text: "🤖 Agent 配置", link: "/agents/" }
 ]
 
@@ -89,10 +90,15 @@ export default defineConfig({
       {
         text: "📏 核心准则 (Rules)",
         items: [
-
+          { text: "📏 规则中心", link: "/rules/" },
           { text: "📝 编码规范", link: "/rules/coding_rules" },
+          { text: "🔍 Review 规范", link: "/rules/review_rules" },
+          { text: "🚫 红线禁令", link: "/rules/red_lines" },
+          { text: "🧱 环境约束", link: "/rules/local_environment_constraints" },
           { text: "🛡 Skill 准入门禁", link: "/rules/skill_vetting_gate" },
+          { text: "🤝 组织协作协议", link: "/rules/org_protocol" },
           { text: "🔒 隐私排除规范", link: "/rules/privacy_excludes" },
+          { text: "🔐 秘钥保护协议", link: "/rules/privacy_secret_protection_protocol" },
         ],
       },
       {

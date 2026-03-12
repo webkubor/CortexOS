@@ -19,6 +19,22 @@
 
 ---
 
+## 0.5 开工前先看这 5 条规则
+
+如果你要改代码、配环境、做 review，不要先在目录里盲找，先看这 5 条：
+
+- [编码规范](/rules/coding_rules)：什么叫可用代码，什么是垃圾代码、胶水代码、屎山代码
+- [Review 规范](/rules/review_rules)：怎么做风险优先的代码审查
+- [红线禁令](/rules/red_lines)：哪些行为直接算事故
+- [本地环境约束](/rules/local_environment_constraints)：Node / pnpm / uv / secrets 的执行边界
+- [秘钥保护协议](/rules/privacy_secret_protection_protocol)：真实凭证放哪里、仓库里能放什么
+
+完整规则入口：
+
+- [规则中心](/rules/)
+
+---
+
 ## 1. 前置准备（5 项）
 
 请先确认本机具备以下环境：
