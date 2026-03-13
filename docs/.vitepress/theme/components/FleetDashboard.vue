@@ -242,7 +242,7 @@ function normalizeBridgeState(state) {
   }));
 
   const missions = Array.isArray(state?.missions)
-    ? state.missions.slice(0, 6).map((task, index) => ({
+    ? state.missions.map((task, index) => ({
       id: task.id || `任务-${String(index + 1).padStart(2, "0")}`,
       taskId: task.taskId || '',
       title: task.title || task.taskId || `任务-${String(index + 1).padStart(2, "0")}`,

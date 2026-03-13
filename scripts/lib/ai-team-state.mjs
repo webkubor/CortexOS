@@ -60,7 +60,7 @@ function buildTaskQueue(db) {
       updated_at AS updatedAt
     FROM tasks
     ORDER BY completed ASC, priority_rank ASC, updated_at DESC, task_id ASC
-    LIMIT 20
+    LIMIT 100
   `).all()
 
   return rows.map((task, index) => ({
