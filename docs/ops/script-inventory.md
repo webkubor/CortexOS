@@ -20,7 +20,6 @@
 | `scripts/maintenance/` | 健康检查、守护、自我复盘 | 控制台报告、`.memory/retros/*`、`.memory/meta/*` |
 | `scripts/ingest/` | 记忆索引、语义检索、向量入库 | `chroma_db/`、索引与查询输出 |
 | `scripts/tools/` | 核心运维工具 | 健康报告、上传输出、探针日志 |
-| `scripts/wechat/` | 微信发布链路 | 远端草稿、`tmp/wechat_preview.html` |
 
 ## 关键主线脚本
 
@@ -53,7 +52,6 @@
 - `health-gate.js`
 - `error-retro.mjs`
 - `check-docs-index.js`
-- `check-skill-paths.mjs`
 - `mcp-guard.mjs`
 - `verify-clean.js`
 
@@ -66,15 +64,8 @@
 
 ### `scripts/tools/`
 - `health-check.js`
-- `sync-skills-management.mjs`
 - `rag_probe.sh`
 - `up.sh`
-
-### `scripts/wechat/`
-- `push.mjs`
-- `push-boiling-snow.mjs`
-- `preview.mjs`
-- `utils.mjs`
 
 ## 主线输出路径
 
@@ -97,8 +88,3 @@
 - `chroma_db/`
 - `.memory/index/*`
 - `.memory/rag_logs/*`（如启用探针）
-
-### 发布与通知
-- `.last_notif.json`
-- `tmp/wechat_preview.html`
-- 远端草稿与外部通知结果

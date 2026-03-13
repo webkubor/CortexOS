@@ -334,6 +334,7 @@ const server = http.createServer(async (req, res) => {
         'health:verify': { cmd: 'node', args: ['scripts/maintenance/verify-health.js'] },
         'health:gate': { cmd: 'node', args: ['scripts/maintenance/health-gate.js'] },
         'health:mcp': { cmd: 'uv', args: ['run', 'mcp_server/server.py', '--help'] },
+        'assistant:radar': { cmd: 'node', args: ['scripts/tools/sync-skills-management.mjs'] },
         'memory:refresh': { cmd: 'python3', args: ['scripts/ingest/chroma_ingest.py'] }
       }
 

@@ -3,26 +3,13 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const projectRoot = path.join(__dirname, '../../')
 
 const codexHome = process.env.CODEX_HOME || path.join(os.homedir(), '.codex')
 const outJsonFile = path.join(codexHome, '.memory', 'skills_inventory.json')
-const localSkillsRoot = path.join(os.homedir(), 'Desktop/skills')
-const localSkillsRootDisplay = '~/Desktop/skills'
-const localSkillsRootCommand = '$HOME/Desktop/skills'
 
 function nowLocal () {
   const d = new Date()
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  const h = String(d.getHours()).padStart(2, '0')
-  const min = String(d.getMinutes()).padStart(2, '0')
-  return `${y}-${m}-${day} ${h}:${min}`
+  return d.toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-')
 }
 
 function canonicalSkillName (name) {
@@ -32,8 +19,6 @@ function canonicalSkillName (name) {
     .replace(/^gemini-skill-/, '')
     .replace(/-skills?$/, '')
 }
-
-
 
 function listSkillEntriesInDir (dirPath, sourceLabel) {
   if (!fs.existsSync(dirPath)) return []
@@ -111,8 +96,6 @@ function mergeInstalledSkills (raw) {
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
-
-
 function main () {
   const home = os.homedir()
   const scanDirs = [
@@ -131,16 +114,15 @@ function main () {
     generatedAt: new Date().toISOString(),
     generatedAtLocal: nowLocal(),
     installedSkills,
-    scanDirs,
-    localSkillsRoot: localSkillsRootDisplay
+    scanDirs
   }
 
   fs.mkdirSync(path.dirname(outJsonFile), { recursive: true })
   fs.writeFileSync(outJsonFile, `${JSON.stringify(payload, null, 2)}\n`, 'utf8')
 
-  console.log('✅ skills inventory updated:')
-  console.log(`- ${outJsonFile}`)
-  console.log(`- installed: ${installedSkills.length}`)
+  console.log('✅ Assistant Radar: Skills inventory updated.')
+  console.log(`- Data saved to: ${outJsonFile}`)
+  console.log(`- Detected skills: ${installedSkills.length}`)
 }
 
 main()
