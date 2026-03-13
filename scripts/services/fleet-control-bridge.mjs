@@ -22,6 +22,7 @@ const registryFile = path.join(projectRoot, '.memory/projects/registry.json')
 const port = FLEET_BRIDGE_PORT
 const host = FLEET_BRIDGE_HOST
 const sseClients = new Map()
+const runningProcesses = new Map()
 let nextClientId = 1
 let lastStateSignature = ''
 let lastBroadcastState = null
@@ -343,6 +344,68 @@ const server = http.createServer(async (req, res) => {
 
       try {
         const { stdout, stderr } = await runCommand('pnpm', ['run', scriptName, ...scriptArgs])
+        writeJson(res, 200, { success: true, stdout, stderr }, origin)
+      } catch (e) {
+        writeJson(res, 500, { error: e.message }, origin)
+      }
+      return
+    }
+
+    if (action === 'run-engine') {
+      const { engineName } = data
+      const allowedEngines = new Set([
+        'gemini',
+        'claude',
+        'codex'
+      ])
+
+      if (!engineName || !allowedEngines.has(engineName)) {
+        writeJson(res, 400, { error: `Invalid or not allowed engine: ${engineName}` }, origin)
+        return
+      }
+
+      const scriptPath = `scripts/actions/${engineName}-with-fleet.sh`
+      
+      // Check if already running
+      if (runningProcesses.has(engineName)) {
+        const existing = runningProcesses.get(engineName)
+        if (existing.exitCode === null) {
+          writeJson(res, 200, { success: true, message: `${engineName} is already running`, pid: existing.pid }, origin)
+          return
+        }
+      }
+
+      try {
+        const child = spawn('bash', [scriptPath], {
+          cwd: projectRoot,
+          detached: true,
+          stdio: ['ignore', 'pipe', 'pipe']
+        })
+
+        child.unref() // Allow parent to exit independently
+        
+        runningProcesses.set(engineName, {
+          pid: child.pid,
+          exitCode: null,
+          startedAt: new Date().toISOString()
+        })
+
+        child.on('exit', (code) => {
+          const info = runningProcesses.get(engineName)
+          if (info) info.exitCode = code
+          console.log(`Engine ${engineName} (pid ${child.pid}) exited with code ${code}`)
+        })
+
+        writeJson(res, 200, { success: true, message: `Engine ${engineName} ignition started`, pid: child.pid }, origin)
+      } catch (e) {
+        writeJson(res, 500, { error: e.message }, origin)
+      }
+      return
+    }
+
+    if (action === 'run-setup') {
+      try {
+        const { stdout, stderr } = await runCommand('bash', ['scripts/actions/setup-codex-alias.sh'])
         writeJson(res, 200, { success: true, stdout, stderr }, origin)
       } catch (e) {
         writeJson(res, 500, { error: e.message }, origin)

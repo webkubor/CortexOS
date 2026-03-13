@@ -29,10 +29,7 @@
     "projects:sync": "node scripts/actions/project-registry.mjs",
     "fleet:sync-dashboard": "node scripts/actions/sync-fleet-dashboard.mjs",
     "feishu:bot": "node scripts/services/feishu-bot-bridge.mjs",
-    "gemini:auto": "scripts/actions/gemini-with-fleet.sh",
-    "claude:auto": "scripts/actions/claude-with-fleet.sh",
-    "codex:auto": "scripts/actions/codex-with-fleet.sh",
-    "codex:setup": "bash scripts/actions/setup-codex-alias.sh",
+
     "init:profile": "node scripts/core/init-owner-profile.mjs"
   },
   "devDependencies": {
