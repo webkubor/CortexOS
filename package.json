@@ -10,15 +10,11 @@
     "dev": "node scripts/actions/vitepress-with-fleet-bridge.mjs dev",
     "docs:build": "vitepress build docs",
     "docs:preview": "node scripts/actions/vitepress-with-fleet-bridge.mjs preview",
-    "health:core": "node scripts/tools/health-check.js --strict",
-    "health:docs-index": "node scripts/maintenance/check-docs-index.js",
-    "health:verify": "node scripts/maintenance/verify-health.js",
-    "health:gate": "node scripts/maintenance/health-gate.js",
-    "health:mcp": "uv run mcp_server/server.py --help || echo 'MCP server smoke test failed'",
+
     "mcp:reload": "node scripts/actions/reload-brain-mcp.mjs",
     "memory:index": "python3 scripts/ingest/build_memory_index.py",
     "memory:query": "python3 scripts/ingest/query_brain.py",
-    "memory:refresh": "python3 scripts/ingest/chroma_ingest.py && python3 scripts/ingest/build_memory_index.py",
+    
     "memory:retro": "node scripts/maintenance/error-retro.mjs",
     "tasks:reconcile": "node scripts/maintenance/reconcile-ai-team-tasks.mjs",
     "fleet:claim": "node scripts/actions/fleet-claim.mjs",

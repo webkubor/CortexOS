@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import MissionCard from "./MissionCard.vue";
 import AgentNode from "./AgentNode.vue";
+import SystemConsole from "./SystemConsole.vue";
 import CliHealthFooter from "./CliHealthFooter.vue";
 
 const loading = ref(true);
@@ -777,6 +778,8 @@ async function makeCaptain(member) {
               <p class="settings-health-reason">{{ item.reason }}</p>
             </article>
           </div>
+
+          <SystemConsole />
         </aside>
       </div>
 

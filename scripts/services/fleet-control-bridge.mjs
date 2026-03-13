@@ -325,6 +325,31 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
+    if (action === 'run-internal-script') {
+      const { scriptName, scriptArgs = [] } = data
+      const allowedScripts = new Set([
+        'health:core',
+        'health:docs-index',
+        'health:verify',
+        'health:gate',
+        'health:mcp',
+        'memory:refresh'
+      ])
+
+      if (!scriptName || !allowedScripts.has(scriptName)) {
+        writeJson(res, 400, { error: `Invalid or not allowed script: ${scriptName}` }, origin)
+        return
+      }
+
+      try {
+        const { stdout, stderr } = await runCommand('pnpm', ['run', scriptName, ...scriptArgs])
+        writeJson(res, 200, { success: true, stdout, stderr }, origin)
+      } catch (e) {
+        writeJson(res, 500, { error: e.message }, origin)
+      }
+      return
+    }
+
     if (!memberId) {
       writeJson(res, 400, { error: 'memberId is required' }, origin)
       return
