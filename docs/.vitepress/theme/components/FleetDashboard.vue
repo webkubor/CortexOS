@@ -919,7 +919,7 @@ async function makeCaptain(member) {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   color: #f8fafc;
   background: #040507;
   overflow: hidden;
@@ -1231,6 +1231,7 @@ async function makeCaptain(member) {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
   padding-right: 8px;
 }
