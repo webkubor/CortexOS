@@ -694,42 +694,43 @@ async function makeCaptain(member) {
                     @mouseenter="showMissionTooltip($event, task)"
                     @mouseleave="hideMissionTooltip"
                   >
-                <div class="card-edge"></div>
-                <div class="m-main">
-                  <div class="m-title-row">
-                    <span
-                      class="m-priority-indicator"
-                      :class="priorityClass(task.priority)"
-                    ></span>
-                    <p class="m-title">{{ task.title }}</p>
-                  </div>
-                  <div class="m-meta-row">
-                    <span class="m-id-tag">{{ task.id }}</span>
-                    <span class="m-status-text" :class="missionStatusClass(task.status)">{{ task.status }}</span>
-                    <span class="m-divider"></span>
-                    <span class="m-owner-tag text-ellipsis" :title="task.owner">{{ task.owner }}</span>
-                    <div class="m-actions">
-                      <button
-                        v-if="canDeleteMission(task)"
-                        class="mission-delete-mini"
-                        :disabled="deletingTaskId === task.taskId"
-                        @click.stop="removeTask(task)"
-                        title="删除"
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                      </button>
+                    <div class="card-edge"></div>
+                    <div class="m-main">
+                      <div class="m-title-row">
+                        <span
+                          class="m-priority-indicator"
+                          :class="priorityClass(task.priority)"
+                        ></span>
+                        <p class="m-title">{{ task.title }}</p>
+                      </div>
+                      <div class="m-meta-row">
+                        <span class="m-id-tag">{{ task.id }}</span>
+                        <span class="m-status-text" :class="missionStatusClass(task.status)">{{ task.status }}</span>
+                        <span class="m-divider"></span>
+                        <span class="m-owner-tag text-ellipsis" :title="task.owner">{{ task.owner }}</span>
+                        <div class="m-actions">
+                          <button
+                            v-if="canDeleteMission(task)"
+                            class="mission-delete-mini"
+                            :disabled="deletingTaskId === task.taskId"
+                            @click.stop="removeTask(task)"
+                            title="删除"
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                              <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="m-sub-meta" v-if="task.workspace">
+                        <span class="m-path text-ellipsis">{{ task.workspace.replace(/\/Users\/[^\/]+/, '~') }}</span>
+                      </div>
                     </div>
                   </div>
-                  <div class="m-sub-meta" v-if="task.workspace">
-                    <span class="m-path text-ellipsis">{{ task.workspace.replace(/\/Users\/[^\/]+/, '~') }}</span>
-                  </div>
                 </div>
-              </div>
-            </div>
-          </transition>
+              </transition>
             </section>
+            
             <div v-if="data.missions.length === 0" class="mission-empty-state">
               <div>当前任务池为空</div>
               <div>点击左上角 + 发布任务</div>
@@ -1246,6 +1247,248 @@ async function makeCaptain(member) {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* 💎 任务卡片 - 高密玻璃态 (Compact Glass Card) */
+.mission-glass-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(20, 24, 32, 0.82), rgba(12, 15, 20, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--delay, 0s);
+  opacity: 0;
+}
+
+.mission-glass-card:hover {
+  background: linear-gradient(180deg, rgba(25, 30, 40, 0.88), rgba(15, 20, 28, 0.95));
+  border-color: rgba(245, 200, 123, 0.2);
+  transform: translateY(-1px);
+}
+
+.card-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(245, 200, 123, 0.12), transparent 40%, transparent 60%, rgba(245, 200, 123, 0.06));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+.m-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.m-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.m-priority-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.m-priority-indicator.is-high { background: #ff6b6b; box-shadow: 0 0 8px rgba(255, 107, 107, 0.4); }
+.m-priority-indicator.is-medium { background: #f5c87b; box-shadow: 0 0 8px rgba(245, 200, 123, 0.3); }
+.m-priority-indicator.is-low { background: #4dd4ac; box-shadow: 0 0 8px rgba(77, 212, 172, 0.3); }
+
+.m-title {
+  margin: 0;
+  color: #f2f4f8;
+  font-size: 13.5px;
+  line-height: 1.4;
+  font-weight: 510;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.m-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.m-id-tag {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 10px;
+  font-family: ui-monospace, monospace;
+}
+
+.m-status-text {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.m-status-text.working { color: #7fb2ff; background: rgba(48, 103, 197, 0.15); }
+.m-status-text.pending { color: #f5c87b; background: rgba(245, 200, 123, 0.1); }
+.m-status-text.done { color: #5ee0a1; background: rgba(94, 224, 161, 0.1); }
+
+.m-divider {
+  width: 1px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.m-owner-tag {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  max-width: 100px;
+}
+
+.m-actions {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mission-glass-card:hover .m-actions {
+  opacity: 1;
+}
+
+.mission-delete-mini {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  color: #ff8d8d;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.mission-delete-mini svg {
+  width: 12px;
+  height: 12px;
+}
+
+.m-sub-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.m-path {
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 10px;
+}
+
+/* 🏷️ 任务标签与状态 (Badges & Status) */
+.m-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.m-status-badge .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.m-status-badge.working {
+  color: #7fb2ff;
+  background: rgba(48, 103, 197, 0.14);
+  border-color: rgba(48, 103, 197, 0.25);
+}
+
+.m-status-badge.pending {
+  color: #f5c87b;
+  background: rgba(245, 200, 123, 0.1);
+  border-color: rgba(245, 200, 123, 0.22);
+}
+
+.m-status-badge.done {
+  color: #5ee0a1;
+  background: rgba(94, 224, 161, 0.1);
+  border-color: rgba(94, 224, 161, 0.22);
+}
+
+.m-owner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.m-owner-meta,
+.m-workspace,
+.m-published-at {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* 🦾 任务操作 (Actions) */
+.mission-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 107, 107, 0.06);
+  color: #ff8d8d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mission-delete-btn:hover {
+  background: rgba(255, 107, 107, 0.12);
+  border-color: rgba(255, 107, 107, 0.4);
+}
+
+.flow-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.flow-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.flow-container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(245, 200, 123, 0.12);
+}
+
+.flow-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 200, 123, 0.25);
 }
 
 /* 📊 统计看板 */
