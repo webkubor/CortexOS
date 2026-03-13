@@ -82,6 +82,7 @@ async function runSetup() {
 
 <template>
   <div class="system-console">
+    <!-- 1. 基座配置 -->
     <div class="console-section">
       <div class="section-header">
         <div class="kicker">INITIALIZATION</div>
@@ -95,6 +96,7 @@ async function runSetup() {
       </div>
     </div>
 
+    <!-- 2. 舰队点火 -->
     <div class="console-section">
       <div class="section-header">
         <div class="kicker">ENGINES</div>
@@ -113,6 +115,7 @@ async function runSetup() {
       </div>
     </div>
 
+    <!-- 3. 系统维护 -->
     <div class="console-section">
       <div class="section-header">
         <div class="kicker">MAINTENANCE</div>

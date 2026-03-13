@@ -328,22 +328,23 @@ const server = http.createServer(async (req, res) => {
 
     if (action === 'run-internal-script') {
       const { scriptName, scriptArgs = [] } = data
-      const allowedScripts = new Set([
-        'health:core',
-        'health:docs-index',
-        'health:verify',
-        'health:gate',
-        'health:mcp',
-        'memory:refresh'
-      ])
+      const scriptMap = {
+        'health:core': { cmd: 'node', args: ['scripts/tools/health-check.js', '--strict'] },
+        'health:docs-index': { cmd: 'node', args: ['scripts/maintenance/check-docs-index.js'] },
+        'health:verify': { cmd: 'node', args: ['scripts/maintenance/verify-health.js'] },
+        'health:gate': { cmd: 'node', args: ['scripts/maintenance/health-gate.js'] },
+        'health:mcp': { cmd: 'uv', args: ['run', 'mcp_server/server.py', '--help'] },
+        'memory:refresh': { cmd: 'python3', args: ['scripts/ingest/chroma_ingest.py'] }
+      }
 
-      if (!scriptName || !allowedScripts.has(scriptName)) {
+      if (!scriptName || !scriptMap[scriptName]) {
         writeJson(res, 400, { error: `Invalid or not allowed script: ${scriptName}` }, origin)
         return
       }
 
+      const { cmd, args } = scriptMap[scriptName]
       try {
-        const { stdout, stderr } = await runCommand('pnpm', ['run', scriptName, ...scriptArgs])
+        const { stdout, stderr } = await runCommand(cmd, [...args, ...scriptArgs])
         writeJson(res, 200, { success: true, stdout, stderr }, origin)
       } catch (e) {
         writeJson(res, 500, { error: e.message }, origin)
