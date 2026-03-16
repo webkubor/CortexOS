@@ -7,27 +7,15 @@
     "pnpm": ">=8"
   },
   "scripts": {
-    "dev": "node scripts/actions/vitepress-with-fleet-bridge.mjs dev",
+    "dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "node scripts/actions/vitepress-with-fleet-bridge.mjs preview",
+    "docs:preview": "vitepress preview docs",
 
     "mcp:reload": "node scripts/actions/reload-brain-mcp.mjs",
     "memory:index": "python3 scripts/ingest/build_memory_index.py",
     "memory:query": "python3 scripts/ingest/query_brain.py",
     
     "memory:retro": "node scripts/maintenance/error-retro.mjs",
-    "tasks:reconcile": "node scripts/maintenance/reconcile-ai-team-tasks.mjs",
-    "fleet:claim": "node scripts/actions/fleet-claim.mjs",
-    "fleet:status": "node scripts/actions/fleet-status.mjs",
-    "fleet:handover": "node scripts/actions/fleet-handover.mjs",
-    "team:db:init": "node scripts/actions/init-ai-team-db.mjs",
-    "fleet:cleanup": "node scripts/actions/fleet-cleanup.mjs",
-    "fleet:post-task": "node scripts/actions/fleet-post-task.mjs",
-    "fleet:checkin": "node scripts/actions/fleet-checkin.mjs",
-    "fleet:bridge": "node scripts/services/fleet-control-bridge.mjs",
-    "team:local": "node scripts/actions/team-local.mjs",
-    "projects:sync": "node scripts/actions/project-registry.mjs",
-    "fleet:sync-dashboard": "node scripts/actions/sync-fleet-dashboard.mjs",
     "feishu:bot": "node scripts/services/feishu-bot-bridge.mjs",
 
     "init:profile": "node scripts/core/init-owner-profile.mjs"
@@ -37,13 +25,10 @@
     "vitepress-plugin-llms": "^1.11.0"
   },
   "dependencies": {
-    "@clack/prompts": "^1.1.0",
-    "better-sqlite3": "^12.6.2",
-    "chalk": "^5.6.2"
+    "@clack/prompts": "^1.1.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
       "esbuild"
     ]
   }

@@ -29,11 +29,17 @@
 
 ## 3. 协作协议
 
-- `docs/router.md` 是规则索引 SSOT
-- 开工前必须：`read_router()` → `get_fleet_status()` → `fleet_claim()`
-- 完工后必须：`log_task()` → `pnpm run fleet:post-task` → `task_handoff_check()`
-- 复杂任务优先复用现有 Skill，不重复造轮子
-- 同路径并行前必须先看 `fleet:status`
+- `docs/router.md` 是规则索引 SSOT。
+- **开工准备**：
+  1. `read_router()` — 获取大脑宪法 (CortexOS)
+  2. `get_fleet_status()` — 获取舰队状态 (aetherfleet-engine)
+  3. `fleet_claim()` — 挂牌登记任务 (aetherfleet-engine)
+- **完工收口**：
+  1. `log_task()` — 记录任务轨迹 (CortexOS)
+  2. `task_handoff_check()` — 任务完工检查 (aetherfleet-engine)
+- **开发规范**：
+  - 复杂任务优先复用现有 Skill，不重复造轮子。
+  - 同路径并行前必须先看 `fleet:status` (aetherfleet-engine)。
 
 ## 4. 引用透明化标准
 

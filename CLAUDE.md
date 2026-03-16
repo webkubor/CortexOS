@@ -14,20 +14,12 @@
 get_context_brief()
 ```
 
-先快速确认队长、当班建议、待执行任务。
-
-### Step 1.5：按需读取完整宪法
-
-```
-read_router()
-```
-
-仅在陌生场景或需要完整规则时调用，避免每次冷启动都全量注入。
+先快速确认大脑核心状态与规则摘要。
 
 ### Step 2：感知舰队状态（防碰撞）
 
 ```
-get_fleet_status()
+get_fleet_status()  // 由 aetherfleet-engine 提供
 ```
 
 检查当前有哪些 AI 在同一路径工作，避免文件冲突。
@@ -35,15 +27,10 @@ get_fleet_status()
 ### Step 3：打卡挂牌
 
 ```
-fleet_claim(
-  workspace="你当前的工作目录绝对路径",
-  task="你本次任务的一句话描述",
-  agent="Claude",
-  alias="Claude"
-)
+fleet_claim(...)  // 由 aetherfleet-engine 提供
 ```
 
-完成后，第一条回复必须带显示签名：`【CortexOS · Claude 02】`
+完成后，第一条回复必须带显示签名：`【CortexOS · <Agent> 02】`
 
 ---
 

@@ -10,13 +10,13 @@
 
 ## 冷启动协议（强制）
 
-开始任何任务前，必须通过 MCP Tool 执行以下 3 步：
+开始任何任务前，必须执行以下 3 步：
 
-1. `read_router()` — 读取项目最高协议
-2. `get_fleet_status()` — 感知舰队状态，防并行冲突
-3. `fleet_claim(workspace=PWD, task="任务描述", agent="Codex", alias="Codex")` — 打卡挂牌
+1. `read_router()` — 读取项目最高协议 (CortexOS)
+2. `get_fleet_status()` — 感知舰队状态 (aetherfleet-engine)
+3. `fleet_claim(...)` — 打卡挂牌 (aetherfleet-engine)
 
-完成后第一条回复必须带显示签名：`【CortexOS · Codex 02】`
+完成后第一条回复必须带显示签名：`【CortexOS · <Agent> 02】`
 
 ## 技术栈
 

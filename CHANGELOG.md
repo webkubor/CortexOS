@@ -5,13 +5,38 @@
 
 ---
 
+## [v6.0.0] — 2026-03-14 「The Great Deconstruction · 脑体物理解构」
+
+### 🎯 变更背景 (Why)
+
+- **架构解构**：CortexOS 完成了从“混合协作中枢”向纯粹“外部大脑（知识与规则服务）”的进化。
+- **职责分离**：将频繁变动的“运行态调度（Fleet）”与相对稳定的“知识资产（Brain）”进行物理隔离，降低系统耦合度。
+- **极致精简**：移除所有非核心依赖与历史包袱，回归 Local-first 知识中枢的本质。
+
+### 🚀 新增 (Added)
+
+- **CortexOS Brain v3.0**：全新的纯净版 MCP Server，专注于 `read_router`, `search_knowledge`, `load_rule`, `log_task` 等核心大脑功能。
+- **架构声明**：在 `README.md`, `router.md` 及各 Agent 引导文件中明确了与 `aetherfleet-engine` 的协作边界。
+
+### 🔧 变更 (Changed)
+
+- **物理清理**：删除了 `.memory/sqlite/ai-team.db` 及所有相关的 Node.js 调度脚本（15+ 文件）。
+- **依赖瘦身**：从 `package.json` 中移除了 `better-sqlite3`, `chalk` 等 100% 调度相关的依赖。
+- **协议升级**：冷启动协议现在引导 Agent 分别挂载“大脑”与“调度器”两个独立的 MCP 服务。
+
+### 🗑️ 移除 (Removed)
+
+- **调度逻辑**：完全移除了 `fleet_claim`, `get_fleet_status`, `fleet_handover` 等工具的内置实现。
+- **旧版数据**：删除了所有存储在 `.memory/` 下的运行态数据库和临时任务池文件。
+
+---
+
 ## [v5.8.0] — 2026-03-13 「规则系统收口 · MCP 热路径 Python 化」
 
 ### 🎯 变更背景 (Why)
 
 - **规则收口**：随着 Agent 增多，原散落在 `docs/rules/` 的约束需要更强的一致性入口。
 - **性能飞跃**：MCP Server 的高频调用路径（claim, status, context_brief）全面转向 Python/FastMCP 优化，减少 Node.js 脚本启动开销。
-- **Aureate 审美同步**：README 升级至金/黑 (Aureate) 视觉风格，对齐项目高端定位。
 
 ### 🚀 新增 (Added)
 
