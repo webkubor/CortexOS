@@ -56,3 +56,4 @@ docs/skills/visual/cinematic-storyboard/assets/*
 !.memory/identity/
 mcp_server/mcp_config.json
 \n# 隐私隔离\n.memory/persona/brains/
+\n# 最终防御：严防泄露\n.env*\n*.key\nsecrets/*\n
