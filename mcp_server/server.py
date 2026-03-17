@@ -389,13 +389,17 @@ def search_knowledge(query: str, top_k: int = 5) -> list[dict]:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def get_context_brief() -> str:
-    """返回大脑当前状态的 200 字以内极简摘要。支持热切换大脑状态展示。
+    """返回大脑当前状态的 200 字以内极简摘要。支持热切换大脑与动态用户身份展示。
     """
     import json
     config_path = Path("config/brains.json")
+    profile_path = Path(".memory/identity/profile.json")
+    
     active_brain_name = "Default"
     brain_desc = "CortexOS Core"
+    user_name = "The User"
     
+    # 1. 加载大脑配置
     if config_path.exists():
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
@@ -406,12 +410,22 @@ def get_context_brief() -> str:
                 brain_desc = brain_info.get("description", "")
         except:
             pass
+            
+    # 2. 加载用户身份
+    if profile_path.exists():
+        try:
+            with open(profile_path, 'r', encoding='utf-8') as f:
+                profile = json.load(f)
+                user_name = profile.get("user_name", user_name)
+        except:
+            pass
 
     rules_count = 0
     if RULES_DIR.exists():
         rules_count = len(list(RULES_DIR.glob("*.md")))
     
     parts = [
+        f"👤 User: {user_name}",
         f"🧠 Brain: [{active_brain_name}]",
         f"Focus: {brain_desc}",
         f"Rules: {rules_count} items",
