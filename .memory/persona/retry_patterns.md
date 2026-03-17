@@ -30,3 +30,24 @@
 - [auto/command_failure] 2026-03-04: 记录失败命令与关键报错，补充前置检查后重跑
 - [auto/permission_or_path] 2026-03-09: 权限或路径错误。先执行 `ls -la` 确认目标权限，或检查环境变量中的 ROOT 路径
 - [auto/generic_error] 2026-03-11: 记录症状并补充上下文，再执行最小化复现
+
+## 5. 进化收割记录 (2026-03-17)
+
+### [Path Protection] 凭证防护与路径透明化
+- 症状：敏感凭证散落在 `docs/` 或 `.env` 中，Git 误读风险。
+- 方案：
+  1. 统一映射逻辑路径 `memory/secrets/`。
+  2. `docs/` 仅保留模板，禁止明文。
+  3. 优先使用 `read_secret()` MCP 工具。
+
+### [MCP Performance] MCP 热路径重构
+- 症状：依赖 CLI (pnpm) 输出作为上下文太慢，且解析易出错。
+- 方案：
+  1. 优先使用 Python 直读 `ai-team.db` (SQLite)。
+  2. 将调度逻辑下沉至数据库层，避开子进程 Shell 解析。
+
+### [RAG Optimization] RAG 知识注入精准度
+- 症状：搜索结果冗余，Token 溢出，信息密度低。
+- 方案：
+  1. `deep` 模式摘要优先。
+  2. 命中专项知识库后，减少对通用库的混合调用。

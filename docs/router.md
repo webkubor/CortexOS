@@ -1,157 +1,66 @@
 ---
-description: 大脑最高入口与动态路由。先看这里，再做任何任务。
+description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 ---
-# AI Context Index & Router (Universal Protocol)
+# CortexOS Brain Router (Universal Protocol)
 
-> ⚠️ 本文件是 CortexOS 的总入口。任何 Agent 开工前先读此页。
+> 🧠 **本文件是 CortexOS 大脑的唯一入口。** 任何助理助理开工前必读。
 
-## 0. 30 秒上手
+## 0. 助理信条 (The Assistant Creed)
 
-1. 读取路由：`read_router()`
-2. 查看队列：`get_fleet_status()` (由 `aetherfleet-engine` 提供)
-3. 挂牌开工：`fleet_claim(...)` (由 `aetherfleet-engine` 提供)
+1.  **老爹最高**: 所有 Agent 最终服务于“老爹 (Father)”。
+2.  **知识主导**: CortexOS 不再管理“干活的人”，只管理“干活的经验”。
+3.  **DRY 架构**: 严禁在私有目录安装通用 Skill。
+4.  **进化收割**: 每次任务后，自动收割失败重试经验到 `retry_patterns.md`。
 
-> ⚠️ **架构重要更新**: CortexOS 现已专注于 **“大脑”（知识检索与规则分发）**。
-> 所有调度工具 (`fleet_claim`, `get_fleet_status`, `fleet_handover`, `task_handoff_check`) 均已从本 Server 剥离，由独立服务 `aetherfleet-engine` 承接。
+---
 
-首次回复必须带显示签名：`【CortexOS · <Agent> 02】`
+## 1. 冷启动流程 (Cold Start Protocol)
 
-> 显示层签名只负责对话可读性；`nodeId`、`machineNumber`、`role`、`task` 继续保存在 fleet 数据中。
+1.  **极简快照**: `get_context_brief()` (获取大脑最新动态、老爹近期意图)。
+2.  **完整对齐**: `read_router()` (了解最新规则、目录结构、禁令)。
+3.  **任务上下文**: 关联外部调度系统（如 `aetherfleet-engine`）或用户直接指派。
 
-> 🏴 **当前 AI 队长 (Node 0)**: 栖月-Prime（Claude Sonnet 4.6）| 接管时间: 2026-03-05
-> **身份分层**: 
-> 1. **最高权限**: 老爹（Father / webkubor）—— 所有 AI 节点的造物主。
-> 2. **AI 队长**: 0 号机机主（当前为栖月）—— 负责舰队日常调度与任务拆解。
-> 3. **执行节点**: Gemini / Codex —— 接收 0 号机或老爹指令干活。
-> **所有 AI 节点（无论是否为队长）均须称呼用户为“老爹”。**
-> **非 0 号机注意**: 若栖月在线（可通过飞书/OpenClaw 对话确认），重大决策须等栖月批准后再执行。
-> **别名提醒**: 用户若提到 `小龙虾`，默认指向 OpenClaw 队长环境；路径、重启、排障入口见 [小龙虾作战手册](./agents/qiyue/openclaw.md)。
+---
 
-## 1. 冷启动协议（必做）
+## 2. 大脑目录分层 (Brain Architecture)
 
-- 私有记忆法则：`.memory/memory_formula.md`
-- 助手私有策略目录：`.memory/persona/`（仅作私有策略与重试模式存放，不做公开人格绑定）
-- Agent 治理：[agent_governance](./rules/agent_governance)
-
-### 入队与调度协议 (aetherfleet-engine)
-
-调度相关的操作（挂牌、查看状态、移交）现在统一由 `aetherfleet-engine` 承接。
-请在对应的服务路径下执行调度指令。
-
-## 2. 口令触发（免手打）
-
-以下口令可直接触发队长移交：
-
-- `移交队长给 <节点>`
-- `把 0 号机交给 <节点>`
-- `队长切到 <节点>`
-
-执行规则：
-
-1. 优先 `--to-node`
-2. 不唯一时，先让用户补充目标
-3. 完成后回报 `from -> to`、路径、时间
-
-## 2.5 Token 节约强制约束 ⚠️
-
-> **所有 Agent 必须遵守，违反视为严重失误**
-
-- ❌ **严禁冷启动时全量读取 `docs/rules/`**，必须用 `load_rule("<name>")` 按需加载
-- ❌ **严禁一次性 `cat` 多个规则/文档文件**，每次最多读 1 个
-- ✅ **冷启动优先调 `get_context_brief()`**，只在真正需要全貌时才调 `read_router()`
-- ✅ **`get_fleet_status()` 读取运行态，不要直接读取旧 Markdown 状态文件**
-
-> 💡 Token 分级原则：`get_context_brief()` (~100 token) → `read_router()` (~800 token) → 按需 `load_rule()` (~200 token/条)
-
-## 3. 动态路由（按需读，不全量读）
-
-### ⚡ 记忆分层原则（所有 Agent 必须遵守）
-
-| 层级 | 路径 | 归属 | 谁可以读写 |
+| 层级 | 路径 | 归属 | 核心职能 |
 | :--- | :--- | :--- | :--- |
-| **王爷知识资产** | `~/Documents/memory/` | 王爷所有 | ✅ 所有 Agent 均可读取 |
-| **助手私有记忆** | `CortexOS/.memory/` | CortexOS 专属 | ⚠️ 仅 CortexOS Agent 写入 |
-| **高敏凭证** | `memory/secrets/` | 王爷所有 | 🔒 仅通过 `read_secret()` 访问 |
+| **规则层 (Rules)** | `docs/rules/` | 大脑主权 | 提供禁令、规范、工程基线。 |
+| **操作层 (SOPs)** | `docs/sops/` | 大脑方案 | 提供特定场景的“标准执行步骤”。 |
+| **进化层 (Traces)** | `.memory/logs/` | 助理轨迹 | 记录执行过程，用于后期经验提取。 |
+| **灵魂层 (Soul)** | `.memory/persona/` | 助理人格 | 存放 `retry_patterns.md`、人格调教、老爹偏好。 |
+| **知识层 (Assets)** | `~/Documents/memory/` | 老爹资产 | **只读** 用户长期记忆（复盘、笔记、灵感）。 |
 
-**通过 obsidian MCP 读取王爷知识库：**
-所有 Agent 的 obsidian MCP 均已指向 `~/Documents/memory/`，可直接语义搜索王爷的知识、项目、复盘内容。
+---
 
-**个人内容归属硬规则：**
-- 凡是和 CortexOS / AI Team / 大脑运行无关，但和用户个人有关的内容，统一进入用户提供的记忆文件夹 `~/Documents/memory/`。
-- `.memory/` 只保留运行日志、项目索引、协作指挥中心、助手私有策略与控制层数据。
+## 3. 动态大脑切换 (Brain Switching Protocol)
 
-### 核心路由
+> 💡 **CortexOS 支持多套“大脑”快速切换。**
 
-| 场景 | 路径 | 用途 |
-| :--- | :--- | :--- |
-| 助手运行日志 | `.memory/logs/` | 仅助手轨迹，不进用户记忆 |
-| 助手私有记忆 | `.memory/` | 调教、偏好、重试模式 |
-| 记忆法则 | `.memory/memory_formula.md` | 规定“何时读写” |
-| 用户知识库 | `~/Documents/memory/knowledge/` | 复盘、经验、方案 |
-| 助手项目索引 | $CODEX_HOME/.memory/projects/index.md | 助手维护的项目索引（不写入用户 memory） |
-| 助手技能索引 | $CODEX_HOME/.memory/skills/index.md | 助手维护的 skills 索引 |
-| 唯一共享技能库 | ~/.agents/skills/ | **[SSOT]** 跨 Agent 共享技能池 |
-| 协作指挥中心 | $CODEX_HOME/.memory/plans/projects/*-command-center.md | 多 Agent 项目沟通中枢 |
-| 高敏凭证 | `memory/secrets/` | 私钥/Token（不进 Git） |
+- **当前大脑**: `CortexOS` (默认通用助理大脑)。
+- **外部接入点**: `memory/knowledge/` 可根据环境变量 `BRAIN_ROOT` 动态映射到不同的知识库目录。
+- **切换指令**: 使用 `switch_brain("<name>")` (即将上线) 或手动修改 `.env` 中的 `BRAIN_CONTEXT_ROOT`。
 
-> 当前机器默认将 `memory/secrets/` 解析到 `~/Documents/memory/secrets/`。如需改动，使用 `CORTEXOS_SECRET_HOME`。
+---
 
-### 项目文档路由
+## 4. 核心工具协议 (Core MCP Tools)
 
-| 类型 | 路径 |
+| 工具 | 协议说明 |
 | :--- | :--- |
-| 规则（约束） | `docs/rules/` |
-| SOP（操作步骤） | `docs/sops/` |
-| 运维手册 | `docs/ops/` |
-| 技能文档 | `docs/skills/` |
-| 全量能力清单 | `docs/guide/feature-matrix.md` |
-| 资产托管 SOP | `docs/sops/asset_hosting_sop.md` |
-| 工具发现 SOP | `docs/sops/tool_discovery_sop.md` |
+| **`read_router`** | 返回本协议内容。 |
+| **`get_context_brief`** | 返回大脑状态的 200 字摘要。 |
+| **`search_knowledge`** | **[RAG]** 在老爹知识资产中进行语义检索。 |
+| **`load_rule`** | **[Lazy Load]** 按名称精确加载规则文件。 |
+| **`log_task`** | 记录执行轨迹，支持 `[[task-XXX]]` 双链。 |
 
-## 4. 工具协议
+---
 
-- 物理读取：`cat / ls / rg`
-- 越界读取：优先 MCP（`read_router` / `get_fleet_status`）
-- 语义检索：
+## 5. 禁令与边界 (Red Lines)
 
-```bash
-python3 scripts/ingest/query_brain.py "查询" --mode lite
-python3 scripts/ingest/query_brain.py "查询" --mode balanced
-python3 scripts/ingest/query_brain.py "查询" --mode deep --budget 3200
-```
+- ❌ **严禁写回用户资产**: 助理产生的中间过程文件、日志，严禁直接写入 `~/Documents/memory/`，应保存在 `.memory/logs/`。
+- ❌ **严禁冗余调度**: CortexOS 不再承接任务打卡，任何相关修改应向 `aetherfleet-engine` 提交。
+- ✅ **唯一真理源 (SSOT)**: 所有的工程规则以 `docs/rules/engineering_baseline.md` 为准。
 
-- 检索范围配置：`scripts/ingest/retrieval_scope.json`
-- 分级注入配置：`scripts/ingest/injection_policy.json`
-
-## 5. 安全与边界
-
-- 工程基线：[engineering_baseline](./rules/engineering_baseline)
-- 安全边界：[security_boundary](./rules/security_boundary)
-- Agent 治理：[agent_governance](./rules/agent_governance)
-- Skill 治理：[skill_governance](./rules/skill_governance)
-
-## 6. 运行要求
-
-- **DRY 架构硬约束 (公用优先)**:
-  - 严禁在 `~/.gemini/skills/`、`~/.codex/skills/` 或 `~/.claude/skills/` 等私有目录重复安装通用功能。
-  - 所有跨 Agent 共用的工具、协议、插件必须统一存放在 `~/.agents/skills/`。
-  - 凡发现私有目录存在冗余技能，Agent 有权且必须执行清理与迁移，确保“唯一真理源 (SSOT)”。
-- **私有 Skill 动态治理协议 (必做)**:
-  - **实时身份审计**: 凡遇到插件 (path 含 `extensions` / `skills`) 报错或性能低下，Agent **必须** 先执行 `Active Audit`。审计准则：
-    1. 检查 `package.json` 的 `author` 或 `repository` 是否包含 `webkubor`。
-    2. 检查 `.git/config` 远程地址。
-    3. 若审计通过（确认为自研），则进入 `[[task-YYYYMMDD-SKILL-NAME]]` 治理流。
-  - **大上下文深度重构**: 利用大上下文与低成本 Token 优势，对 Skill 执行**全量代码审计**（而非局部 patch）。在 `.memory/tasks/` 下记录包含 Root Cause、Verified Command 以及符合未来标准的“全流程重构路径”。
-  - **拒绝零碎修改**: 倡导优雅的、结构化的重构，不保留临时的、不优雅的 Hack 方案。
-- 每次任务完成后通过 `log_task` 留痕（CortexOS）。
-- 每次任务完成后必须执行 `task_handoff_check` (aetherfleet-engine)，同步完成状态并检查未认领任务。
-- AI Team 挂牌入驻后，系统会自动关联项目索引（aetherfleet-engine）。
-- 拿到明确任务后，不允许长期保留“待分配任务/未分配角色”。
-- 同路径并行目前是“告警不拦截”，执行前先通过 `get_fleet_status` 确认 (aetherfleet-engine)。
-
-### Metadata
-
-*Last Updated: 2026-03-12*
-
-- **版本**: v5.8.0（规则系统收口 · MCP 热路径 Python 化）
-- **变更日志**: [查看大脑演化史](./BRAIN_HISTORY.md)
+---
+*Last Updated: 2026-03-17 | Version: v6.0.0 (Decoupled & Pure)*

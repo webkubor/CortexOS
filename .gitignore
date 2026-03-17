@@ -55,3 +55,4 @@ docs/skills/visual/cinematic-storyboard/assets/*
 !.memory/persona/
 !.memory/identity/
 mcp_server/mcp_config.json
+\n# 隐私隔离\n.memory/persona/brains/

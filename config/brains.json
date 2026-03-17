@@ -1,0 +1,33 @@
+{
+  "active_brain": "default",
+  "brains": {
+    "default": {
+      "name": "CortexOS Core",
+      "description": "通用助理大脑，涵盖工程、安全与基础协作协议",
+      "rules_path": "docs/rules/",
+      "knowledge_scope": ["general", "tech"],
+      "persona_file": ".memory/persona/retry_patterns.md"
+    },
+    "tech": {
+      "name": "Technical Architect",
+      "description": "深度技术大脑，专注于架构设计、代码重构与性能调优",
+      "rules_path": ".memory/persona/brains/tech/",
+      "knowledge_scope": ["tech", "codebase", "infra"],
+      "persona_file": ".memory/persona/retry_patterns.md"
+    },
+    "creative": {
+      "name": "Creative Spark",
+      "description": "创意与美学大脑，专注于 UI/UX、视觉升级与内容播种",
+      "rules_path": ".memory/persona/brains/creative/",
+      "knowledge_scope": ["design", "art", "content"],
+      "persona_file": ".memory/persona/brains/creative/aesthetic_manifesto.md"
+    },
+    "life": {
+      "name": "Life Assistant",
+      "description": "生活助理大脑，处理日常琐事、健康建议与日程规划",
+      "rules_path": ".memory/persona/brains/life/",
+      "knowledge_scope": ["health", "schedule", "finance"],
+      "persona_file": ".memory/persona/brains/life/daily_optimization.md"
+    }
+  }
+}

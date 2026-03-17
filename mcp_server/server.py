@@ -83,16 +83,35 @@ def read_router() -> str:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def load_rule(rule_name: str) -> str:
-    """按名称加载 docs/rules/ 目录下的特定规则文件（懒加载，防止上下文污染）。
-
-    参数:
-        rule_name: 规则文件名（不含 .md，例如 "webkubor_vibe_manifesto"）
+    """按名称加载规则。支持热切换大脑：优先加载私有规则路径，公有目录兜底。
+    实现助理灵魂与开源骨架的物理隔离。
     """
-    target = RULES_DIR / f"{rule_name}.md"
-    if not target.exists():
-        available = [f.stem for f in RULES_DIR.glob("*.md")]
-        return f"规则 '{rule_name}' 不存在。\n可用规则：{', '.join(available)}"
-    return target.read_text(encoding="utf-8")
+    import json
+    config_path = Path("config/brains.json")
+    active_rules_path = RULES_DIR # 默认公有路径
+    
+    if config_path.exists():
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                active_id = config.get("active_brain", "default")
+                brain_info = config.get("brains", {}).get(active_id, {})
+                rel_path = brain_info.get("rules_path", "docs/rules/")
+                active_rules_path = Path(rel_path)
+        except:
+            pass
+
+    # 1. 优先尝试从大脑专属路径 (可能是私有的 .memory/persona/brains/...) 加载
+    file_path = active_rules_path / f"{rule_name}.md"
+    if file_path.exists():
+        return file_path.read_text(encoding="utf-8")
+    
+    # 2. 如果没找到，尝试从公有目录 docs/rules/ 加载 (通用兜底)
+    fallback_path = RULES_DIR / f"{rule_name}.md"
+    if fallback_path.exists():
+        return fallback_path.read_text(encoding="utf-8")
+    
+    return f"Error: Rule '{rule_name}' not found in active brain or fallback directory."
 
 
 # ─────────────────────────────────────────────
@@ -100,11 +119,33 @@ def load_rule(rule_name: str) -> str:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def list_rules() -> str:
-    """列出 docs/rules/ 目录下所有可用的规则文件名称。"""
-    if not RULES_DIR.exists():
-        return "rules 目录不存在。"
-    rules = [f.stem for f in sorted(RULES_DIR.glob("*.md"))]
-    return json.dumps({"available_rules": rules, "count": len(rules)}, ensure_ascii=False, indent=2)
+    """列出当前可用规则（包含大脑私有规则与公有通用规则）。"""
+    import json
+    config_path = Path("config/brains.json")
+    active_rules_path = RULES_DIR
+    
+    if config_path.exists():
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                active_id = config.get("active_brain", "default")
+                brain_info = config.get("brains", {}).get(active_id, {})
+                active_rules_path = Path(brain_info.get("rules_path", "docs/rules/"))
+        except:
+            pass
+
+    private_rules = [f.stem for f in sorted(active_rules_path.glob("*.md"))] if active_rules_path.exists() else []
+    public_rules = [f.stem for f in sorted(RULES_DIR.glob("*.md"))] if RULES_DIR.exists() else []
+    
+    # 合并并去重
+    all_rules = sorted(list(set(private_rules + public_rules)))
+    
+    return json.dumps({
+        "available_rules": all_rules, 
+        "private_rules": private_rules,
+        "public_rules": public_rules,
+        "count": len(all_rules)
+    }, ensure_ascii=False, indent=2)
 
 
 # ─────────────────────────────────────────────
@@ -348,17 +389,33 @@ def search_knowledge(query: str, top_k: int = 5) -> list[dict]:
 # ─────────────────────────────────────────────
 @mcp.tool()
 def get_context_brief() -> str:
-    """返回大脑当前状态的 200 字以内极简摘要，供 Agent 冷启动快速定向。
-    推荐先调用本工具，再按需调用 read_router()。
+    """返回大脑当前状态的 200 字以内极简摘要。支持热切换大脑状态展示。
     """
+    import json
+    config_path = Path("config/brains.json")
+    active_brain_name = "Default"
+    brain_desc = "CortexOS Core"
+    
+    if config_path.exists():
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                active_id = config.get("active_brain", "default")
+                brain_info = config.get("brains", {}).get(active_id, {})
+                active_brain_name = brain_info.get("name", active_id)
+                brain_desc = brain_info.get("description", "")
+        except:
+            pass
+
     rules_count = 0
     if RULES_DIR.exists():
         rules_count = len(list(RULES_DIR.glob("*.md")))
     
     parts = [
-        "CortexOS Brain (Knowledge Server) v3.0",
+        f"🧠 Brain: [{active_brain_name}]",
+        f"Focus: {brain_desc}",
         f"Rules: {rules_count} items",
-        "Note: Fleet scheduling (claim/status) has moved to aetherfleet-engine."
+        "SSOT: v6.0.0 (Pure Brain Mode)"
     ]
     
     summary = " | ".join(parts)
