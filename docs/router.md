@@ -28,6 +28,7 @@ description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 | :--- | :--- | :--- | :--- |
 | **规则层 (Rules)** | `docs/rules/` | 大脑主权 | 提供禁令、规范、工程基线。 |
 | **操作层 (SOPs)** | `docs/sops/` | 大脑方案 | 提供特定场景的“标准执行步骤”。 |
+| **逻辑层 (Refined)** | `.memory/sqlite/knowledge.db` | 大脑右脑 | **[New]** 结构化存储老爹的代码模式与架构决策。 |
 | **进化层 (Traces)** | `.memory/logs/` | 助理轨迹 | 记录执行过程，用于后期经验提取。 |
 | **灵魂层 (Soul)** | `.memory/persona/` | 助理人格 | 存放 `retry_patterns.md`、人格调教、用户偏好。 |
 | **知识层 (Assets)** | `~/Documents/memory/` | 用户资产 | **只读** 用户长期记忆（复盘、笔记、灵感）。 |
@@ -39,8 +40,8 @@ description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 > 💡 **CortexOS 支持多套“大脑”快速切换。**
 
 - **当前大脑**: `CortexOS` (默认通用助理大脑)。
-- **外部接入点**: `memory/knowledge/` 可根据环境变量 `BRAIN_ROOT` 动态映射到不同的知识库目录。
-- **切换指令**: 使用 `switch_brain("<name>")` (即将上线) 或手动修改 `.env` 中的 `BRAIN_CONTEXT_ROOT`。
+- **双引擎驱动**: 语义检索 (ChromaDB) + 逻辑检索 (SQLite)。
+- **切换指令**: 使用 `scripts/core/switch_brain.py <name>`。
 
 ---
 
@@ -49,8 +50,9 @@ description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 | 工具 | 协议说明 |
 | :--- | :--- |
 | **`read_router`** | 返回本协议内容。 |
-| **`get_context_brief`** | 返回大脑状态的 200 字摘要。 |
+| **`get_context_brief`** | 返回大脑状态摘要（含当前活跃大脑）。 |
 | **`search_knowledge`** | **[RAG]** 在用户知识资产中进行语义检索。 |
+| **`get_refined_logic`** | **[Logic]** 检索结构化的代码模式与硬约束（来自 knowledge.db）。 |
 | **`load_rule`** | **[Lazy Load]** 按名称精确加载规则文件。 |
 | **`log_task`** | 记录执行轨迹，支持 `[[task-XXX]]` 双链。 |
 
