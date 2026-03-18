@@ -1,8 +1,6 @@
 import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
 
-const enableLocalTeam = process.env.CORTEXOS_LOCAL_TEAM === '1'
-
 const nav = [
   { text: "📚 DOC", link: "/" },
   { text: "🚀 使用指引", link: "/guide/" },
@@ -10,20 +8,11 @@ const nav = [
   { text: "🤖 Agent 配置", link: "/agents/" }
 ]
 
-if (enableLocalTeam) {
-  nav.splice(1, 0, { text: "🛰️ AI Team", link: "/team/" })
-}
-
 const opsItems = [
-  { text: "🚦 舰队态势板", link: "/ops/fleet-dashboard" },
   { text: "🔁 自动巡航", link: "/ops/auto-pilot" },
   { text: "🧪 健康检查", link: "/ops/external-health-check" },
   { text: "🧭 协作工作流", link: "/ops/workflow" }
 ]
-
-if (enableLocalTeam) {
-  opsItems.unshift({ text: "🛰️ AI Team 大面板", link: "/team/" })
-}
 
 export default defineConfig({
   lang: "zh-CN",

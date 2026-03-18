@@ -1,45 +1,20 @@
-# 大脑自动运转系统 (Auto-Pilot)
+# 自动巡航 (Auto-Pilot)
 
-> **目标**: 明确后台任务由谁跑、何时跑、怎么启停与验活。
+## 1. 定义与目标
 
-## 1. 真正运行的后台任务
+Auto-Pilot 并不是指 Agent 自动写代码，而是指 CortexOS 大脑的**后台自我维护机制**。其目标是确保本地稳态、缓存同步与安全审计。
 
-- **进程名**: `brain-cortex-pilot`
-- **脚本**: `scripts/core/auto-pilot.js`
-- **托管器**: PM2
-- **调度节奏**: `--cron-restart "*/5 * * * *"`（每 5 分钟触发一次）
-- **统一配置文件**: `config/brain-runtime.json`（记录后台任务开关、调度与用途）
+## 2. 核心任务清单
 
-## 2. 自动运转内容（当前实现）
+| 任务 | 周期 | 脚本 | 职能 |
+| :--- | :--- | :--- | :--- |
+| **安全巡检** | 提交前 | `scripts/auth/secret_validator.py` | 扫描硬编码密钥与敏感路径。 |
+| **逻辑同步** | 每日 | `scripts/core/sync_router.py` | 确保 `router.md` 与数据库别名映射一致。 |
+| **日志清理** | 每周 | `scripts/ops/auto_pilot.py --cleanup` | 归档并压缩过期的运行时日志。 |
+| **健康自愈** | 实时/按需 | `scripts/ops/health_check.sh` | 自动重启异常挂掉的本地 MCP Server。 |
 
-每次触发会执行：
+## 3. 运行模式
 
-1. 自动维护：`fleet-cleanup`（清理僵尸节点）+ `fleet-sync`（同步舰队看板）
-2. MCP 监护：`mcp-guard`（检查并修复 Gemini 的 `cortexos-brain` 配置漂移，异常时推送通知）
-3. 收集 AI Team 态势：在线/排队/离线/僵尸、队长、任务清单、进度
-4. 汇总本轮改动文件（按路由意图分组）
-5. 写入 `.memory/logs/YYYY-MM-DD.md`
-6. 若有文件变更则自动提交，并执行知识入库
-7. 发送本地通知；如已配置 Webhook，再额外发送飞书通知
-
-## 3. 启动时机（必须执行）
-
-- **首次安装后**: 必须启动一次后台任务
-- **每天开工前**: 检查进程是 `online`
-- **修改 auto-pilot 或相关脚本后**: 重启进程使新逻辑生效
-
-## 4. 启动与管理命令
-
-统一命令清单见：
-
-- [运行命令总表（SSOT）](./runtime-command-reference.md)
-
-## 5. 开机自启（建议一次配置）
-
-开机自启命令也已收敛到 [运行命令总表（SSOT）](./runtime-command-reference.md)。
-
-## 6. 故障排查
-
-- `status=stopped`：先 `pm2 restart brain-cortex-pilot`
-- 高频重启：查看 `pm2 logs brain-cortex-pilot` 定位报错
-- 日志无新增：检查 `.memory/logs/` 当天文件是否更新，确认当前目录是项目根
+- **CLI 模式**: 手动执行 `pnpm run ops:auto-pilot`。
+- **Git Hook 模式**: 挂载在 `pre-commit`，拦截风险操作。
+- **后台模式**: 通过 `pm2` 或 `systemd` 托管，持续维护本地稳态。

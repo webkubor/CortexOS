@@ -40,7 +40,17 @@
 | `list_secrets` | 列出秘钥库文件清单 | 检查秘钥是否已配置 |
 | `send_lark_notification` | 发送飞书 Webhook 通知 | 关键状态外部通报 |
 
-> ⚠️ **调度工具说明**: `fleet_claim`, `get_fleet_status`, `fleet_handover`, `task_handoff_check` 等工具已迁移至独立服务 `aetherfleet-engine`。
+## 核心协议工具 (v6.0.0)
+
+CortexOS 提供一组高度抽象的 MCP 工具，用于在大脑层进行逻辑对齐与资产访问。
+
+| 工具 | 分类 | 核心职能 |
+| :--- | :--- | :--- |
+| `read_router` | 路由 | 获取最高协议与动态别名。 |
+| `load_rule` | 规则 | 按需加载特定工程规则。 |
+| `search_knowledge` | 记忆 | 语义检索用户长期知识。 |
+| `log_task` | 进化 | 记录执行轨迹与逻辑变更。 |
+| `log_relationship` | 情感 | 沉淀互动偏好与关系里程碑。 |
 
 ---
 

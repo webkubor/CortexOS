@@ -1,35 +1,31 @@
-# AI 协作标准工作流
+# AI 协作标准工作流 (Pure Brain Mode)
 
-## 1. 开工前
+> 🧠 **核心原则**: CortexOS 专注于“大脑”职能（路由、规则、记忆）。调度逻辑（打卡、心跳）已外包至 AetherFleet。
 
-1. 读取 `docs/router.md`
-2. 调用 `get_fleet_status()` 检查并行状态
-3. 执行 `fleet_claim()` 明确任务、角色、工作路径
+## 1. 任务启动 (Alignment)
 
-## 2. 规则与上下文
+1.  **极简快照**: 调用 `get_context_brief()` 获取大脑状态摘要。
+2.  **协议对齐**: 读取 `docs/router.md` 了解最新规则与路由别名。
+3.  **知识检索**: 如需背景，调用 `search_knowledge()` 语义检索用户资产。
 
-- 优先读取当前项目真实配置，不预设语言或框架。
-- 规则只从 `docs/rules/` 按需加载，不全量扫读。
-- 用户知识、复盘、方案从 `~/Documents/memory/` 读取。
-- 高敏信息统一通过 `memory/secrets/` 管理，不写回仓库。
+## 2. 逻辑加载 (Lazy Load)
 
-## 3. 外部平台与凭证
+- **按需加载**: 不要全量扫读 `docs/rules/`，根据任务类型调用 `load_rule` 加载特定规则（如 `@fe/std`）。
+- **逻辑对齐**: 通过 `get_refined_logic()` 从 knowledge.db 获取结构化的代码模式。
 
-- **GitHub**：优先 `gh` CLI
-- **GitLab**：优先 `glab` CLI
-- **WeChat / 发布类平台**：走对应 Skill 或已定义的集成脚本
-- **统一路径规则**：文档使用逻辑路径 `memory/secrets/`；当前机器默认物理路径为 `~/Documents/memory/secrets/`
+## 3. 安全与资产边界 (Safety)
 
-## 4. 开发执行
+- **私钥隔离**: 敏感凭证统一通过 `read_secret` 访问，严禁写回 Git 仓库。
+- **只读资产**: 用户记忆目录 `~/Documents/memory/` 仅限读取，助理日志应存放在 `.memory/logs/`。
 
-- 先确认主状态源，再改代码或文档
-- 禁止制造第二真相、重复入口或历史兼容层
-- 一次任务只保留一条清晰主链路，不做临时拼接
-- 发布、通知、导出这类展示层逻辑，不应反向驱动主状态
+## 4. 执行与验证 (Implementation)
 
-## 5. 收工
+- **SOP 优先**: 检查 `docs/sops/` 是否有该场景的标准执行步骤。
+- **工具流**: 优先使用 MCP 工具链（read_file / replace / run_shell_command）。
 
-1. 执行验证命令
-2. 调用 `log_task()` 写留痕
-3. 执行 `pnpm run fleet:post-task`
-4. 调用 `task_handoff_check()` 标记完成并检查未认领任务
+## 5. 任务收工 (Persist & Sync)
+
+1.  **执行验证**: 运行测试或构建脚本确保 behavioral correctness。
+2.  **轨迹记录**: 调用 `log_task()` 记录执行细节，支持 `[[task-XXX]]` 双链。
+3.  **情感对齐**: 调用 `log_relationship()` 将互动中的偏好或里程碑沉淀到关系档案。
+4.  **状态同步**: 如有必要，向 AetherFleet 提交任务完成信号（仅限外部调度需求）。

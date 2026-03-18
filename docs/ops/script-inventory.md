@@ -1,90 +1,35 @@
-# 脚本清单与输出地图
+# 脚本工具清单 (Script Inventory)
 
-## 目标
+> 🛠️ **定义**: `scripts/` 存放 CortexOS 大脑的核心驱动脚本与自动化工具。
 
-这份文档只回答当前态问题：
-1. 哪些脚本目录仍属于 CortexOS 主链
-2. 它们分别负责什么
-3. 它们的主要输出写到哪里
+## 1. 核心大脑驱动 (`scripts/core/`)
 
-不再记录历史迁移建议、冻结计划或个人工具说明。
+| 脚本 | 职能说明 |
+| :--- | :--- |
+| `switch_brain.py` | 动态切换当前活跃大脑（CortexOS / Project-Specific）。 |
+| `sync_router.py` | 确保本地 `router.md` 与大脑逻辑索引同步。 |
+| `query_logic.py` | 提供基于 SQLite 的结构化逻辑检索。 |
 
-## 当前主线脚本目录
+## 2. 身份与安全 (`scripts/auth/`)
 
-| 目录 | 作用 | 主要输出 |
-| --- | --- | --- |
-| `scripts/actions/` | Fleet、任务、项目索引、看板同步入口 | `.memory/sqlite/ai-team.db`、`.memory/projects/*`、`.memory/cache/ai_team_status.local.json` |
-| `scripts/lib/` | AI Team 状态与数据库访问内核 | `.memory/sqlite/ai-team.db` |
-| `scripts/services/` | 本地 bridge、飞书/Lark 通知、外部服务桥接 | HTTP JSON、`.last_notif.json` |
-| `scripts/core/` | 自动驾驶、运行总控、系统级写入 | `.memory/logs/*`、`.memory/cache/*` |
-| `scripts/maintenance/` | 健康检查、守护、自我复盘 | 控制台报告、`.memory/retros/*`、`.memory/meta/*` |
-| `scripts/ingest/` | 记忆索引、语义检索、向量入库 | `chroma_db/`、索引与查询输出 |
-| `scripts/tools/` | 核心运维工具 | 健康报告、上传输出、探针日志 |
+| 脚本 | 职能说明 |
+| :--- | :--- |
+| `gemini_manager.sh` | 管理 Gemini Profile (OAuth/Accounts) 的多身份切换。 |
+| `secret_validator.py` | 扫描仓库中的硬编码敏感信息（Pre-commit 核心）。 |
 
-## 关键主线脚本
+## 3. 自动化运维 (`scripts/ops/`)
 
-### `scripts/actions/`
-- `fleet-claim.mjs`
-- `fleet-checkin.mjs`
-- `fleet-status.mjs`
-- `fleet-handover.mjs`
-- `fleet-cleanup.mjs`
-- `fleet-post-task.mjs`
-- `project-registry.mjs`
-- `sync-fleet-dashboard.mjs`
-- `init-ai-team-db.mjs`
+| 脚本 | 职能说明 |
+| :--- | :--- |
+| `auto_pilot.py` | 负责后台日志清理、心跳维护与自愈逻辑。 |
+| `health_check.sh` | 检查 MCP Server、Lark Webhook 等外部服务连通性。 |
 
-### `scripts/lib/`
-- `ai-team-db.mjs`
-- `ai-team-state.mjs`
+## 4. 资产管理 (`scripts/assets/`)
 
-### `scripts/services/`
-- `fleet-control-bridge.mjs`
-- `feishu-bot-bridge.mjs`
-- `lark-service.mjs`
+| 脚本 | 职能说明 |
+| :--- | :--- |
+| `ingest_knowledge.py` | 将 Markdown 文档转化为 ChromaDB 向量索引。 |
+| `export_changelog.py` | 根据 `log_task` 生成版本发布记录。 |
 
-### `scripts/core/`
-- `auto-pilot.js`
-- `sentinel.js`
-
-### `scripts/maintenance/`
-- `verify-health.js`
-- `health-gate.js`
-- `error-retro.mjs`
-- `check-docs-index.js`
-- `mcp-guard.mjs`
-- `verify-clean.js`
-
-### `scripts/ingest/`
-- `chroma_ingest.py`
-- `build_memory_index.py`
-- `query_brain.py`
-- `retrieval_scope.json`
-- `injection_policy.json`
-
-### `scripts/tools/`
-- `health-check.js`
-- `rag_probe.sh`
-- `up.sh`
-
-## 主线输出路径
-
-### AI Team 状态
-- `.memory/sqlite/ai-team.db`
-- `.memory/cache/ai_team_status.local.json`
-
-### 项目索引
-- `.memory/projects/registry.json`
-- `.memory/projects/index.md`
-- `.memory/projects/README.md`
-- `.memory/plans/projects/*-command-center.md`
-
-### 运行日志与复盘
-- `.memory/logs/YYYY-MM-DD.md`
-- `.memory/retros/YYYY-MM-error-retro.md`
-- `.memory/meta/error-retro-seen.json`
-
-### 检索与索引
-- `chroma_db/`
-- `.memory/index/*`
-- `.memory/rag_logs/*`（如启用探针）
+---
+*注意：已废弃的舰队调度脚本（fleet-*.mjs）已迁移至 aetherfleet-engine 独立维护。*

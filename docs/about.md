@@ -1,46 +1,21 @@
-# CortexOS
+# 关于 CortexOS
 
-> 将规则、记忆、状态和协作协议落在本地的外部大脑系统。
+## 项目初衷
 
-**CortexOS** 是一套面向个人使用的本地外部大脑与多 Agent 协作中枢。
-它的目标不是把更多资料堆进仓库，而是把真正影响长期协作的东西收敛成稳定系统：
+CortexOS (Core AI Operating System) 并非传统的操作系统，而是一个为 AI Agent 设计的**外部大脑层**。它的核心目标是解决 Agent 在跨会话、跨模型协作时的“失忆”与“逻辑漂移”问题。
 
-- 规则放在仓库里，任何 Agent 可按协议读取。
-- 用户长期知识放在 `~/Documents/memory/`，不和项目运行态混写。
-- 运行状态放在本地主库里，由系统统一管理，不再依赖零散 Markdown 文件。
-- 多 Agent 协作通过 MCP 与 Fleet 协议完成，不靠口头同步。
+## 核心设计哲学
 
----
+- **大脑与执行分离**：CortexOS 负责存储规则、记忆和逻辑路由；具体的任务执行与调度由 AetherFleet 等外部引擎驱动。
+- **上下文极简 (Token Optimizer)**：不再向 Agent 注入全量文档，而是通过动态路由按需加载。
+- **安全第一 (Safety First)**：通过 MCP 协议实现物理隔离，私钥与敏感资产永远留在本地 Memory 中。
 
-## 核心原则
+## 职能边界
 
-### 1. 上下文主权
-规则、知识、凭证、运行态分层存放，避免云端绑定和路径混乱。
+- ✅ **CortexOS (Brain)**: 提供 `router.md`、`knowledge.db`、`rules/`、`secrets/`。
+- ✅ **Aether Muses (Persona)**: 提供 `relationship.md`、人格对齐、审美同步。
+- ❌ **AetherFleet (Engine)**: 处理打卡、心跳、队长切换、任务看板。
 
-### 2. 单一事实源
-任务、舰队状态、项目索引必须有明确主源；展示层和历史记录不承担主状态职责。
+## 发展现状
 
-### 3. 协议优先
-Agent 启动、挂牌、交接、留痕都走统一协议，不靠临时约定。
-
-### 4. 项目维护而非任务拼接
-CortexOS 关注长期可维护性：边界清楚、状态收敛、技术债可控。
-
----
-
-## 当前能力边界
-
-- **规则系统**：`docs/rules/`
-- **操作与运维**：`docs/ops/`、`docs/sops/`
-- **功能总表**：`docs/guide/feature-matrix.md`
-- **多 Agent 编排**：Fleet + MCP Tool
-- **知识检索**：本地索引 + ChromaDB
-- **历史记录**：`.memory/` 与 `docs/BRAIN_HISTORY.md`
-
----
-
-## 外部链接
-
-- [webkubor.online](https://www.webkubor.online/home)
-- [掘金主页](https://juejin.cn/user/2119514149631870)
-- [GitHub](https://github.com/webkubor)
+目前 CortexOS 已进化至 **v6.0.0 (Pure Brain Mode)**，全面去中心化，支持 Gemini CLI、Claude Desktop 和 Cursor 等多种主流 AI 客户端。

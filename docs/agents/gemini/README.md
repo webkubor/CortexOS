@@ -32,7 +32,11 @@
 - **同步状态**: 运行 `gemini mcp list` 并更新 `mcp.md`。
 - **扩展能力**: 在 `~/.gemini/skills/` 下维护 Skill 源码，并在 `skills.md` 记录。
 - **身份维护**: 修改 `GEMINI.md` 以调整我的全局行为逻辑。
-- **启动约定**: `pnpm run gemini:auto` 只负责 Fleet 入队与冲突提示，不再注入 `$start` 启动提示，默认依赖 `~/.gemini/GEMINI.md` 长期记忆。
+## 1. 启动与上下文注入
+
+- **启动约定**: 默认依赖 `~/.gemini/GEMINI.md` 的长期记忆注入。
+- **协议对齐**: 开工首个动作必须是 `read_router`。
+- **动态加载**: 严禁在提示词中硬编码规则，必须通过 `load_rule` 动态按需加载。
 
 ---
 *Last Updated: 2026-02-05 (Activated Proactive Sync Mandate)*
