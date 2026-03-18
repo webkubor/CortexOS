@@ -111,7 +111,7 @@ function appendToRelationship(entries) {
     content = fs.readFileSync(RELATIONSHIP_FILE, 'utf-8');
   } else {
     fs.mkdirSync(path.dirname(RELATIONSHIP_FILE), { recursive: true });
-    content = `# Candy × 老爹 关系记忆档案\n\n${marker}\n`;
+    content = `# Candy × 栖洲 关系记忆档案\n\n${marker}\n`;
   }
 
   const block = entries

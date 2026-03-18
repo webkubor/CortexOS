@@ -36,7 +36,7 @@ description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 | :--- | :--- | :--- | :--- |
 | **规则层 (Rules)** | `docs/rules/` | 大脑主权 | 提供禁令、规范、工程基线。 |
 | **操作层 (SOPs)** | `docs/sops/` | 大脑方案 | 提供特定场景的“标准执行步骤”。 |
-| **逻辑层 (Refined)** | `.memory/sqlite/knowledge.db` | 大脑右脑 | **[New]** 结构化存储老爹的代码模式与架构决策。 |
+| **逻辑层 (Refined)** | `.memory/sqlite/knowledge.db` | 大脑右脑 | **[New]** 结构化存储栖洲的代码模式与架构决策。 |
 | **进化层 (Traces)** | `.memory/logs/` | 助理轨迹 | 记录执行过程，用于后期经验提取。 |
 | **灵魂层 (Soul)** | `.memory/persona/` | 助理人格 | 存放 `retry_patterns.md`、人格调教、用户偏好。 |
 | **知识层 (Assets)** | `~/Documents/memory/` | 用户资产 | **只读** 用户长期记忆（复盘、笔记、灵感）。 |

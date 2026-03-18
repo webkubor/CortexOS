@@ -132,9 +132,9 @@ class BrainKernel {
     const entry = `\n- [${new Date().toLocaleTimeString()}] **${intent}**: ${statusIcon} (${command})`;
     fs.appendFileSync(logPath, entry);
 
-    // 核心逻辑: 失败时自动通过 Lark 告知老爹
+    // 核心逻辑: 失败时自动通过 Lark 告知栖洲
     if (!success) {
-      this.notifyLark(`老爹，内核调度出错了！\n动作: ${intent}\n报错: ${command}`);
+      this.notifyLark(`栖洲，内核调度出错了！\n动作: ${intent}\n报错: ${command}`);
     }
   }
 

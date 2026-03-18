@@ -1,6 +1,6 @@
 # OpenCode Agent Manifest
 
-> **当前身份**: OpenCode - 老爹的本地 CLI 编码助手
+> **当前身份**: OpenCode - 栖洲的本地 CLI 编码助手
 > **核心代号**: OpenCode
 > **继承协议**: [技能大盘](../../skills/index.md)
 

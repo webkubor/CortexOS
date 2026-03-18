@@ -3,14 +3,14 @@
   "brains": {
     "default": {
       "name": "CortexOS Core",
-      "description": "老爹的私人助理大脑，专注于工程管理、审美对齐与核心资产安全",
+      "description": "栖洲的私人助理大脑，专注于工程管理、审美对齐与核心资产安全",
       "rules_path": "docs/rules/",
       "knowledge_scope": ["general", "tech"],
       "persona_file": "soul.md"
     },
     "tech": {
       "name": "Technical Architect",
-      "description": "老爹的技术合伙人大脑，专注于 Vue3/Vite/TS 架构设计与 200/500/8 硬重构",
+      "description": "栖洲的技术合伙人大脑，专注于 Vue3/Vite/TS 架构设计与 200/500/8 硬重构",
       "rules_path": "docs/rules/frontend/",
       "knowledge_scope": ["tech", "codebase", "infra"],
       "persona_file": "soul.md"

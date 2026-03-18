@@ -8,7 +8,7 @@ DB_PATH = ".memory/sqlite/knowledge.db"
 
 def extract_corrections(log_path):
     """
-    通过正则过滤，只提取老爹对助理进行“纠偏”或“否定”的负面反馈。
+    通过正则过滤，只提取栖洲对助理进行“纠偏”或“否定”的负面反馈。
     正面确认不产生进化动力，负面反馈才是进化的核心 Token。
     """
     if not os.path.exists(log_path):

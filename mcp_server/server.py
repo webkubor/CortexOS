@@ -194,7 +194,7 @@ def log_relationship(
     参数:
         event:    发生了什么（一句话描述，必填）
         category: 事件类型，可选: 互动 | 偏好发现 | 情绪信号 | 温柔反驳 | 共同决策 | 里程碑
-        mood:     老爹当时的情绪状态（可选，如：专注、烦躁、开心）
+        mood:     栖洲当时的情绪状态（可选，如：专注、烦躁、开心）
         note:     Candy 的主观观察或感受（可选）
     """
     RELATIONSHIP_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -206,7 +206,7 @@ def log_relationship(
     lines = [f"\n#### {today} {timestamp} [{category}]"]
     lines.append(f"- **事件**: {event}")
     if mood:
-        lines.append(f"- **老爹情绪**: {mood}")
+        lines.append(f"- **栖洲情绪**: {mood}")
     if note:
         lines.append(f"- **Candy 观察**: {note}")
     entry = "\n".join(lines) + "\n"
@@ -231,7 +231,7 @@ def log_relationship(
     else:
         # 文件不存在则创建最小结构
         RELATIONSHIP_FILE.write_text(
-            f"# Candy × 老爹 关系记忆档案\n\n## 3. 共同经历日志 (Shared History)\n{entry}",
+            f"# Candy × 栖洲 关系记忆档案\n\n## 3. 共同经历日志 (Shared History)\n{entry}",
             encoding="utf-8",
         )
 
