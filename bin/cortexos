@@ -1,0 +1,538 @@
+#!/usr/bin/env python3
+"""
+cortexos CLI — CortexOS 大脑命令行入口
+
+用法:
+  cortexos brief          极简快照（<20行）
+  cortexos router         完整路由
+  cortexos rule <name>    加载具体规则
+  cortexos list-rules     列出所有规则
+  cortexos log <内容>     记录日志
+  cortexos logs [N]       查看最近 N 条日志（默认5）
+  cortexos status         大脑状态概览
+  cortexos secrets        列出凭证文件名
+  cortexos search <关键词> 知识库语义搜索
+  cortexos serve [--port 3579]  HTTP API 模式
+"""
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+
+# ─── 路径常量 ───────────────────────────────────────
+BRAIN_ROOT = Path(__file__).resolve().parents[1]
+DOCS = BRAIN_ROOT / "docs"
+ROUTER = DOCS / "router.md"
+RULES_DIR = DOCS / "rules"
+MEMORY_LOGS = BRAIN_ROOT / ".memory" / "logs"
+SECRETS_DIR = Path.home() / "Documents" / "memory" / "secrets"
+KNOWLEDGE_DIR = Path.home() / "Documents" / "memory" / "knowledge"
+AGENTS_MD = BRAIN_ROOT / "AGENTS.md"
+
+# ─── 颜色 ───────────────────────────────────────────
+class C:
+    BOLD = "\033[1m"
+    CYAN = "\033[36m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    GRAY = "\033[90m"
+    RESET = "\033[0m"
+
+def header(text):
+    return f"{C.BOLD}{C.CYAN}{text}{C.RESET}"
+
+def dim(text):
+    return f"{C.GRAY}{text}{C.RESET}"
+
+
+# ─── 核心命令 ───────────────────────────────────────
+
+def cmd_brief(args):
+    """极简快照：从 router.md 快照区提取关键信息"""
+    if not ROUTER.exists():
+        print("❌ router.md 不存在", file=sys.stderr)
+        return 1
+    
+    content = ROUTER.read_text(encoding="utf-8")
+    
+    # 提取快照区
+    snapshot_lines = []
+    in_snapshot = False
+    for line in content.split("\n"):
+        if "快照区" in line:
+            in_snapshot = True
+            continue
+        if in_snapshot:
+            if line.startswith("## ") and "快照" not in line:
+                break
+            snapshot_lines.append(line)
+    
+    if snapshot_lines:
+        print(header("🧠 CortexOS 快照"))
+        print()
+        for line in snapshot_lines:
+            if line.startswith("```"):
+                continue
+            print(line.rstrip())
+    else:
+        # fallback: 读 AGENTS.md
+        if AGENTS_MD.exists():
+            print(AGENTS_MD.read_text(encoding="utf-8")[:1000])
+    
+    return 0
+
+
+def cmd_router(args):
+    """完整路由协议"""
+    if not ROUTER.exists():
+        print("❌ router.md 不存在", file=sys.stderr)
+        return 1
+    print(ROUTER.read_text(encoding="utf-8"))
+    return 0
+
+
+def cmd_list_rules(args):
+    """列出所有规则文件"""
+    if not RULES_DIR.exists():
+        print("❌ docs/rules/ 目录不存在", file=sys.stderr)
+        return 1
+    
+    print(header("📋 可用规则"))
+    print()
+    
+    for f in sorted(RULES_DIR.rglob("*.md")):
+        rel = f.relative_to(RULES_DIR)
+        # 读第一行作为描述
+        try:
+            first_line = f.read_text(encoding="utf-8").split("\n")[0].strip()
+            if first_line.startswith("#"):
+                first_line = first_line.lstrip("# ").strip()
+        except:
+            first_line = ""
+        desc = dim(f" — {first_line[:60]}") if first_line else ""
+        print(f"  • {rel}{desc}")
+    
+    return 0
+
+
+def cmd_rule(args):
+    """加载具体规则"""
+    rule_name = args.name.replace(".md", "")
+    
+    # 在 rules/ 下查找
+    candidates = list(RULES_DIR.rglob(f"*{rule_name}*.md"))
+    if not candidates:
+        print(f"❌ 未找到匹配 '{rule_name}' 的规则", file=sys.stderr)
+        return 1
+    
+    if len(candidates) > 1:
+        print(header(f"📋 找到 {len(candidates)} 个匹配:"))
+        for c in candidates:
+            print(f"  • {c.relative_to(RULES_DIR)}")
+        print()
+    
+    for f in candidates:
+        print(header(f"📄 {f.relative_to(RULES_DIR)}"))
+        print()
+        print(f.read_text(encoding="utf-8"))
+        print()
+    
+    return 0
+
+
+def cmd_status(args):
+    """大脑状态概览"""
+    print(header("🧠 CortexOS 状态"))
+    print()
+    
+    # AGENTS.md
+    if AGENTS_MD.exists():
+        print(f"  AGENTS.md:  ✅")
+    
+    # router.md
+    if ROUTER.exists():
+        content = ROUTER.read_text(encoding="utf-8")
+        # 提取版本
+        for line in content.split("\n"):
+            if "版本" in line and ":" in line:
+                print(f"  {line.strip()}")
+                break
+            if "SSOT" in line:
+                print(f"  {line.strip()}")
+                break
+        print(f"  router.md:  ✅")
+    
+    # 规则数量
+    if RULES_DIR.exists():
+        rules = list(RULES_DIR.rglob("*.md"))
+        print(f"  规则文件:   {len(rules)} 个")
+    
+    # 日志数量
+    if MEMORY_LOGS.exists():
+        logs = list(MEMORY_LOGS.glob("*.md"))
+        print(f"  日志文件:   {len(logs)} 个")
+    
+    # 凭证
+    if SECRETS_DIR.exists():
+        secrets = list(SECRETS_DIR.glob("*"))
+        print(f"  凭证文件:   {len(secrets)} 个")
+    
+    # 知识库
+    if KNOWLEDGE_DIR.exists():
+        kb_files = list(KNOWLEDGE_DIR.rglob("*.md"))
+        print(f"  知识条目:   {len(kb_files)} 个")
+    
+    return 0
+
+
+def cmd_log(args):
+    """记录一条日志"""
+    MEMORY_LOGS.mkdir(parents=True, exist_ok=True)
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_file = MEMORY_LOGS / f"{today}.md"
+    
+    timestamp = datetime.now().strftime("%H:%M")
+    agent = args.agent or "cli"
+    content = f"[{timestamp}] [{agent}] {args.content}\n"
+    
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(content)
+    
+    print(f"✅ 已记录到 {log_file.name}")
+    return 0
+
+
+def cmd_logs(args):
+    """查看最近 N 条日志"""
+    if not MEMORY_LOGS.exists():
+        print("暂无日志")
+        return 0
+    
+    logs = sorted(MEMORY_LOGS.glob("*.md"), reverse=True)
+    if not logs:
+        print("暂无日志")
+        return 0
+    
+    n = args.count or 5
+    print(header(f"📝 最近 {n} 天日志"))
+    print()
+    
+    for log_file in logs[:n]:
+        print(header(f"  {log_file.stem}"))
+        content = log_file.read_text(encoding="utf-8")
+        # 只显示最后 20 行
+        lines = content.strip().split("\n")
+        for line in lines[-20:]:
+            print(f"    {line}")
+        print()
+    
+    return 0
+
+
+def cmd_secrets(args):
+    """列出凭证文件"""
+    if not SECRETS_DIR.exists():
+        print("暂无凭证文件")
+        return 0
+    
+    print(header("🔑 凭证文件"))
+    for f in sorted(SECRETS_DIR.iterdir()):
+        if f.is_file():
+            size = f.stat().st_size
+            print(f"  • {f.name}  {dim(f'({size}B)')}")
+    return 0
+
+
+def cmd_search(args):
+    """知识库搜索"""
+    query = args.query
+    top_k = args.top_k or 5
+    
+    if not KNOWLEDGE_DIR.exists():
+        print("暂无知识库")
+        return 0
+    
+    # 简单的关键词匹配（不需要 ChromaDB）
+    files = list(KNOWLEDGE_DIR.rglob("*.md"))
+    results = []
+    
+    for f in files:
+        try:
+            content = f.read_text(encoding="utf-8")
+            if query.lower() in content.lower():
+                # 计算匹配度
+                score = content.lower().count(query.lower())
+                results.append((score, f, content))
+        except:
+            pass
+    
+    results.sort(key=lambda x: x[0], reverse=True)
+    
+    if not results:
+        print(f"未找到包含 '{query}' 的知识条目")
+        return 0
+    
+    print(header(f"🔍 搜索 '{query}' — {len(results)} 条结果"))
+    print()
+    
+    for score, f, content in results[:top_k]:
+        rel = f.relative_to(KNOWLEDGE_DIR)
+        print(header(f"  📄 {rel}  {dim(f'(匹配 {score} 次)')}"))
+        # 显示匹配片段
+        idx = content.lower().find(query.lower())
+        start = max(0, idx - 50)
+        end = min(len(content), idx + len(query) + 100)
+        snippet = content[start:end].replace("\n", " ")
+        if start > 0:
+            snippet = "..." + snippet
+        print(f"    {snippet}")
+        print()
+    
+    return 0
+
+
+# ─── HTTP API 模式 ───────────────────────────────────
+
+def cmd_serve(args):
+    """HTTP API 模式"""
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    import urllib.parse
+    
+    port = args.port or 3579
+    
+    class BrainHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            parsed = urllib.parse.urlparse(self.path)
+            path = parsed.path
+            
+            routes = {
+                "/health": lambda: {"status": "ok", "service": "cortexos-cli"},
+                "/api/brief": self._brief,
+                "/api/router": self._router,
+                "/api/status": self._status,
+                "/api/rules": self._rules,
+                "/api/secrets": self._secrets,
+                "/api/logs": self._logs,
+            }
+            
+            if path in routes:
+                handler = routes[path]
+                data = handler() if callable(handler) else handler
+                self._json_response(data)
+            elif path.startswith("/api/rule/"):
+                name = urllib.parse.unquote(path.split("/api/rule/")[-1])
+                data = self._get_rule(name)
+                self._json_response(data)
+            elif path.startswith("/api/search"):
+                params = urllib.parse.parse_qs(parsed.query)
+                q = params.get("q", [""])[0]
+                top_k = int(params.get("top_k", [5])[0])
+                data = self._search(q, top_k)
+                self._json_response(data)
+            else:
+                self._json_response({"error": "Not found"}, 404)
+        
+        def _brief(self):
+            if not ROUTER.exists():
+                return {"error": "router.md not found"}
+            content = ROUTER.read_text(encoding="utf-8")
+            snapshot_lines = []
+            in_snapshot = False
+            for line in content.split("\n"):
+                if "快照区" in line:
+                    in_snapshot = True
+                    continue
+                if in_snapshot:
+                    if line.startswith("## ") and "快照" not in line:
+                        break
+                    if line.startswith("```"):
+                        continue
+                    snapshot_lines.append(line.rstrip())
+            return {"brief": "\n".join(snapshot_lines)}
+        
+        def _router(self):
+            if not ROUTER.exists():
+                return {"error": "router.md not found"}
+            return {"router": ROUTER.read_text(encoding="utf-8")}
+        
+        def _status(self):
+            return {
+                "service": "cortexos",
+                "version": "1.0.0",
+                "brain_root": str(BRAIN_ROOT),
+                "agents_md": AGENTS_MD.exists(),
+                "router": ROUTER.exists(),
+                "rules_count": len(list(RULES_DIR.rglob("*.md"))) if RULES_DIR.exists() else 0,
+                "logs_count": len(list(MEMORY_LOGS.glob("*.md"))) if MEMORY_LOGS.exists() else 0,
+            }
+        
+        def _rules(self):
+            if not RULES_DIR.exists():
+                return {"rules": []}
+            rules = []
+            for f in sorted(RULES_DIR.rglob("*.md")):
+                rel = str(f.relative_to(RULES_DIR))
+                try:
+                    first = f.read_text(encoding="utf-8").split("\n")[0].strip().lstrip("# ").strip()
+                except:
+                    first = ""
+                rules.append({"name": rel, "description": first[:100]})
+            return {"rules": rules}
+        
+        def _get_rule(self, name):
+            rule_name = name.replace(".md", "")
+            candidates = list(RULES_DIR.rglob(f"*{rule_name}*.md"))
+            if not candidates:
+                return {"error": f"Rule '{name}' not found", "suggestions": [f.relative_to(RULES_DIR) for f in list(RULES_DIR.rglob("*.md"))[:5]]}
+            results = []
+            for f in candidates:
+                results.append({
+                    "name": str(f.relative_to(RULES_DIR)),
+                    "content": f.read_text(encoding="utf-8")
+                })
+            return {"rules": results} if len(results) > 1 else results[0]
+        
+        def _secrets(self):
+            if not SECRETS_DIR.exists():
+                return {"secrets": []}
+            return {"secrets": [f.name for f in sorted(SECRETS_DIR.iterdir()) if f.is_file()]}
+        
+        def _logs(self):
+            if not MEMORY_LOGS.exists():
+                return {"logs": []}
+            logs = sorted(MEMORY_LOGS.glob("*.md"), reverse=True)
+            result = []
+            for f in logs[:10]:
+                result.append({
+                    "date": f.stem,
+                    "content": f.read_text(encoding="utf-8")[-2000:]  # last 2000 chars
+                })
+            return {"logs": result}
+        
+        def _search(self, query, top_k):
+            if not query or not KNOWLEDGE_DIR.exists():
+                return {"results": []}
+            files = list(KNOWLEDGE_DIR.rglob("*.md"))
+            results = []
+            for f in files:
+                try:
+                    content = f.read_text(encoding="utf-8")
+                    if query.lower() in content.lower():
+                        score = content.lower().count(query.lower())
+                        idx = content.lower().find(query.lower())
+                        start = max(0, idx - 100)
+                        end = min(len(content), idx + len(query) + 200)
+                        results.append({
+                            "file": str(f.relative_to(KNOWLEDGE_DIR)),
+                            "score": score,
+                            "snippet": content[start:end].replace("\n", " ")
+                        })
+                except:
+                    pass
+            results.sort(key=lambda x: x["score"], reverse=True)
+            return {"query": query, "results": results[:top_k]}
+        
+        def _json_response(self, data, status=200):
+            body = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(body)
+        
+        def log_message(self, format, *log_args):
+            pass  # 安静模式
+    
+    server = HTTPServer(("0.0.0.0", port), BrainHandler)
+    print(header(f"🧠 CortexOS HTTP API"))
+    print(f"   端口: {port}")
+    print(f"   地址: http://localhost:{port}")
+    print()
+    print("   端点:")
+    print(f"   GET /health         健康检查")
+    print(f"   GET /api/brief      极简快照")
+    print(f"   GET /api/router     完整路由")
+    print(f"   GET /api/status     状态概览")
+    print(f"   GET /api/rules      规则列表")
+    print(f"   GET /api/rule/<name> 加载规则")
+    print(f"   GET /api/secrets    凭证列表")
+    print(f"   GET /api/logs       最近日志")
+    print(f"   GET /api/search?q=  知识搜索")
+    print()
+    print(dim("按 Ctrl+C 停止"))
+    
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\n已停止")
+        server.shutdown()
+    
+    return 0
+
+
+# ─── 入口 ───────────────────────────────────────────
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="cortexos",
+        description="🧠 CortexOS 大脑命令行入口",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest="command")
+    
+    sub.add_parser("brief", help="极简快照（<20行）")
+    sub.add_parser("router", help="完整路由协议")
+    sub.add_parser("status", help="大脑状态概览")
+    sub.add_parser("list-rules", help="列出所有规则")
+    sub.add_parser("secrets", help="列出凭证文件名")
+    
+    p_rule = sub.add_parser("rule", help="加载具体规则")
+    p_rule.add_argument("name", help="规则名称（支持模糊匹配）")
+    
+    p_log = sub.add_parser("log", help="记录日志")
+    p_log.add_argument("content", help="日志内容")
+    p_log.add_argument("--agent", "-a", help="记录者（默认 cli）")
+    
+    p_logs = sub.add_parser("logs", help="查看最近 N 条日志")
+    p_logs.add_argument("count", nargs="?", type=int, default=5, help="条数")
+    
+    p_search = sub.add_parser("search", help="知识库搜索")
+    p_search.add_argument("query", help="搜索关键词")
+    p_search.add_argument("--top-k", "-n", type=int, default=5, help="结果数量")
+    
+    p_serve = sub.add_parser("serve", help="HTTP API 模式")
+    p_serve.add_argument("--port", "-p", type=int, default=3579, help="端口号")
+    
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        return 0
+    
+    commands = {
+        "brief": cmd_brief,
+        "router": cmd_router,
+        "status": cmd_status,
+        "list-rules": cmd_list_rules,
+        "rule": cmd_rule,
+        "log": cmd_log,
+        "logs": cmd_logs,
+        "secrets": cmd_secrets,
+        "search": cmd_search,
+        "serve": cmd_serve,
+    }
+    
+    handler = commands.get(args.command)
+    if handler:
+        return handler(args)
+    else:
+        parser.print_help()
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main() or 0)
