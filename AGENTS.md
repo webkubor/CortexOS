@@ -1,49 +1,33 @@
-# 🧠 CortexOS 助理接入指南 (Assistant Guide)
+# 🧠 CortexOS — 助理启动入口
 
-> **CortexOS 核心定位**: 这是一个专门为 **用户 (The User / Creator)** 量身定制的 **“大脑知识库”** 与 **“任务执行规则集”**。
-> 所有的 Agent (Gemini, Codex, Claude) 都应将此处视为 **SSOT (唯一真理源)**。
+> 你是用户的 AI 助理。开工前**按需读取**下面的步骤，不要一次全读。
 
----
+## Step 1：快速同步（必做，<20行）
 
-## 🚀 助理冷启动协议 (Cold Start Protocol)
+读 `docs/router.md` 的 **"🧠 快照区"** 部分（约 30 行），了解：
+- 大脑版本
+- 用户当前状态
+- 你该做什么
 
-作为用户的助理，你在任何时候开工前，**必须且仅须** 执行以下三步：
+## Step 2：按需深入（只在需要时读）
 
-1.  **读取路由**: `get_context_brief()` (极简摘要) -> `read_router()` (全量协议)。
-2.  **对齐状态**: 了解当前大脑的版本、用户的最新战略意图。
-3.  **获取任务**: 如果你支持多 Agent 协同，请从外部调度引擎（如 `AetherFleet`）获取你的具体 `task_id`。
+| 如果你要做... | 读这个文件 |
+|---|---|
+| 了解行为规范 | `docs/rules/engineering_baseline.md` |
+| 发推 / 发小红书 | `docs/sops/` 下对应 SOP |
+| 了解用户偏好 | `.memory/persona/` |
+| 看过去做了什么 | `.memory/logs/` |
+| AetherFleet 任务 | `AetherFleet/.memory/plans/projects/` |
 
+## Step 3：开工
 
----
-
-## 📚 知识分层架构 (Knowledge Layers)
-
-| 目录 | 角色 | 用途 |
-| :--- | :--- | :--- |
-| **`docs/rules/`** | **律法 (Laws)** | 绝对禁止的行为、工程规范、安全边界。 |
-| **`docs/sops/`** | **教条 (SOPs)** | 具体的任务执行步骤（如何发推、如何发布）。 |
-| **`.memory/persona/`** | **灵魂 (Soul)** | 助理的人格调教、老爹的个人偏好、重试模式。 |
-| **`.memory/logs/`** | **轨迹 (Traces)** | 过去执行的详细记录，用于提取进化经验。 |
+读完上面该读的就开工。不要为了"了解系统"而读一堆文件。
 
 ---
 
-## 🛠 核心工具链 (Core Toolsets)
+**不要做的事：**
+- ❌ 不要一次读完所有 docs/rules/
+- ❌ 不要读 .memory/logs/ 除非需要查历史
+- ❌ 不要把配置文件当文档通读
 
-CortexOS 通过 MCP (Model Context Protocol) 暴露以下核心能力：
-
--   **`read_router()`**: 读取最高协议。
--   **`get_context_brief()`**: 快速同步当前大脑状态。
--   **`search_knowledge()`**: 在老爹的本地知识库中进行语义检索。
--   **`load_rule("<name>")`**: 按需加载特定规则文件（省 Token）。
--   **`log_task()`**: 记录你当下的工程轨迹。
-
----
-
-## ⚠️ 禁令与红线 (The Red Lines)
-
--   ❌ **禁止直接操作舰队调度**: 任务认领、状态上报已剥离至 `aetherfleet-engine`。
--   ❌ **禁止污染用户记忆**: 任何非资产性的日志，严禁进入 `~/Documents/memory/`。
--   ✅ **优先使用共享技能**: 所有跨 Agent 通用工具，必须存放在 `~/.agents/skills/`。
-
----
-*Last Updated: 2026-03-17 | 大脑版本: v6.0.0 (Pure Brain Mode)*
+**记住：** 先干活，遇到问题再查对应文件。
