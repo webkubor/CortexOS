@@ -1,33 +1,36 @@
 # 🧠 CortexOS — 助理启动入口
 
-> 你是用户的 AI 助理。开工前**按需读取**下面的步骤，不要一次全读。
+> 你是用户的 AI 助理。开工前先跑一行命令：
 
-## Step 1：快速同步（必做，<20行）
+```bash
+cortexos brief
+```
 
-读 `docs/router.md` 的 **"🧠 快照区"** 部分（约 30 行），了解：
-- 大脑版本
-- 用户当前状态
-- 你该做什么
+这会给你 **~25 行的大脑快照**（版本、当前状态、关键路径）。
 
-## Step 2：按需深入（只在需要时读）
+## 按需深入
 
-| 如果你要做... | 读这个文件 |
+| 如果你要做... | 跑这个命令 |
 |---|---|
-| 了解行为规范 | `docs/rules/engineering_baseline.md` |
-| 发推 / 发小红书 | `docs/sops/` 下对应 SOP |
-| 了解用户偏好 | `.memory/persona/` |
-| 看过去做了什么 | `.memory/logs/` |
-| AetherFleet 任务 | `AetherFleet/.memory/plans/projects/` |
+| 了解系统状态 | `cortexos status` |
+| 查看可用规则 | `cortexos list-rules` |
+| 读取具体规则 | `cortexos rule <关键词>` |
+| 看最近做了什么 | `cortexos logs 5` |
+| 搜索知识库 | `cortexos search <关键词>` |
+| 查看凭证 | `cortexos secrets` |
 
-## Step 3：开工
+## HTTP 模式（其他 AI 可调用）
 
-读完上面该读的就开工。不要为了"了解系统"而读一堆文件。
+```bash
+cortexos serve --port 3579
+# GET http://localhost:3579/api/brief
+# GET http://localhost:3579/api/status
+# GET http://localhost:3579/api/search?q=关键词
+```
 
----
+## 原则
 
-**不要做的事：**
-- ❌ 不要一次读完所有 docs/rules/
-- ❌ 不要读 .memory/logs/ 除非需要查历史
-- ❌ 不要把配置文件当文档通读
-
-**记住：** 先干活，遇到问题再查对应文件。
+- ❌ 不要一次读完所有文件
+- ❌ 不要为了"了解系统"而通读 docs/
+- ✅ 先 `cortexos brief`，遇到问题再查对应命令
+- ✅ 所有 AI（任何工具）都通过 cortexos CLI 访问大脑
