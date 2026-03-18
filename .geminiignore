@@ -1,0 +1,10 @@
+# Token 节约与噪音屏蔽
+chroma_db/
+node_modules/
+.pnpm-store/
+.venv/
+.git/
+.obsidian/
+tmp_logs.zip
+pnpm-lock.yaml
+uv.lock

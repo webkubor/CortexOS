@@ -54,6 +54,8 @@ docs/skills/visual/cinematic-storyboard/assets/*
 !.memory/memory_formula.md
 !.memory/persona/
 !.memory/identity/
+# 私有关系记忆 — 绝不开源
+.memory/persona/relationship.md
 mcp_server/mcp_config.json
 \n# 隐私隔离\n.memory/persona/brains/
 \n# 最终防御：严防泄露\n.env*\n*.key\nsecrets/*\n

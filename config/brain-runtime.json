@@ -17,7 +17,7 @@
       "managedBy": "pm2",
       "script": "scripts/core/auto-pilot.js",
       "schedule": "*/5 * * * *",
-      "purpose": "自动同步、AI Team 态势记录、僵尸清理、看板刷新"
+      "purpose": "大脑内核同步、老爹资产保护、僵尸进程清理、环境态势感知"
     }
   }
 }

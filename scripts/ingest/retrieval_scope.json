@@ -8,9 +8,7 @@
     "docs/guide",
     "docs/intel",
     "docs/agents",
-    "../memory/knowledge",
-    "../memory/projects",
-    "../memory/skills"
+    "../memory"
   ],
   "exclude_path_contains": [
     "/.vitepress/",

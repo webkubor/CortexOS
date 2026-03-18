@@ -6,15 +6,23 @@ description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 > 🧠 **本文件是 CortexOS 大脑的唯一入口。** 任何助理助理开工前必读。
 
 ## 0. 助理信条 (The Assistant Creed)
+... (保持不变)
 
-1.  **用户最高**: 所有 Agent 最终服务于 **用户 (The User / Creator)**。
-2.  **知识主导**: CortexOS 不再管理“干活的人”，只管理“干活的经验”。
-3.  **DRY 架构**: 严禁在私有目录安装通用 Skill。
-4.  **进化收割**: 每次任务后，自动收割失败重试经验到 `retry_patterns.md`。
+## 1. 别名映射 (Shortcuts Map) - [New: Token Optimizer]
+
+| 别名 | 映射路径 | 业务含义 |
+| :--- | :--- | :--- |
+| **`@fe/std`** | `docs/rules/frontend/standard.md` | 前端 200/500/8 硬约束准则 |
+| **`@fe/base`** | `docs/rules/frontend/baseline.md` | 前端 Vue3/Vite/TS 技术基线 |
+| **`@fe/rev`** | `docs/rules/frontend/templates/review.md` | 代码审查输出模板 (Findings-First) |
+| **`@fe/cmt`** | `docs/rules/frontend/templates/comment.md` | 函数/组件注释规范模板 |
+| **`@fe/rel`** | `docs/rules/frontend/templates/release.md` | 版本发布记录模板 (Changelog) |
+| **`@core`** | `docs/rules/engineering_baseline.md` | 核心工程准则 (Safety & Security) |
 
 ---
 
-## 1. 冷启动流程 (Cold Start Protocol)
+## 2. 大脑目录分层 (Brain Architecture)
+... (保持不变)
 
 1.  **极简快照**: `get_context_brief()` (获取大脑最新动态、用户近期意图)。
 2.  **完整对齐**: `read_router()` (了解最新规则、目录结构、禁令)。
@@ -55,6 +63,7 @@ description: 大脑最高协议与知识路由 (Pure Brain Mode)。
 | **`get_refined_logic`** | **[Logic]** 检索结构化的代码模式与硬约束（来自 knowledge.db）。 |
 | **`load_rule`** | **[Lazy Load]** 按名称精确加载规则文件。 |
 | **`log_task`** | 记录执行轨迹，支持 `[[task-XXX]]` 双链。 |
+| **`log_relationship`** | **[关系记忆]** 将有情感价值的事件沉淀到 `.memory/persona/relationship.md`（私有，绝不 git）。每次会话结束前必须调用。 |
 
 ---
 

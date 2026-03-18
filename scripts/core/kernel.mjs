@@ -10,6 +10,7 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
+import https from 'https';
 import { z } from 'zod';
 import { Command } from 'commander';
 
@@ -102,11 +103,39 @@ class BrainKernel {
     }
   }
 
+  // --- 5. 私人助理 Hook: Lark 通知 (包含关键词：大脑) ---
+  async notifyLark(message) {
+    const webhookUrl = this.getSecret('lark.md', 'LARK_WEBHOOK');
+    if (typeof webhookUrl !== 'string') return;
+
+    const data = JSON.stringify({
+      msg_type: "text",
+      content: { text: `[大脑通知] ${message}` }
+    });
+
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    };
+
+    const req = https.request(webhookUrl, options);
+    req.on('error', (e) => console.error(`Lark 通知失败: ${e.message}`));
+    req.write(data);
+    req.end();
+  }
+
   logAction({ intent, success, command = 'internal' }) {
     const logPath = path.join(this.config.logsDir, `raw/kernel-${new Date().toISOString().split('T')[0]}.md`);
     if (!fs.existsSync(path.dirname(logPath))) fs.mkdirSync(path.dirname(logPath), { recursive: true });
-    const entry = `\n- [${new Date().toLocaleTimeString()}] **${intent}**: ${success ? '✅' : '❌'} (${command})`;
+    
+    const statusIcon = success ? '✅' : '❌';
+    const entry = `\n- [${new Date().toLocaleTimeString()}] **${intent}**: ${statusIcon} (${command})`;
     fs.appendFileSync(logPath, entry);
+
+    // 核心逻辑: 失败时自动通过 Lark 告知老爹
+    if (!success) {
+      this.notifyLark(`老爹，内核调度出错了！\n动作: ${intent}\n报错: ${command}`);
+    }
   }
 
   setupCLI() {

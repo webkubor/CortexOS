@@ -178,6 +178,67 @@ def log_task(content: str, agent: str = "Gemini") -> str:
 
 
 # ─────────────────────────────────────────────
+# Tool 4.5: 写入关系记忆（私有，绝不 git）
+# ─────────────────────────────────────────────
+RELATIONSHIP_FILE = ASSISTANT_MEMORY_HOME / "persona" / "relationship.md"
+
+@mcp.tool()
+def log_relationship(
+    event: str,
+    category: str = "互动",
+    mood: str = "",
+    note: str = "",
+) -> str:
+    """将本次会话中有情感价值的事件沉淀到 Candy 的关系记忆档案。
+
+    参数:
+        event:    发生了什么（一句话描述，必填）
+        category: 事件类型，可选: 互动 | 偏好发现 | 情绪信号 | 温柔反驳 | 共同决策 | 里程碑
+        mood:     老爹当时的情绪状态（可选，如：专注、烦躁、开心）
+        note:     Candy 的主观观察或感受（可选）
+    """
+    RELATIONSHIP_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    timestamp = datetime.now().strftime("%H:%M")
+
+    # 构建条目
+    lines = [f"\n#### {today} {timestamp} [{category}]"]
+    lines.append(f"- **事件**: {event}")
+    if mood:
+        lines.append(f"- **老爹情绪**: {mood}")
+    if note:
+        lines.append(f"- **Candy 观察**: {note}")
+    entry = "\n".join(lines) + "\n"
+
+    # 如果文件存在，追加到"共同经历日志"章节
+    if RELATIONSHIP_FILE.exists():
+        content = RELATIONSHIP_FILE.read_text(encoding="utf-8")
+        marker = "## 3. 共同经历日志 (Shared History)"
+        if marker in content:
+            insert_pos = content.index(marker) + len(marker)
+            # 找到下一个 ## 章节或文件末尾
+            next_section = content.find("\n## ", insert_pos)
+            if next_section == -1:
+                new_content = content + entry
+            else:
+                new_content = content[:next_section] + entry + content[next_section:]
+            RELATIONSHIP_FILE.write_text(new_content, encoding="utf-8")
+        else:
+            # 直接追加
+            with RELATIONSHIP_FILE.open("a", encoding="utf-8") as f:
+                f.write(entry)
+    else:
+        # 文件不存在则创建最小结构
+        RELATIONSHIP_FILE.write_text(
+            f"# Candy × 老爹 关系记忆档案\n\n## 3. 共同经历日志 (Shared History)\n{entry}",
+            encoding="utf-8",
+        )
+
+    return f"✅ 关系记忆已沉淀 [{category}]: {event[:40]}{'...' if len(event) > 40 else ''}"
+
+
+# ─────────────────────────────────────────────
 # Tool 5: 列出密钥文件
 # ─────────────────────────────────────────────
 @mcp.tool()

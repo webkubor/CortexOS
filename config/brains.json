@@ -3,17 +3,17 @@
   "brains": {
     "default": {
       "name": "CortexOS Core",
-      "description": "通用助理大脑，涵盖工程、安全与基础协作协议",
+      "description": "老爹的私人助理大脑，专注于工程管理、审美对齐与核心资产安全",
       "rules_path": "docs/rules/",
       "knowledge_scope": ["general", "tech"],
-      "persona_file": ".memory/persona/retry_patterns.md"
+      "persona_file": "soul.md"
     },
     "tech": {
       "name": "Technical Architect",
-      "description": "深度技术大脑，专注于架构设计、代码重构与性能调优",
-      "rules_path": ".memory/persona/brains/tech/",
+      "description": "老爹的技术合伙人大脑，专注于 Vue3/Vite/TS 架构设计与 200/500/8 硬重构",
+      "rules_path": "docs/rules/frontend/",
       "knowledge_scope": ["tech", "codebase", "infra"],
-      "persona_file": ".memory/persona/retry_patterns.md"
+      "persona_file": "soul.md"
     },
     "creative": {
       "name": "Creative Spark",
