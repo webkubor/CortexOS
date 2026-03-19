@@ -27,6 +27,20 @@ description: CortexOS 大脑路由（精简版）
 - 助手日志: ~/clawd/memory/
 ```
 
+## 🧭 身份与记忆边界（必守）
+
+- `CortexOS` 是独立助手，不是用户知识真源
+- `IDENTITY.md` 是 CortexOS 当前称谓与身份的唯一真源
+- `~/Documents/memory/` 是用户长期资产与知识真源
+- `CortexOS/.memory/` 只保留 CortexOS 自己的运行态、私有策略、人格连续性
+- `AetherFleet/.memory/` 只保留编排、任务、桥接、状态数据
+
+默认写入规则：
+
+1. 用户知识、项目档案、复盘、分享文稿 -> `~/Documents/memory/`
+2. CortexOS 自己的日志、私有偏好、控制状态 -> `CortexOS/.memory/`
+3. 舰队挂牌、任务状态、调度数据 -> `AetherFleet/.memory/`
+
 ## 📂 目录导航（按需读取）
 
 | 路径 | 用途 | 何时读 |
