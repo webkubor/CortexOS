@@ -50,6 +50,7 @@
 通过 `cortexos` 命令行工具，任何 AI 都能访问大脑：
 ```bash
 cortexos brief          # 极简快照（~25行）
+cortexos init           # 冷启动当前工作区（设计中）
 cortexos router         # 完整路由
 cortexos status         # 状态概览
 cortexos rule <名>      # 加载具体规则
@@ -89,6 +90,12 @@ echo 'export PATH="$PATH:~/Documents/CortexOS/bin"' >> ~/.zshrc
 ```bash
 cortexos brief    # 25 行状态快照
 ```
+
+### 2.5 下一步：工作区冷启动
+
+如果你希望 AI 在进入任意仓库时自动知道“当前是什么项目、该读哪份项目档案、推荐什么规则”，建议采用新的 `cortexos init` 协议设计：
+
+- [CortexOS init 协议设计](./docs/guide/init-protocol.md)
 
 ### 3. HTTP API 模式（其他 AI 可调用）
 ```bash

@@ -2,18 +2,18 @@
 
 这份指南给第一次接触 CortexOS 的同学使用，目标是 10 分钟内完成三件事：
 
-1. 本地跑起来（大脑核心）。  
-2. 接进 AI 客户端（MCP）。  
-3. 学会扩展自己的外部大脑（知识、规则、秘钥）。  
+1. 本地跑起来（大脑核心）。
+2. 配好 cortexos CLI（任何 AI 都能调用）。
+3. 学会扩展自己的外部大脑（知识、规则、秘钥）。
 
-如果你要看“完整功能清单（全部命令 + 全部 MCP Tool）”，直接看：  
+如果你要看"完整功能清单"，直接看：
 👉 [CortexOS 功能总表](/guide/feature-matrix)
 
 ---
 
 ## 0. 你会得到什么
 
-- 一个可被 AI 调用的本地外部大脑（基于 FastMCP）。
+- 一个可被任何 AI 调用的本地外部大脑（CLI 命令 + HTTP API）。
 - 一套可沉淀的记忆系统（文档长期可追溯）。
 - 纯净的规则分发与知识检索机制。
 
@@ -53,37 +53,42 @@ uv sync
 
 ---
 
-## 3. 挂载到 AI 客户端 (MCP)
+## 3. 配置 cortexos CLI（让 AI 能调用大脑）
 
-### 3.1 CortexOS Brain MCP (核心大脑)
+### 3.1 添加 PATH
 
-以下是可直接复制的客户端配置示例。
-
-#### Gemini CLI (`~/.gemini/settings.json`)
-
-```json
-{
-  "mcpServers": {
-    "cortexos-brain": {
-      "command": "uv",
-      "args": ["run", "/你的/CortexOS/mcp_server/server.py"],
-      "trust": true
-    }
-  }
-}
+```bash
+echo 'export PATH="$PATH:$HOME/Documents/CortexOS/bin"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
-#### Claude Desktop (macOS)
+### 3.2 验证
 
-```json
-{
-  "mcpServers": {
-    "cortexos-brain": {
-      "command": "uv",
-      "args": ["run", "/你的/CortexOS/mcp_server/server.py"]
-    }
-  }
-}
+```bash
+cortexos brief
+```
+
+看到 ~25 行的大脑快照就成功了。
+
+### 3.3 每个 AI 怎么配
+
+其实不用配。每个 Agent 的配置文件已经写好了：
+
+- **Gemini** → `~/.gemini/GEMINI.md`（已经告诉它跑 `cortexos brief`）
+- **Claude** → `~/.claude/CLAUDE.md`（同上）
+- **Codex** → `~/.codex/AGENTS.md`（同上）
+- **Kimi** → 环境变量 `KIMI_AGENTS_MD`（同上）
+
+打开任意一个 AI，直接问它 `cortexos brief`，它就知道怎么做了。
+
+### 3.4 HTTP API（可选，给 Web 应用或不支持 shell 的 AI）
+
+```bash
+cortexos serve --port 3579
+# 然后任何能发 HTTP 请求的应用都可以调用
+# http://localhost:3579/api/brief
+# http://localhost:3579/api/status
+# http://localhost:3579/api/search?q=关键词
 ```
 
 ---
@@ -92,9 +97,16 @@ uv sync
 
 | 命令 | 什么时候用 |
 | :--- | :--- |
+| `cortexos brief` | 开工第一步，获取大脑状态 |
+| `cortexos init` | 工作区冷启动入口（设计中） |
+| `cortexos status` | 快速看系统状态 |
+| `cortexos search <关键词>` | 检索知识库 |
+| `cortexos logs 3` | 看最近3天日志 |
 | `pnpm run dev` | 本地启动文档/规则预览站 |
-| `pnpm run memory:query` | 在终端直接检索你的知识库 |
-| `pnpm run memory:index` | 知识库更新后刷新语义索引 |
+
+如果你希望 AI 自动识别当前工作区、命中项目索引并挂载项目文档，请继续看：
+
+👉 [CortexOS init 协议设计](/guide/init-protocol)
 
 ---
 
@@ -112,17 +124,16 @@ uv sync
 
 ### 6.1 扩展知识库
 
-1. 把 Markdown 放到 `memory/knowledge/...`。  
-2. 执行入库：`pnpm run memory:index`。  
-3. 验证检索：`pnpm run memory:query "你的问题"`。
+1. 把 Markdown 放到 `memory/knowledge/...`。
+2. 验证检索：`cortexos search "你的问题"`。
 
 ### 6.2 扩展规则库
 
 1. 在 `docs/rules/` 新建 `.md` 文档。
 2. 在 `docs/router.md` 登记新规则。
-3. 让 Agent 通过 `load_rule` 加载并执行。
+3. Agent 通过 `cortexos rule <名>` 按需加载。
 
 ### 6.3 扩展秘钥
 
 1. 在 `memory/secrets/` 新建文件。
-2. 使用 `read_secret` 或 `write_secret` 工具进行安全访问。
+2. 使用 `cortexos secrets` 查看凭证清单。

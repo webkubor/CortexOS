@@ -18,6 +18,8 @@ cortexos CLI — CortexOS 大脑命令行入口
 import argparse
 import json
 import os
+import sqlite3
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -30,6 +32,8 @@ RULES_DIR = DOCS / "rules"
 MEMORY_LOGS = BRAIN_ROOT / ".memory" / "logs"
 SECRETS_DIR = Path.home() / "Documents" / "memory" / "secrets"
 KNOWLEDGE_DIR = Path.home() / "Documents" / "memory" / "knowledge"
+MEMORY_PROJECT_DOCS = KNOWLEDGE_DIR / "refined" / "projects"
+KNOWLEDGE_DB = BRAIN_ROOT / ".memory" / "sqlite" / "knowledge.db"
 AGENTS_MD = BRAIN_ROOT / "AGENTS.md"
 
 # ─── 颜色 ───────────────────────────────────────────
@@ -46,6 +50,381 @@ def header(text):
 
 def dim(text):
     return f"{C.GRAY}{text}{C.RESET}"
+
+
+def normalize_path(path_like):
+    return str(Path(path_like).expanduser().resolve())
+
+
+def path_display(path_like):
+    try:
+        value = str(Path(path_like).expanduser().resolve())
+    except Exception:
+        value = str(path_like)
+    home = str(Path.home())
+    if value == home:
+        return "~"
+    if value.startswith(home + os.sep):
+        return "~/" + os.path.relpath(value, home)
+    return value
+
+
+def load_projects_registry():
+    if not KNOWLEDGE_DB.exists():
+        return []
+
+    try:
+        conn = sqlite3.connect(str(KNOWLEDGE_DB))
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            """
+            SELECT project_name, root_path, tech_stack, core_logic_map, entry_points, repo_role, memory_doc, updated_at
+            FROM project_maps
+            """
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return []
+
+    projects = []
+    for row in rows:
+        projects.append(
+            {
+                "id": row["project_name"],
+                "name": row["project_name"],
+                "root": row["root_path"],
+                "tech_stack": row["tech_stack"] or "",
+                "core_logic_map": row["core_logic_map"] or "",
+                "entry_points": row["entry_points"] or "",
+                "repo_role": row["repo_role"] or "",
+                "memory_doc": row["memory_doc"] or "",
+                "updated_at": row["updated_at"] or "",
+            }
+        )
+    return projects
+
+
+def upsert_project_map(repo_root, project_name, repo_role="", memory_doc=""):
+    if not KNOWLEDGE_DB.exists() or not repo_root or not project_name:
+        return {"status": "skipped", "message": "未写入项目索引"}
+
+    repo_root = normalize_path(repo_root)
+    project_name = str(project_name).strip()
+    repo_role = str(repo_role or "").strip()
+    memory_doc = normalize_path(memory_doc) if memory_doc else ""
+
+    try:
+        conn = sqlite3.connect(str(KNOWLEDGE_DB))
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        existing_by_root = cursor.execute(
+            """
+            SELECT id, project_name, root_path, tech_stack, core_logic_map, entry_points, repo_role, memory_doc
+            FROM project_maps
+            WHERE root_path = ?
+            LIMIT 1
+            """,
+            (repo_root,),
+        ).fetchone()
+
+        existing_by_name = cursor.execute(
+            """
+            SELECT id, project_name, root_path, tech_stack, core_logic_map, entry_points, repo_role, memory_doc
+            FROM project_maps
+            WHERE project_name = ?
+            LIMIT 1
+            """,
+            (project_name,),
+        ).fetchone()
+
+        if existing_by_root:
+            changed = (
+                existing_by_root["project_name"] != project_name
+                or existing_by_root["root_path"] != repo_root
+                or (existing_by_root["repo_role"] or "") != repo_role
+                or (existing_by_root["memory_doc"] or "") != memory_doc
+            )
+            cursor.execute(
+                """
+                UPDATE project_maps
+                SET project_name = ?, root_path = ?, repo_role = ?, memory_doc = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """,
+                (project_name, repo_root, repo_role, memory_doc, existing_by_root["id"]),
+            )
+            conn.commit()
+            conn.close()
+            return {
+                "status": "updated" if changed else "unchanged",
+                "message": "已按当前 Git 仓库同步项目索引",
+            }
+
+        if existing_by_name:
+            changed = (
+                existing_by_name["root_path"] != repo_root
+                or (existing_by_name["repo_role"] or "") != repo_role
+                or (existing_by_name["memory_doc"] or "") != memory_doc
+            )
+            cursor.execute(
+                """
+                UPDATE project_maps
+                SET root_path = ?, project_name = ?, repo_role = ?, memory_doc = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """,
+                (repo_root, project_name, repo_role, memory_doc, existing_by_name["id"]),
+            )
+            conn.commit()
+            conn.close()
+            return {
+                "status": "updated" if changed else "unchanged",
+                "message": "已按当前工作区纠正项目索引",
+            }
+
+        cursor.execute(
+            """
+            INSERT INTO project_maps (project_name, root_path, tech_stack, core_logic_map, entry_points, repo_role, memory_doc, updated_at)
+            VALUES (?, ?, '', '', '', ?, ?, CURRENT_TIMESTAMP)
+            """,
+            (project_name, repo_root, repo_role, memory_doc),
+        )
+        conn.commit()
+        conn.close()
+        return {"status": "created", "message": "已自动注册到项目索引"}
+    except Exception as exc:
+        return {"status": "error", "message": f"项目索引写入失败：{exc}"}
+
+
+def get_available_rule_names():
+    if not RULES_DIR.exists():
+        return set()
+    return {f.stem for f in RULES_DIR.rglob("*.md")}
+
+
+def find_git_root(workspace):
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(workspace), "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return normalize_path(result.stdout.strip())
+    except Exception:
+        return ""
+
+
+def detect_nested_git_roots(workspace, repo_root):
+    warnings = []
+    workspace = Path(workspace).resolve()
+    repo_root = Path(repo_root).resolve() if repo_root else None
+    current = workspace
+
+    while True:
+        git_marker = current / ".git"
+        if git_marker.exists() and repo_root and current != repo_root:
+            warnings.append(f"检测到嵌套 Git 仓库：{path_display(current)}")
+        if not repo_root or current == repo_root or current.parent == current:
+            break
+        current = current.parent
+
+    return warnings
+
+
+def match_project_from_registry(workspace, projects, repo_root=""):
+    workspace_norm = normalize_path(workspace)
+    repo_root_norm = normalize_path(repo_root) if repo_root else ""
+    matches = []
+
+    for item in projects:
+        root = item.get("root")
+        if not root:
+            continue
+        try:
+            root_norm = normalize_path(root)
+        except Exception:
+            continue
+
+        if not (workspace_norm == root_norm or workspace_norm.startswith(root_norm + os.sep)):
+            continue
+
+        # 如果当前在 Git 仓库中，优先只接受与仓库边界一致或更具体的项目根。
+        # 避免把 ~/ 这类过宽父级项目错误命中为当前项目。
+        if repo_root_norm:
+            if root_norm != repo_root_norm and not root_norm.startswith(repo_root_norm + os.sep):
+                if root_norm != workspace_norm:
+                    continue
+
+        matches.append((len(root_norm), item, root_norm))
+
+    if not matches:
+        return None, ""
+
+    matches.sort(key=lambda x: x[0], reverse=True)
+    _, item, matched_root = matches[0]
+    return item, matched_root
+
+
+def detect_repo_role(workspace, repo_root, project):
+    raw = " ".join(
+        str(x or "")
+        for x in [
+            workspace,
+            repo_root,
+            project.get("kind"),
+            project.get("type"),
+            project.get("id"),
+            project.get("name"),
+            project.get("tech_stack"),
+            project.get("entry_points"),
+        ]
+    ).lower()
+
+    if "frontend" in raw or "admin-web" in raw or "cashier" in raw or "web" in raw:
+        if repo_root and normalize_path(workspace) != normalize_path(repo_root):
+            return "frontend-app"
+        return "frontend-repo"
+    if "backend" in raw or "server" in raw or "api" in raw:
+        return "backend-service"
+    if "app" in raw or "expo" in raw or "react-native" in raw or "mobile" in raw:
+        return "frontend-app"
+    if repo_root:
+        return "repo"
+    return "workspace"
+
+
+def find_memory_doc(workspace, project):
+    if not MEMORY_PROJECT_DOCS.exists():
+        return ""
+
+    direct = project.get("memory_doc")
+    if direct and Path(direct).expanduser().exists():
+        return normalize_path(direct)
+
+    candidates = []
+    slug = str(project.get("id", "")).strip()
+    name = str(project.get("name", "")).strip()
+    workspace_name = Path(workspace).name
+    repo_like = Path(project.get("root") or workspace).name
+
+    for value in [slug, name, workspace_name, repo_like]:
+        if not value:
+            continue
+        safe = value.strip()
+        candidates.extend([
+            MEMORY_PROJECT_DOCS / f"{safe}.md",
+            MEMORY_PROJECT_DOCS / f"{safe.lower()}.md",
+            MEMORY_PROJECT_DOCS / f"{safe.replace(' ', '-').lower()}.md",
+            MEMORY_PROJECT_DOCS / f"{safe.replace(' ', '_').lower()}.md",
+        ])
+
+    seen = set()
+    for candidate in candidates:
+        key = str(candidate)
+        if key in seen:
+            continue
+        seen.add(key)
+        if candidate.exists():
+            return normalize_path(candidate)
+
+    return ""
+
+
+def recommend_rules(workspace, repo_role):
+    available = get_available_rule_names()
+    recommended = []
+
+    def add(name):
+        if name in available and name not in recommended:
+            recommended.append(name)
+
+    add("engineering_baseline")
+    add("agent_governance")
+    if normalize_path(workspace).startswith(normalize_path(BRAIN_ROOT)):
+        add("security_boundary")
+    if repo_role in {"frontend-app", "frontend-repo", "backend-service"}:
+        add("knowledge_ingestion_protocol")
+
+    return recommended
+
+
+def build_init_payload(workspace):
+    workspace_path = Path(workspace).expanduser().resolve()
+    workspace_norm = normalize_path(workspace_path)
+    repo_root = find_git_root(workspace_path)
+    repo_role_guess = detect_repo_role(workspace_norm, repo_root, {})
+    seed_project = {
+        "id": Path(repo_root).name if repo_root else Path(workspace_norm).name,
+        "name": Path(repo_root).name if repo_root else Path(workspace_norm).name,
+        "root": repo_root or workspace_norm,
+    }
+    memory_doc_guess = find_memory_doc(repo_root or workspace_norm, seed_project)
+    sync_result = {"status": "skipped", "message": "当前工作区不是 Git 仓库，未写入项目索引"}
+
+    if repo_root:
+        canonical_project_name = Path(repo_root).name
+        sync_result = upsert_project_map(repo_root, canonical_project_name, repo_role_guess, memory_doc_guess)
+
+    projects = load_projects_registry()
+    project, matched_root = match_project_from_registry(workspace_path, projects, repo_root)
+
+    warnings = []
+    if repo_root:
+        warnings.extend(detect_nested_git_roots(workspace_path, repo_root))
+    else:
+        warnings.append("当前目录不在 Git 仓库中")
+
+    if project:
+        project_id = project.get("id") or Path(matched_root or workspace_norm).name
+        project_name = project.get("name") or project_id
+        project_root = normalize_path(project.get("root") or matched_root or workspace_norm)
+        matched = True
+    else:
+        project_id = Path(workspace_norm).name
+        project_name = project_id
+        project_root = workspace_norm
+        matched = False
+        if repo_root:
+            warnings.append("已检测到 Git 仓库，但未能从项目索引中重新命中")
+        else:
+            warnings.append("当前工作区尚未注册到项目索引")
+
+    repo_role = project.get("repo_role") or detect_repo_role(workspace_norm, repo_root, project or {})
+    memory_doc = project.get("memory_doc") or find_memory_doc(project_root, {
+        "id": project_id,
+        "name": project_name,
+        "root": project_root,
+    })
+    if not memory_doc:
+        warnings.append("未找到对应的项目记忆文档")
+
+    rules = recommend_rules(workspace_norm, repo_role)
+
+    payload = {
+        "ok": True,
+        "cwd": workspace_norm,
+        "project": {
+            "id": project_id,
+            "name": project_name,
+            "root": project_root,
+            "repo_root": repo_root,
+            "repo_role": repo_role,
+            "memory_doc": memory_doc,
+            "matched": matched,
+        },
+        "rules": rules,
+        "warnings": warnings,
+        "索引同步": sync_result,
+        "next_actions": [
+            action
+            for action in [
+                "读取项目记忆文档" if memory_doc else "",
+                "加载推荐规则" if rules else "",
+            ]
+            if action
+        ],
+    }
+    return payload
 
 
 # ─── 核心命令 ───────────────────────────────────────
@@ -294,6 +673,46 @@ def cmd_search(args):
     return 0
 
 
+def cmd_init(args):
+    """工作区冷启动"""
+    target = args.path or os.getcwd()
+    payload = build_init_payload(target)
+
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return 0
+
+    project = payload["project"]
+    print(header("🧠 CortexOS Init"))
+    print()
+    print(f"项目 ID: {project['id']}")
+    print(f"项目名称: {project['name']}")
+    print(f"当前工作区: {path_display(payload['cwd'])}")
+    print(f"仓库根目录: {path_display(project['repo_root']) if project['repo_root'] else '-'}")
+    print(f"仓库角色: {project['repo_role']}")
+    print(f"已命中项目索引: {'是' if project['matched'] else '否'}")
+    print(f"项目记忆文档: {path_display(project['memory_doc']) if project['memory_doc'] else '-'}")
+    print(f"索引同步: {payload['索引同步']['message']}")
+    print()
+
+    print("推荐规则:")
+    if payload["rules"]:
+        for rule in payload["rules"]:
+            print(f"- {rule}")
+    else:
+        print("- 无")
+    print()
+
+    print("提示:")
+    if payload["warnings"]:
+        for warning in payload["warnings"]:
+            print(f"- {warning}")
+    else:
+        print("- 无")
+
+    return 0
+
+
 # ─── HTTP API 模式 ───────────────────────────────────
 
 def cmd_serve(args):
@@ -311,6 +730,7 @@ def cmd_serve(args):
             routes = {
                 "/health": lambda: {"status": "ok", "service": "cortexos-cli"},
                 "/api/brief": self._brief,
+                "/api/init": self._init,
                 "/api/router": self._router,
                 "/api/status": self._status,
                 "/api/rules": self._rules,
@@ -357,6 +777,9 @@ def cmd_serve(args):
             if not ROUTER.exists():
                 return {"error": "router.md not found"}
             return {"router": ROUTER.read_text(encoding="utf-8")}
+
+        def _init(self):
+            return build_init_payload(os.getcwd())
         
         def _status(self):
             return {
@@ -455,6 +878,7 @@ def cmd_serve(args):
     print("   端点:")
     print(f"   GET /health         健康检查")
     print(f"   GET /api/brief      极简快照")
+    print(f"   GET /api/init       工作区冷启动")
     print(f"   GET /api/router     完整路由")
     print(f"   GET /api/status     状态概览")
     print(f"   GET /api/rules      规则列表")
@@ -485,6 +909,9 @@ def main():
     sub = parser.add_subparsers(dest="command")
     
     sub.add_parser("brief", help="极简快照（<20行）")
+    p_init = sub.add_parser("init", help="冷启动当前工作区")
+    p_init.add_argument("path", nargs="?", help="目标工作区路径（默认当前目录）")
+    p_init.add_argument("--json", action="store_true", help="输出 JSON")
     sub.add_parser("router", help="完整路由协议")
     sub.add_parser("status", help="大脑状态概览")
     sub.add_parser("list-rules", help="列出所有规则")
@@ -515,6 +942,7 @@ def main():
     
     commands = {
         "brief": cmd_brief,
+        "init": cmd_init,
         "router": cmd_router,
         "status": cmd_status,
         "list-rules": cmd_list_rules,

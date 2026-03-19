@@ -5,6 +5,33 @@
 
 ---
 
+## [Unreleased] — 2026-03-19 「工作区感知冷启动 · 项目索引 SSOT 收口」
+
+### 🎯 变更背景 (Why)
+
+- **冷启动体验过于分散**：原有 `brief / router / search` 更像命令集合，不适合日常 Agent 冷启动。
+- **项目索引存在历史债务**：项目身份不应继续依赖松散的 JSON 旁路或手工注册流程。
+- **SSOT 原则收口**：项目索引需要回归结构化主源，避免重复数据源继续扩散。
+
+### 🚀 新增 (Added)
+
+- **`cortexos init` MVP**：新增工作区冷启动入口，支持当前目录或显式路径初始化。
+- **`cs` 短命令入口**：新增 `bin/cs`，作为 `cortexos` 的简短别名。
+- **初始化协议文档**：新增 `docs/guide/init-protocol.md`，明确 `init` 的工作区识别与项目同步模型。
+
+### 🔧 变更 (Changed)
+
+- **项目索引主源收口到 SQLite**：`cortexos init` 现在直接读取并同步 `.memory/sqlite/knowledge.db -> project_maps`。
+- **Git 仓库根成为唯一身份锚点**：初始化时以 `repo_root` 作为项目唯一识别依据，并自动 upsert 项目索引。
+- **自动纠偏项目元信息**：`init` 会按当前仓库状态同步 `project_name / repo_role / memory_doc / updated_at`。
+- **中文化初始化输出**：`init` 的文本提示与 JSON 可读字段改为中文语义，贴合日常使用。
+- **文档入口更新**：`README.md` 与 `docs/guide/index.md` 补充 `cortexos init` 入口说明。
+
+### 🗑️ 移除 (Removed)
+
+- **废弃两步式注册思路**：取消 `register` 作为冷启动主流程的设计方向。
+- **清理过渡残留**：删除实验性索引旁路与本次开发产生的临时缓存痕迹。
+
 ## [v6.0.0] — 2026-03-14 「The Great Deconstruction · 脑体物理解构」
 
 ### 🎯 变更背景 (Why)
