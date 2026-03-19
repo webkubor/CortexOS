@@ -239,7 +239,7 @@
 ### 🚀 新增 (Added)
 
 - **本地 RAG 检索**：ChromaDB（本地持久化）+ Ollama `nomic-embed-text`，支持 `query_brain.py "查询"` 语义检索大脑内容。
-- **硬核通知引擎**：双通道（Lark 推送 + macOS native），Agent 关键操作实时通知老爹。
+- **硬核通知引擎**：双通道（Lark 推送 + macOS native），Agent 关键操作实时通知用户。
 - `brain/secrets/lark.env` 统一管理飞书通讯配置。
 
 ### 🔧 变更 (Changed)
