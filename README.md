@@ -80,9 +80,9 @@ CortexOS/
 
 ### 1. 添加 PATH（首次使用）
 ```bash
-export PATH="$PATH:/Users/webkubor/Documents/CortexOS/bin"
+export PATH="$PATH:~/Documents/CortexOS/bin"
 # 写入 ~/.zshrc 永久生效
-echo 'export PATH="$PATH:/Users/webkubor/Documents/CortexOS/bin"' >> ~/.zshrc
+echo 'export PATH="$PATH:~/Documents/CortexOS/bin"' >> ~/.zshrc
 ```
 
 ### 2. 获取大脑快照
