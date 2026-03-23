@@ -19,29 +19,34 @@
 
 ---
 
-## MCP 配置位置
+## 大脑访问方式
 
-| Agent | MCP 配置文件 |
+所有 Agent 统一通过 `cortexos` CLI 访问大脑：
+
+| Agent | 启动指令 |
 | :--- | :--- |
-| 栖月 | OpenClaw 平台管理，无需手动配 |
-| Gemini CLI | `~/.gemini/settings.json` → `mcpServers` |
-| Codex | `~/.codex/config.toml` → `[mcp_servers]` |
-| Claude Code | `~/.claude/settings.json` → `mcpServers` |
+| 栖月 | `cortexos brief`（OpenClaw 内直接调用） |
+| Gemini CLI | `cortexos brief`（GEMINI.md 配置） |
+| Codex | `cortexos brief`（AGENTS.md 配置） |
+| Claude Code | `cortexos brief`（CLAUDE.md 配置） |
+
+> 其他 AI 工具也可通过 HTTP API 调用：`cortexos serve --port 3579`
 
 ---
 
 ## 详细档案
 
-- 🌸 [栖月档案](./qiyue/README.md) | [栖月 MCP](./qiyue/mcp.md) | [小龙虾手册](./qiyue/openclaw.md)
-- [Gemini 配置档案](./gemini/README.md) | [Gemini MCP 清单](./gemini/mcp.md)
-- [Codex 配置档案](./codex/README.md) | [Codex MCP 清单](./codex/mcp.md)
-- [Claude Code 配置档案](./claude/README.md) | [Claude MCP 清单](./claude/mcp.md)
+- 🌸 [栖月档案](./qiyue/README.md) | [小龙虾手册](./qiyue/openclaw.md)
+- [Gemini 配置档案](./gemini/README.md)
+- [Codex 配置档案](./codex/README.md)
+- [Claude Code 配置档案](./claude/README.md)
 - [OpenCode 配置档案](./opencode/README.md)
 
 ---
 
 ## 维护约定
 
-- 新增 Agent 时在 `docs/agents/<agent>/` 建目录并补 `README.md` 与 `mcp.md`
+- 新增 Agent 时在 `docs/agents/<agent>/` 建目录并补 `README.md`
+- 各 Agent 的启动配置文件（GEMINI.md / AGENTS.md / CLAUDE.md）统一指向 `cortexos brief`
 - 配置变更后必须同步更新本页"舰队能力速查"表
 - 指挥官变更时更新页面顶部的"当前指挥官"字段

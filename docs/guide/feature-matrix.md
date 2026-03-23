@@ -15,42 +15,68 @@
 | `pnpm run docs:build` | 构建 VitePress 静态站点 | 发布前构建检查 |
 | `pnpm run docs:preview` | 本地预览构建产物 | 验证构建后页面 |
 
-### 1.2 知识管理 (Memory & RAG)
+### 1.2 cortexos CLI 命令
 
 | 命令 | 用途 | 什么时候用 |
 | :--- | :--- | :--- |
-| `pnpm run memory:index` | 构建/刷新知识库语义索引 | 知识库大批量更新后 |
-| `pnpm run memory:query` | 在终端直接查询知识库 | 快速查找复盘/经验 |
-| `pnpm run mcp:reload` | 重新加载大脑 MCP 配置 | 调试 Server 代码后 |
+| `cortexos brief` | 极简快照（~25行） | **所有 Agent 冷启动** |
+| `cortexos router` | 完整路由协议 | 需要全貌时 |
+| `cortexos status` | 大脑状态概览 | 检查系统状态 |
+| `cortexos rule <名>` | 加载具体规则 | 需要特定规范约束时 |
+| `cortexos list-rules` | 列出所有可用规则 | 不确定规则名时 |
+| `cortexos logs <N>` | 最近 N 天日志 | 查看近期操作记录 |
+| `cortexos search <关键词>` | 知识库搜索 | 经验召回/复盘查询 |
+| `cortexos log <内容>` | 记录日志 | 完工留档 |
+| `cortexos secrets` | 列出凭证文件 | 检查秘钥是否已配置 |
+| `cortexos serve` | 启动 HTTP API（端口 3579） | 其他 AI / Web 应用调用 |
 
 ---
 
-## 2. MCP Tool 总表 (CortexOS Brain v3.0)
+## 2. cortexos CLI 全能接口 (v6.0.0)
 
-| Tool | 用途 | 典型触发 |
+> cortexos CLI 是 CortexOS 的唯一标准接口。不依赖 MCP 协议，任何能跑 shell 或发 HTTP 请求的 AI 工具都能调用。
+
+### 命令速查
+
+| 命令 | 用途 | 典型触发 |
 | :--- | :--- | :--- |
-| `get_context_brief` | 读取轻量状态快照（极低 Token） | **冷启动首选** |
-| `read_router` | 读取大脑最高协议 (router.md) | 需要完整上下文时 |
-| `search_knowledge` | 检索知识库文档（语义 + 全文） | 经验召回/复盘查询 |
-| `load_rule` | 懒加载单条规则 (docs/rules/) | 需要特定规范约束时 |
-| `list_rules` | 列出所有可用规则名称 | 不确定具体规则名时 |
-| **`log_task`** | **(Obsidian 协同)** 写入任务日志并生成双链 | 任务阶段性完工留档 |
-| `read_secret` | 读取外置秘钥文件 | 脚本/Agent 获取 Token |
-| `write_secret` | 安全写入/更新外置秘钥 | 保存 API Key 等敏感信息 |
-| `list_secrets` | 列出秘钥库文件清单 | 检查秘钥是否已配置 |
-| `send_lark_notification` | 发送飞书 Webhook 通知 | 关键状态外部通报 |
+| `cortexos brief` | 极简快照（~25行） | **冷启动首选** |
+| `cortexos router` | 完整路由协议 | 需要全貌时 |
+| `cortexos status` | 状态概览（版本/规则/日志/凭证数） | 检查系统状态 |
+| `cortexos rule <名>` | 加载具体规则（模糊匹配） | 需要特定规范约束时 |
+| `cortexos list-rules` | 列出所有可用规则 | 不确定规则名时 |
+| `cortexos logs <N>` | 最近 N 天日志 | 查看近期操作记录 |
+| `cortexos search <关键词>` | 知识库搜索（关键词匹配） | 经验召回/复盘查询 |
+| `cortexos log <内容>` | 记录日志 | 完工留档 |
+| `cortexos secrets` | 列出凭证文件清单 | 检查秘钥是否已配置 |
 
-## 核心协议工具 (v6.0.0)
+### HTTP API 模式
 
-CortexOS 提供一组高度抽象的 MCP 工具，用于在大脑层进行逻辑对齐与资产访问。
+启动后其他 AI 可通过 HTTP 调用：
 
-| 工具 | 分类 | 核心职能 |
+```bash
+cortexos serve --port 3579
+```
+
+| 端点 | 方法 | 用途 |
 | :--- | :--- | :--- |
-| `read_router` | 路由 | 获取最高协议与动态别名。 |
-| `load_rule` | 规则 | 按需加载特定工程规则。 |
-| `search_knowledge` | 记忆 | 语义检索用户长期知识。 |
-| `log_task` | 进化 | 记录执行轨迹与逻辑变更。 |
-| `log_relationship` | 情感 | 沉淀互动偏好与关系里程碑。 |
+| `/health` | GET | 健康检查 |
+| `/api/brief` | GET | 极简快照 |
+| `/api/router` | GET | 完整路由 |
+| `/api/status` | GET | 状态概览 |
+| `/api/rules` | GET | 规则列表 |
+| `/api/rule/<name>` | GET | 加载具体规则 |
+| `/api/search?q=<关键词>` | GET | 知识库搜索 |
+| `/api/logs` | GET | 最近日志 |
+| `/api/files` | GET | 已生成图片列表 |
+
+### 启动方式对比
+
+| 方式 | 命令 | 适用场景 |
+| :--- | :--- | :--- |
+| CLI | `cortexos brief` | 终端里的 AI（Gemini/Codex/Claude CLI） |
+| HTTP | `cortexos serve` | Web 应用、不支持 shell 的 AI |
+| 文件直读 | `cat ~/.claude/CLAUDE.md` | 首次冷启动引导 |
 
 ---
 
