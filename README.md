@@ -61,6 +61,33 @@ cortexos serve          # HTTP API 模式（端口3579）
 
 > 💡 **设计原则**：不依赖 MCP 协议。CLI 命令是通用接口，HTTP API 是补充，任何能跑 shell 或发 HTTP 请求的 AI 工具都能调用。
 
+### 2. Cloud Brain API（云端共享记忆入口）
+
+仓库内已经包含云端大脑接口服务，后续进入项目的 agent 不应忽略这层能力：
+
+- 本地代码路径：`services/brain-api/`
+- Cloud Run 服务名：`brain-api`
+- 当前服务地址：[https://brain-api-675793533606.asia-southeast2.run.app](https://brain-api-675793533606.asia-southeast2.run.app)
+
+当前最小接口：
+
+- `GET /health`
+- `POST /memories`
+- `GET /memories`
+- `POST /notifications`
+- `GET /notifications`
+- `POST /notifications/:id/triage`
+- `POST /tasks`
+- `GET /tasks`
+
+这层的定位是：让**杭州本地节点**与**雅加达远端节点**共享同一份云端大脑主库，而不是替代本地 CortexOS 本体。
+
+当前数据流已经收口为：
+
+- `notifications`：远端汇报先进入 inbox
+- `memories`：只沉淀重点知识
+- `tasks`：需要后续动作的事项
+
 ## 📂 目录结构 (Directory Structure)
 
 ```text
@@ -72,6 +99,7 @@ CortexOS/
 ├── .memory/                 # 【记忆层】助手私有运行态数据
 │   ├── identity/            # 用户习惯与设备画像 (Local-only)
 │   └── logs/                # 进化记忆轨迹
+├── services/brain-api       # 【云端扩展】Cloud Run 共享记忆服务
 ├── bin/cortexos             # 【接口层】CLI 工具入口（任何 AI 可调用）
 ├── scripts/                 # 【动力层】维护、检索与通知脚本
 └── package.json             # 【基石】项目配置
@@ -116,6 +144,8 @@ cortexos serve --port 3579
 ---
 
 ## ⚡️ 技术栈与架构 (Technical Stack & Architecture)
+
+- **总架构图**：[`docs/ops/architecture.md`](./docs/ops/architecture.md)（只描述 CortexOS 这个 Brain Agent 本体，不混入 AI Team / AetherFleet）
 
 CortexOS 的设计哲学是"纯本地、高自主、可进化"。整个系统被清晰地划分为三层，每一层都采用最适合其职责的工具链。
 

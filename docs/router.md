@@ -25,6 +25,8 @@ description: CortexOS 大脑路由（精简版）
 - 舰队状态: AetherFleet/.memory/cache/
 - 个人记忆: ~/Documents/memory/
 - 助手日志: ~/clawd/memory/
+- Cloud Brain 代码: services/brain-api/
+- Cloud Brain URL: https://brain-api-675793533606.asia-southeast2.run.app
 ```
 
 ## 🧭 身份与记忆边界（必守）
@@ -50,6 +52,7 @@ description: CortexOS 大脑路由（精简版）
 | `.memory/persona/` | 用户偏好、助手人格 | 首次使用或忘了偏好时 |
 | `.memory/logs/` | 过往执行记录 | 查历史问题 |
 | `AetherFleet/` | AI 航队调度 | 有 AetherFleet 任务时 |
+| `services/brain-api/` | 云端共享记忆服务 | 需要跨设备/跨地区共享记忆时 |
 
 ## 🏷️ 别名速查
 
@@ -64,6 +67,7 @@ description: CortexOS 大脑路由（精简版）
 - MCP Server: `mcp_server/server.py`（14 个工具）
 - 舰队引擎: `AetherFleet`
 - AI 舰队: Gemini / Codex / Claude / Kimi
+- Cloud Brain API: `services/brain-api/` -> Cloud Run (`/health`, `/memories`, `/notifications`, `/tasks`)
 
 ## 🚫 红线
 
