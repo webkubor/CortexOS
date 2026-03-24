@@ -54,6 +54,7 @@ function shouldPrintLarkSkip(reason) {
 }
 
 const AUTO_MAINTENANCE_TASKS = [
+  { key: 'brain-inbox', cmd: 'node scripts/maintenance/brain-inbox.mjs' },
   { key: 'fleet-cleanup', cmd: 'node scripts/actions/fleet-cleanup.mjs' },
   { key: 'tasks-reconcile', cmd: 'node scripts/maintenance/reconcile-ai-team-tasks.mjs' },
   { key: 'fleet-sync', cmd: 'node scripts/actions/sync-fleet-dashboard.mjs' },

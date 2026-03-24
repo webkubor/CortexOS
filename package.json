@@ -13,6 +13,7 @@
     "brain-api:dev": "pnpm --dir services/brain-api dev",
     "brain-api:start": "pnpm --dir services/brain-api start",
     "brain-api:deploy": "node scripts/actions/deploy-brain-api.mjs",
+    "brain:inbox:check": "node scripts/maintenance/brain-inbox.mjs",
 
     "mcp:reload": "node scripts/actions/reload-brain-mcp.mjs",
     "memory:index": "python3 scripts/ingest/build_memory_index.py",

@@ -1,9 +1,11 @@
 import Fastify from 'fastify'
+import cors from '@fastify/cors'
 import {
   applyNotificationTriage,
   createMemory,
   createNotification,
   createTask,
+  getNotificationById,
   listMemories,
   listNotifications,
   listTasks
@@ -12,6 +14,11 @@ import { suggestTriageAction } from './triage.js'
 
 const app = Fastify({
   logger: true
+})
+
+await app.register(cors, {
+  origin: true,
+  methods: ['GET', 'POST', 'OPTIONS']
 })
 
 function isHealthRoute (request) {
@@ -116,7 +123,10 @@ app.get('/notifications', async (request) => {
 })
 
 app.post('/notifications/:id/triage', async (request, reply) => {
-  const notification = request.body?.notification || {}
+  const storedNotification = await getNotificationById(request.params.id)
+  if (!storedNotification) return replyBadRequest(reply, { error: 'notification not found' })
+
+  const notification = request.body?.notification || storedNotification
   const suggestion = suggestTriageAction({
     ...notification,
     title: request.body?.title || notification.title,

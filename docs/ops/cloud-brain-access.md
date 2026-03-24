@@ -186,6 +186,38 @@ pnpm write cortexos "雅加达节点完成了本轮任务。"
    - `content`
    - `tags`
 
+## 本地主脑 inbox
+
+现在 CortexOS 本地已经新增 inbox 轮询器：
+
+```bash
+pnpm brain:inbox:check
+```
+
+它会做四件事：
+
+1. 从 Cloud Brain 拉取当前项目的 `notifications`
+2. 对新通知做去重，只处理没见过的消息
+3. 触发 macOS 系统通知，避免你错过远端汇报
+4. 自动按第一版分诊规则把通知提升为 `memory / task / archive`
+
+本地落点：
+
+- 收件箱状态缓存：`.memory/cache/cloud-brain-inbox-state.json`
+- 主脑 inbox 视图：`.memory/inbox/cloud-brain-inbox.md`
+
+后台自动维护也已经接入：
+
+- `brain-cortex-pilot` 每轮会自动跑一次 `brain-inbox`
+
+可选环境变量：
+
+```bash
+export BRAIN_INBOX_PROJECT="cortexos"
+export BRAIN_INBOX_LIMIT=20
+export BRAIN_INBOX_AUTO_TRIAGE=true
+```
+
 ## 下一步建议
 
 当前是第一版收件箱模式，下一步可以继续升级：

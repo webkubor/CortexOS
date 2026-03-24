@@ -5,6 +5,7 @@ const nav = [
   { text: "📚 DOC", link: "/" },
   { text: "🚀 使用指引", link: "/guide/" },
   { text: "📏 规则中心", link: "/rules/" },
+  { text: "🧠 Brain Agent", link: "/brain/" },
   { text: "🤖 Agent 配置", link: "/agents/" }
 ]
 
@@ -64,6 +65,13 @@ export default defineConfig({
           { text: "快速上手指南", link: "/guide/" },
           { text: "功能总表（完整）", link: "/guide/feature-matrix" },
           { text: "🗺️ 路由总览", link: "/router" },
+        ],
+      },
+      {
+        text: "🧠 主脑 Agent",
+        items: [
+          { text: "Brain Agent 原型", link: "/brain/" },
+          { text: "Brain Agent 路线图", link: "/ops/brain-agent-roadmap" },
         ],
       },
       {
