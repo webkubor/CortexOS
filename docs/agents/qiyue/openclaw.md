@@ -143,6 +143,5 @@ rg -n "gateway|model|fallback|channels" ~/.openclaw/openclaw.json
 ## 8. 相关入口
 
 - [栖月档案](./README.md)
-- [栖月 MCP 接入说明](./mcp.md)
 - [大脑总路由](../../router.md)
 - [Agent 配置总览](../index.md)

@@ -5,13 +5,12 @@ description: CortexOS 作为单个外部大脑 Agent 的技术架构图，覆盖
 
 > 这份文档只描述 **CortexOS 自己**。
 >
-> 它不是 AI Team，不是 AetherFleet，也不是任务看板。
+> 它不是 AI Team，不是任务看板，也不是任何外部调度器。
 > 你可以把它理解成：**一个有记忆、有规则、有接口的 Brain Agent**。
 
 ## 1. CortexOS 的正确定位
 
 - `CortexOS` 是一个 **Brain Agent**
-- `AI Team / AetherFleet` 是 **外部协作系统**
 - `~/Documents/memory/` 是 **用户长期知识真源**
 - `Cloud Run + Firestore` 是 **云端共享大脑扩展**
 
@@ -21,7 +20,6 @@ description: CortexOS 作为单个外部大脑 Agent 的技术架构图，覆盖
 flowchart LR
   user["用户长期知识真源\n~/Documents/memory"] --> brain["CortexOS\nBrain Agent"]
   brain --> clients["Gemini / Codex / Claude / 其他客户端"]
-  fleet["AI Team / AetherFleet\n外部执行与调度系统"] --> brain
   brain --> cloud["Cloud Brain\nCloud Run + Firestore"]
 ```
 
@@ -80,15 +78,13 @@ flowchart LR
 
 ## 4. 数据边界图
 
-这是 CortexOS 最重要的边界，不然会把“用户知识”“大脑私有记忆”“外部调度状态”混在一起。
+这是 CortexOS 最重要的边界，不然会把“用户知识”“大脑私有记忆”“云端共享状态”混在一起。
 
 ```mermaid
 flowchart TD
   user["~/Documents/memory/\n用户知识真源"] -->|项目档案 / 复盘 / 长期知识| mcp["Brain MCP / CLI"]
   cortex["CortexOS/.memory/\n大脑私有运行记忆"] -->|日志 / 偏好 / 运行状态| mcp
   chroma["chroma_db/\n语义索引"] --> mcp
-
-  fleet["AI Team / AetherFleet 状态"] -. 外部输入 .-> mcp
   mcp -. 不直接充当用户资产库 .-> cortex
   mcp -. 不拥有用户本人知识产权 .-> user
 ```
@@ -97,8 +93,8 @@ flowchart TD
 
 1. `~/Documents/memory/` 是用户知识真源
 2. `CortexOS/.memory/` 是 CortexOS 自己的私有运行态
-3. `AI Team / AetherFleet` 数据不是 CortexOS 本体的一部分
-4. 调度状态如果要接入，只能作为 CortexOS 的**外部输入源**
+3. `Cloud Brain` 是 CortexOS 的云端共享延展，不是另一套脑
+4. 外部执行系统如果存在，也只能作为 CortexOS 的**外部输入源**
 
 ## 5. CortexOS 对外提供什么
 
@@ -121,25 +117,22 @@ flowchart LR
 | CLI | `bin/cortexos` | 面向 shell / 脚本 / 任何能跑命令的客户端 |
 | HTTP（本地） | `cortexos serve` | 面向不方便直接跑 CLI 的调用方 |
 
-## 6. 外部系统在什么位置
+## 6. 外部客户端在什么位置
 
-这一块是为了防止再把 AI Team 画进大脑内部。
+这一块是为了防止把任意客户端误画进 CortexOS 本体。
 
 ```mermaid
 flowchart LR
-  brain["CortexOS\nBrain Agent"] --> fleet["AetherFleet / AI Team"]
-  brain --> openclaw["OpenClaw / Claude"]
+  brain["CortexOS\nBrain Agent"] --> openclaw["OpenClaw / Claude"]
   brain --> gemini["Gemini CLI"]
   brain --> codex["Codex"]
-
-  fleet -. 读取规则 / 写入摘要 / 请求状态 .-> brain
 ```
 
 解释：
 
-- `AI Team / AetherFleet` 是 CortexOS 的**消费者**
+- 各种客户端都是 CortexOS 的**消费者**
 - 它们可以读 CortexOS，也可以把摘要/事件回写给 CortexOS
-- 但它们不是 CortexOS 的组成部分
+- 但它们都不是 CortexOS 的组成部分
 
 ## 7. 云端大脑扩展
 
@@ -217,6 +210,30 @@ flowchart LR
 | 云端大脑接口 | `services/brain-api/` | Cloud Run 服务骨架 |
 
 ## 9. 读这张图时要记住的判断规则
+
+1. `CortexOS` 是单体主脑 Agent，不是 AI Team
+2. `Cloud Brain` 是 CortexOS 的云端延展，不是另一套脑
+3. `~/Documents/memory/` 永远是用户长期知识真源
+4. 聊天、收件箱、任务、记忆以后都应围绕主脑前台统一组织
+
+## 10. 下一步演进方向
+
+在当前架构基础上，`CortexOS` 最自然的下一步不是继续堆脚本，而是长出一个真正可交互的 Brain Agent 前台。
+
+建议路线：
+
+```mermaid
+flowchart LR
+  chat["聊天前台"] --> runtime["Agent Runtime"]
+  inbox["收件箱"] --> runtime
+  runtime --> memories["记忆沉淀"]
+  runtime --> tasks["任务生成"]
+  runtime --> tools["工具调用"]
+```
+
+更完整的分阶段计划见：
+
+- [brain-agent-roadmap](./brain-agent-roadmap)
 
 ### 某个东西是不是 CortexOS 本体的一部分？
 

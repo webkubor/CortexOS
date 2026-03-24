@@ -17,12 +17,11 @@
 
 > **【CortexOS · Codex 02】**
 >
-> CortexOS 是一套本地第一 (Local-first) 的多 Agent 协作架构。它将规则、意志、项目轨迹与跨会话记忆，持久化在你的本地磁盘之上。
+> CortexOS 是一套本地优先 (Local-first) 的个人外部大脑架构。它把规则、意志、项目轨迹与跨会话记忆，稳定落到你的本地磁盘与云端共享层上。
 
-## 🪐 宇宙图谱 (Project Map)
+## 🪐 关联项目 (Related Projects)
 
-- [CortexOS](https://github.com/webkubor/CortexOS): 本地优先的 AI 记忆系统与多 Agent 协作中枢。
-- [AetherFleet](https://github.com/webkubor/AetherFleet): 实时、可视化、沉浸式的 AI Team 协作引擎。
+- [CortexOS](https://github.com/webkubor/CortexOS): 本地优先的个人外部大脑与云端共享记忆入口。
 - [Prompt Lab](https://github.com/webkubor/prompt-lab): AI 影像工作流指南与创意参考库。
 - [nanobanana-plus](https://github.com/webkubor/nanobanana-plus): 强化型 Gemini 绘图扩展，支持逐调用模型切换。
 
@@ -145,7 +144,7 @@ cortexos serve --port 3579
 
 ## ⚡️ 技术栈与架构 (Technical Stack & Architecture)
 
-- **总架构图**：[`docs/ops/architecture.md`](./docs/ops/architecture.md)（只描述 CortexOS 这个 Brain Agent 本体，不混入 AI Team / AetherFleet）
+- **总架构图**：[`docs/ops/architecture.md`](./docs/ops/architecture.md)（只描述 CortexOS 这个 Brain Agent 本体）
 
 CortexOS 的设计哲学是"纯本地、高自主、可进化"。整个系统被清晰地划分为三层，每一层都采用最适合其职责的工具链。
 

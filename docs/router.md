@@ -16,13 +16,12 @@ description: CortexOS 大脑路由（精简版）
 - 沸腾之雪 AI 武侠微电影（正片 1-9 集完结）
 - 小红书运营：司南烛(主号 654 粉) + 小烛(新号)
 - nanobanana-plus v1.5.0 已发布（HTTP API 模式）
-- AetherFleet 舰队调度系统
+- Cloud Brain 收件箱与分诊链路
 - 氛围壁纸工坊 https://wallpaper.webkubor.online/
 
 关键资源:
 - 私钥/凭证: ~/Documents/memory/secrets/ (chmod 600)
 - 项目路径: ~/Documents/CortexOS/
-- 舰队状态: AetherFleet/.memory/cache/
 - 个人记忆: ~/Documents/memory/
 - 助手日志: ~/clawd/memory/
 - Cloud Brain 代码: services/brain-api/
@@ -35,13 +34,12 @@ description: CortexOS 大脑路由（精简版）
 - `IDENTITY.md` 是 CortexOS 当前称谓与身份的唯一真源
 - `~/Documents/memory/` 是用户长期资产与知识真源
 - `CortexOS/.memory/` 只保留 CortexOS 自己的运行态、私有策略、人格连续性
-- `AetherFleet/.memory/` 只保留编排、任务、桥接、状态数据
 
 默认写入规则：
 
 1. 用户知识、项目档案、复盘、分享文稿 -> `~/Documents/memory/`
 2. CortexOS 自己的日志、私有偏好、控制状态 -> `CortexOS/.memory/`
-3. 舰队挂牌、任务状态、调度数据 -> `AetherFleet/.memory/`
+3. 云端共享通知、任务、记忆 -> `services/brain-api/` 对应的 Cloud Brain 主库
 
 ## 📂 目录导航（按需读取）
 
@@ -51,7 +49,6 @@ description: CortexOS 大脑路由（精简版）
 | `docs/sops/` | 具体操作步骤 | 发推/发小红书/发布前 |
 | `.memory/persona/` | 用户偏好、助手人格 | 首次使用或忘了偏好时 |
 | `.memory/logs/` | 过往执行记录 | 查历史问题 |
-| `AetherFleet/` | AI 航队调度 | 有 AetherFleet 任务时 |
 | `services/brain-api/` | 云端共享记忆服务 | 需要跨设备/跨地区共享记忆时 |
 
 ## 🏷️ 别名速查
@@ -65,12 +62,10 @@ description: CortexOS 大脑路由（精简版）
 ## 🔧 核心工具
 
 - MCP Server: `mcp_server/server.py`（14 个工具）
-- 舰队引擎: `AetherFleet`
-- AI 舰队: Gemini / Codex / Claude / Kimi
+- 本地客户端: Gemini / Codex / Claude / 其他 Agent
 - Cloud Brain API: `services/brain-api/` -> Cloud Run (`/health`, `/memories`, `/notifications`, `/tasks`)
 
 ## 🚫 红线
 
-- 不直接操作舰队调度（交给 AetherFleet）
 - 不把敏感信息写回公开配置
 - 不一次读完所有规则（按需加载）
