@@ -15,6 +15,7 @@
     "brain-api:deploy": "node scripts/actions/deploy-brain-api.mjs",
     "brain:inbox:check": "node scripts/maintenance/brain-inbox.mjs",
     "brain:status": "node scripts/actions/brain-status.mjs",
+    "brain:watch": "node scripts/actions/brain-status.mjs --watch",
 
     "mcp:reload": "node scripts/actions/reload-brain-mcp.mjs",
     "memory:index": "python3 scripts/ingest/build_memory_index.py",

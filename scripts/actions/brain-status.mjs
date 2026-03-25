@@ -12,6 +12,7 @@ const memoryRoot = path.join(projectRoot, '.memory')
 const inboxStatePath = path.join(memoryRoot, 'cache/cloud-brain-inbox-state.json')
 const inboxFilePath = path.join(memoryRoot, 'inbox/cloud-brain-inbox.md')
 const brainApiUrl = process.env.BRAIN_API_URL || 'https://brain-api-675793533606.asia-southeast2.run.app'
+const isWatchMode = process.argv.includes('--watch')
 const color = {
   reset: '\x1b[0m',
   dim: '\x1b[2m',
@@ -110,6 +111,11 @@ function renderCount(label, value, { warn = false } = {}) {
 }
 
 async function main() {
+  const snapshot = await buildSnapshot()
+  process.stdout.write(snapshot.output)
+}
+
+async function buildSnapshot() {
   const inboxState = loadInboxState()
   const pm2Process = loadPm2Process()
 
@@ -195,10 +201,39 @@ async function main() {
     })
   }
 
-  console.log(lines.filter(Boolean).join('\n'))
+  const output = `${lines.filter(Boolean).join('\n')}\n`
+  const comparable = JSON.stringify({
+    cloudError,
+    healthVersion: health?.version || '',
+    pilotStatus,
+    pilotRestarts,
+    inboxLastCheckedAt: inboxState.lastCheckedAt,
+    notifications: notifications.map(item => [item.id, item.status, item.read, item.updatedAt, item.actedAt]),
+    tasks: tasks.map(item => [item.id || item.taskId, item.status, item.updatedAt]),
+    seenCount
+  })
+
+  return { output, comparable }
 }
 
-main().catch((error) => {
+async function watchLoop() {
+  let lastComparable = ''
+
+  while (true) {
+    const snapshot = await buildSnapshot()
+    if (snapshot.comparable !== lastComparable) {
+      process.stdout.write('\x1Bc')
+      process.stdout.write(snapshot.output)
+      process.stdout.write(`\n${color.dim}监控中：仅在状态变化时刷新，Ctrl+C 退出。${color.reset}\n`)
+      lastComparable = snapshot.comparable
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000))
+  }
+}
+
+const entry = isWatchMode ? watchLoop : main
+
+entry().catch((error) => {
   console.error(`brain:status 失败：${error.message}`)
   process.exit(1)
 })
