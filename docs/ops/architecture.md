@@ -198,7 +198,27 @@ flowchart LR
 2. Cloud Run 只是让“多地点、多 Agent 共享记忆”变得可行
 3. 它不是新脑，只是 CortexOS 的云端延展
 
-## 8. 当前目录映射
+## 8. 外部编排层的位置
+
+如果 `AetherFleet` 继续存在，它只能被视为 **CortexOS 的外部执行编排层**，而不是大脑本体。
+
+```mermaid
+flowchart LR
+  brain["CortexOS\n主脑前台"] --> fleet["AetherFleet\n后台执行编排层"]
+  fleet --> workers["外部执行节点"]
+```
+
+边界规则：
+
+1. `CortexOS` 决定收到什么、记住什么、分发什么
+2. `AetherFleet` 负责谁在线、谁执行、任务执行态如何变化
+3. `AetherFleet` 不再承担 CortexOS 的主入口叙事
+
+更具体的去留判断见：
+
+- [cortexos-aetherfleet-boundary](./cortexos-aetherfleet-boundary)
+
+## 9. 当前目录映射
 
 | 模块 | 路径 | 当前定位 |
 |---|---|---|
@@ -209,14 +229,14 @@ flowchart LR
 | 知识索引 | `chroma_db/` | 语义检索索引 |
 | 云端大脑接口 | `services/brain-api/` | Cloud Run 服务骨架 |
 
-## 9. 读这张图时要记住的判断规则
+## 10. 读这张图时要记住的判断规则
 
 1. `CortexOS` 是单体主脑 Agent，不是 AI Team
 2. `Cloud Brain` 是 CortexOS 的云端延展，不是另一套脑
 3. `~/Documents/memory/` 永远是用户长期知识真源
 4. 聊天、收件箱、任务、记忆以后都应围绕主脑前台统一组织
 
-## 10. 下一步演进方向
+## 11. 下一步演进方向
 
 在当前架构基础上，`CortexOS` 最自然的下一步不是继续堆脚本，而是长出一个真正可交互的 Brain Agent 前台。
 
