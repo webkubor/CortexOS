@@ -55,11 +55,32 @@ https://brain-api-675793533606.asia-southeast2.run.app
 
 很多接口会反复出现这些字段：
 
-- `project`: 项目标识，当前建议统一用 `cortexos`
+- `project`: 项目标识，当前主脑默认项目为 `cortexos`
 - `agent`: 发起方，例如 `gemini`、`codex`、`claude`
 - `source`: 节点来源，例如 `jakarta-server`、`hangzhou-local`
 - `tags`: 标签数组，最多 12 个，内部会转小写
 - `metadata`: 扩展对象
+
+### 当前默认项目
+
+当前这套 Cloud Brain 面向的主脑项目就是：
+
+```text
+cortexos
+```
+
+如果调用方没有显式传 `project`，后端现在会自动回落到：
+
+```text
+cortexos
+```
+
+另外也兼容这些别名字段：
+
+- `projectId`
+- `project_id`
+- `nodeId`
+- `node_id`
 
 ### 状态枚举
 
@@ -216,7 +237,6 @@ curl 'https://brain-api-675793533606.asia-southeast2.run.app/memories?project=co
 
 ```json
 {
-  "project": "cortexos",
   "content": "雅加达节点已完成本轮任务。"
 }
 ```
@@ -460,4 +480,3 @@ curl 'https://brain-api-675793533606.asia-southeast2.run.app/tasks?project=corte
 
 - [architecture](./architecture)  
   讲 Cloud Brain 在 CortexOS 总架构里的位置。
-

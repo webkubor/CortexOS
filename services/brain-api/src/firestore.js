@@ -1,6 +1,7 @@
 import { Firestore, Timestamp } from '@google-cloud/firestore'
 
 const firestore = new Firestore()
+const DEFAULT_PROJECT = normalizeText(process.env.BRAIN_DEFAULT_PROJECT, 'cortexos')
 
 const memoriesCollection = firestore.collection('brain_memories')
 const notificationsCollection = firestore.collection('brain_notifications')
@@ -22,6 +23,18 @@ function normalizeTags (tags) {
 
 function normalizeMetadata (metadata) {
   return metadata && typeof metadata === 'object' ? metadata : {}
+}
+
+function normalizeProjectPayload (payload = {}) {
+  return normalizeText(payload.project || payload.projectId || payload.project_id, DEFAULT_PROJECT)
+}
+
+function normalizeAgentPayload (payload = {}) {
+  return normalizeText(payload.agent || payload.agentId || payload.agent_id, 'unknown')
+}
+
+function normalizeSourcePayload (payload = {}) {
+  return normalizeText(payload.source || payload.sourceId || payload.source_id || payload.nodeId || payload.node_id, 'unknown')
 }
 
 function normalizePriority (value, fallback = 'medium') {
@@ -131,10 +144,9 @@ export function serializeTask (snapshot) {
 }
 
 export function validateMemoryPayload (payload = {}) {
-  const project = normalizeText(payload.project)
+  const project = normalizeProjectPayload(payload)
   const content = normalizeText(payload.content)
 
-  if (!project) return { ok: false, error: 'project is required' }
   if (!content) return { ok: false, error: 'content is required' }
 
   return {
@@ -142,8 +154,8 @@ export function validateMemoryPayload (payload = {}) {
     value: {
       project,
       content,
-      agent: normalizeText(payload.agent, 'unknown'),
-      source: normalizeText(payload.source, 'unknown'),
+      agent: normalizeAgentPayload(payload),
+      source: normalizeSourcePayload(payload),
       kind: normalizeText(payload.kind, 'note'),
       summary: normalizeText(payload.summary),
       tags: normalizeTags(payload.tags),
@@ -154,10 +166,9 @@ export function validateMemoryPayload (payload = {}) {
 }
 
 export function validateNotificationPayload (payload = {}) {
-  const project = normalizeText(payload.project)
+  const project = normalizeProjectPayload(payload)
   const content = normalizeText(payload.content)
 
-  if (!project) return { ok: false, error: 'project is required' }
   if (!content) return { ok: false, error: 'content is required' }
 
   const now = Timestamp.now()
@@ -168,8 +179,8 @@ export function validateNotificationPayload (payload = {}) {
       project,
       title: normalizeText(payload.title, content.slice(0, 80)),
       content,
-      agent: normalizeText(payload.agent, 'unknown'),
-      source: normalizeText(payload.source, 'unknown'),
+      agent: normalizeAgentPayload(payload),
+      source: normalizeSourcePayload(payload),
       type: normalizeNotificationType(payload.type),
       priority: normalizePriority(payload.priority),
       status: normalizeNotificationStatus(payload.status),
@@ -186,10 +197,9 @@ export function validateNotificationPayload (payload = {}) {
 }
 
 export function validateTaskPayload (payload = {}) {
-  const project = normalizeText(payload.project)
+  const project = normalizeProjectPayload(payload)
   const title = normalizeText(payload.title)
 
-  if (!project) return { ok: false, error: 'project is required' }
   if (!title) return { ok: false, error: 'title is required' }
 
   const now = Timestamp.now()
@@ -200,9 +210,9 @@ export function validateTaskPayload (payload = {}) {
       project,
       title,
       content: normalizeText(payload.content),
-      source: normalizeText(payload.source, 'unknown'),
-      ownerAgent: normalizeText(payload.ownerAgent || payload.agent, 'unknown'),
-      ownerSource: normalizeText(payload.ownerSource || payload.source, 'unknown'),
+      source: normalizeSourcePayload(payload),
+      ownerAgent: normalizeText(payload.ownerAgent || payload.agent || payload.agentId || payload.agent_id, 'unknown'),
+      ownerSource: normalizeText(payload.ownerSource || payload.source || payload.sourceId || payload.source_id || payload.nodeId || payload.node_id, 'unknown'),
       priority: normalizePriority(payload.priority),
       status: normalizeTaskStatus(payload.status),
       tags: normalizeTags(payload.tags),
