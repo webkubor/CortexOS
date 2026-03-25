@@ -35,7 +35,6 @@ const UV_PATH = (() => {
 })();
 const ROUTER_PATH = path.join(PROJECT_ROOT, 'docs/router.md');
 const HISTORY_PATH = path.join(PROJECT_ROOT, 'docs/BRAIN_HISTORY.md');
-const TEAM_STATUS_JSON_PATH = path.join(ASSISTANT_MEMORY_HOME, 'cache/ai_team_status.local.json');
 
 function shouldPrintLarkSkip(reason) {
   if (reason !== 'missing_lark_env') return true;
@@ -55,9 +54,6 @@ function shouldPrintLarkSkip(reason) {
 
 const AUTO_MAINTENANCE_TASKS = [
   { key: 'brain-inbox', cmd: 'node scripts/maintenance/brain-inbox.mjs' },
-  { key: 'fleet-cleanup', cmd: 'node scripts/actions/fleet-cleanup.mjs' },
-  { key: 'tasks-reconcile', cmd: 'node scripts/maintenance/reconcile-ai-team-tasks.mjs' },
-  { key: 'fleet-sync', cmd: 'node scripts/actions/sync-fleet-dashboard.mjs' },
   { key: 'mcp-guard', cmd: 'node scripts/maintenance/mcp-guard.mjs' },
   { key: 'memory-index', cmd: 'python3 scripts/ingest/build_memory_index.py' },
   { key: 'error-retro', cmd: 'node scripts/maintenance/error-retro.mjs' },
@@ -155,90 +151,6 @@ function buildTotalStat(files, statMap) {
   return `${files.length} 个文件变动 | ${total.added} 新增, ${total.deleted} 删除`;
 }
 
-function statusToProgress(status) {
-  const text = String(status || '');
-  if (text.includes('等待分配')) return 5;
-  if (text.includes('执行中')) return 55;
-  if (text.includes('队长锁')) return 60;
-  if (text.includes('已离线')) return 100;
-  return 20;
-}
-
-function normalizeTeamSnapshot(raw) {
-  if (!raw || !Array.isArray(raw.members)) return null;
-  const members = raw.members.map(item => {
-    const memberName = item.member || item.node || 'Unknown';
-    const progress = Number.isFinite(Number(item.progress))
-      ? Number(item.progress)
-      : statusToProgress(item.status);
-    return {
-      member: memberName,
-      role: item.role || '未分配',
-      status: item.status || '未知',
-      progress,
-      task: item.task || '待分配任务',
-      workspace: item.workspace || '-',
-      isCaptain: Boolean(item.isCaptain) || String(item.status || '').includes('队长锁'),
-      isStale: Boolean(item.isStale)
-    };
-  });
-  const captain = members.find(item => item.isCaptain) || null;
-  const stale = members.filter(item => item.isStale).length;
-  return {
-    total: Number.isFinite(Number(raw.total)) ? Number(raw.total) : members.length,
-    active: Number.isFinite(Number(raw.active)) ? Number(raw.active) : members.filter(item => String(item.status).includes('活跃')).length,
-    queued: Number.isFinite(Number(raw.queued)) ? Number(raw.queued) : members.filter(item => String(item.status).includes('等待分配')).length,
-    offline: Number.isFinite(Number(raw.offline)) ? Number(raw.offline) : members.filter(item => String(item.status).includes('离线')).length,
-    stale,
-    captain: captain ? captain.member : '未检测到',
-    members
-  };
-}
-
-function loadTeamSnapshotFromJson() {
-  try {
-    if (!fs.existsSync(TEAM_STATUS_JSON_PATH)) return null;
-    const content = fs.readFileSync(TEAM_STATUS_JSON_PATH, 'utf-8');
-    return normalizeTeamSnapshot(JSON.parse(content));
-  } catch (e) {
-    return null;
-  }
-}
-
-function loadTeamSnapshotFromFleetStatus() {
-  try {
-    const output = execSync('node scripts/actions/fleet-status.mjs --json', {
-      encoding: 'utf-8',
-      cwd: PROJECT_ROOT
-    });
-    const payload = JSON.parse(output);
-    const members = Array.isArray(payload.nodes)
-      ? payload.nodes.map(item => ({
-        member: item.node || 'Unknown',
-        role: item.role || '未分配',
-        status: item.status || '未知',
-        progress: statusToProgress(item.status),
-        task: item.task || '待分配任务',
-        workspace: item.workspace || '-',
-        isCaptain: Boolean(item.isCaptain)
-      }))
-      : [];
-    return normalizeTeamSnapshot({
-      total: payload.total || members.length,
-      active: members.filter(item => String(item.status).includes('活跃')).length,
-      queued: members.filter(item => String(item.status).includes('等待分配')).length,
-      offline: members.filter(item => String(item.status).includes('离线')).length,
-      members
-    });
-  } catch (e) {
-    return null;
-  }
-}
-
-function getTeamSnapshot() {
-  return loadTeamSnapshotFromJson() || loadTeamSnapshotFromFleetStatus();
-}
-
 function runAutoMaintenance() {
   return AUTO_MAINTENANCE_TASKS.map(task => {
     try {
@@ -254,27 +166,8 @@ function runAutoMaintenance() {
   });
 }
 
-function buildDetailedLog(buffer, groupedFiles, fileRecords, totalStat, teamSnapshot, maintenanceResults) {
+function buildDetailedLog(buffer, groupedFiles, fileRecords, totalStat, maintenanceResults) {
   let message = '';
-
-  if (teamSnapshot) {
-    message += '[ AI Team 态势 ]\n';
-    message += `  - 在线 ${teamSnapshot.active} | 排队 ${teamSnapshot.queued} | 离线 ${teamSnapshot.offline} | 僵尸 ${teamSnapshot.stale} | 总计 ${teamSnapshot.total}\n`;
-    message += `  - 当前队长: ${teamSnapshot.captain}\n\n`;
-
-    message += '[ AI Team 任务清单 ]\n';
-    const memberRows = [...teamSnapshot.members]
-      .sort((a, b) => Number(b.isCaptain) - Number(a.isCaptain) || b.progress - a.progress)
-      .slice(0, 8);
-    memberRows.forEach(member => {
-      message += `  - ${member.member} | ${member.role || '未分配'} | ${member.progress}% | ${member.status} | ${member.task}\n`;
-      message += `    ↳ ${member.workspace}\n`;
-    });
-    if (teamSnapshot.members.length > memberRows.length) {
-      message += `  - ... 其余 ${teamSnapshot.members.length - memberRows.length} 个节点已折叠\n`;
-    }
-    message += '\n';
-  }
 
   if (maintenanceResults.length > 0) {
     message += '[ 自动维护 ]\n';
@@ -308,24 +201,8 @@ function buildDetailedLog(buffer, groupedFiles, fileRecords, totalStat, teamSnap
   return message;
 }
 
-function buildLarkSummary(buffer, fileRecords, groupedFiles, totalStat, teamSnapshot, maintenanceResults) {
+function buildLarkSummary(buffer, fileRecords, groupedFiles, totalStat, maintenanceResults) {
   const lines = [];
-
-  if (teamSnapshot) {
-    lines.push(`🤖 AI Team: 在线 ${teamSnapshot.active} / 排队 ${teamSnapshot.queued} / 离线 ${teamSnapshot.offline} / 僵尸 ${teamSnapshot.stale}`);
-    lines.push(`👑 队长: ${teamSnapshot.captain}`);
-    lines.push('🧾 任务清单');
-    teamSnapshot.members
-      .sort((a, b) => Number(b.isCaptain) - Number(a.isCaptain) || b.progress - a.progress)
-      .slice(0, 4)
-      .forEach((member, idx) => {
-        lines.push(`${idx + 1}. ${member.member}(${member.role || '未分配'}) ${member.progress}% | ${member.task}`);
-      });
-    if (teamSnapshot.members.length > 4) {
-      lines.push(`… 其余 ${teamSnapshot.members.length - 4} 个节点已省略`);
-    }
-    lines.push('');
-  }
 
   if (maintenanceResults.length > 0) {
     const statusLine = maintenanceResults
@@ -398,7 +275,6 @@ async function autoPilot() {
 
   try {
     const maintenanceResults = runAutoMaintenance();
-    const teamSnapshot = getTeamSnapshot();
     const statusOutput = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const rawLines = statusOutput
       .split('\n')
@@ -434,7 +310,6 @@ async function autoPilot() {
         groupedFiles,
         fileRecords,
         totalStat || '全量同步完成',
-        teamSnapshot,
         maintenanceResults
       );
       let larkMessage = buildLarkSummary(
@@ -442,7 +317,6 @@ async function autoPilot() {
         fileRecords,
         groupedFiles,
         totalStat || '全量同步完成',
-        teamSnapshot,
         maintenanceResults
       );
 
