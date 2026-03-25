@@ -118,6 +118,7 @@ function notifyNative (notification) {
     const title = escapeNotificationText(notification.title || `新消息 · ${notification.source || 'unknown'}`)
     const body = escapeNotificationText(notification.content || '收到一条新的云端通知')
     const subtitle = escapeNotificationText(`Cloud Brain · ${notification.agent || 'agent'} / ${notification.source || 'unknown'}`)
+    const groupId = escapeNotificationText(`cortexos-cloud-brain-${notification.id || Date.now()}`)
     const appIcon = toFileUrl(NOTIFICATION_ICON_PATH) || toFileUrl(HERO_PATH)
     const contentImage = toFileUrl(HERO_PATH)
 
@@ -127,7 +128,7 @@ function notifyNative (notification) {
         '-title', `🧠 ${title}`,
         '-subtitle', subtitle,
         '-message', body,
-        '-group', 'cortexos-cloud-brain',
+        '-group', groupId,
         '-sound', 'default'
       ]
 
@@ -516,6 +517,7 @@ async function main () {
   const triageResults = []
 
   for (const notification of fresh) {
+    console.log(`[brain-inbox] 新通知: ${notification.title || notification.id} <${notification.id}>`)
     notifyNative(notification)
     const triageResult = await autoTriageNotification(notification)
     triageResults.push(triageResult)
