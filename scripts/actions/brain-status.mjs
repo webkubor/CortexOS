@@ -12,6 +12,15 @@ const memoryRoot = path.join(projectRoot, '.memory')
 const inboxStatePath = path.join(memoryRoot, 'cache/cloud-brain-inbox-state.json')
 const inboxFilePath = path.join(memoryRoot, 'inbox/cloud-brain-inbox.md')
 const brainApiUrl = process.env.BRAIN_API_URL || 'https://brain-api-675793533606.asia-southeast2.run.app'
+const color = {
+  reset: '\x1b[0m',
+  dim: '\x1b[2m',
+  cyan: '\x1b[36m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  bold: '\x1b[1m'
+}
 
 function formatLocalTime(value) {
   if (!value) return '-'
@@ -31,23 +40,21 @@ function formatLocalTime(value) {
 
 function formatDuration(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '-'
-  if (seconds < 60) return `${seconds}s`
+  if (seconds < 60) return `${seconds}秒`
   const minutes = Math.floor(seconds / 60)
   const remainSeconds = seconds % 60
-  if (minutes < 60) return `${minutes}m ${remainSeconds}s`
+  if (minutes < 60) return `${minutes}分 ${remainSeconds}秒`
   const hours = Math.floor(minutes / 60)
   const remainMinutes = minutes % 60
-  if (hours < 24) return `${hours}h ${remainMinutes}m`
+  if (hours < 24) return `${hours}小时 ${remainMinutes}分`
   const days = Math.floor(hours / 24)
   const remainHours = hours % 24
-  return `${days}d ${remainHours}h`
+  return `${days}天 ${remainHours}小时`
 }
 
 function loadInboxState() {
   try {
-    if (!fs.existsSync(inboxStatePath)) {
-      return { seen: {}, lastCheckedAt: '' }
-    }
+    if (!fs.existsSync(inboxStatePath)) return { seen: {}, lastCheckedAt: '' }
     return JSON.parse(fs.readFileSync(inboxStatePath, 'utf8'))
   } catch {
     return { seen: {}, lastCheckedAt: '' }
@@ -66,10 +73,40 @@ function loadPm2Process() {
 
 async function fetchJson(url) {
   const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`)
-  }
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
   return response.json()
+}
+
+function section(title, rows) {
+  if (!rows.length) return ''
+  return [`${color.bold}${color.cyan}【${title}】${color.reset}`, ...rows.map((row) => `  ${row}`)].join('\n')
+}
+
+function normalizeProcessStatus(value) {
+  const text = String(value || '').trim().toLowerCase()
+  if (text === 'online') return '在线'
+  if (text === 'stopped') return '已停止'
+  if (text === 'errored') return '异常'
+  if (text === 'launching') return '启动中'
+  return value || '未知'
+}
+
+function paint(text, tone = 'normal') {
+  if (tone === 'good') return `${color.green}${text}${color.reset}`
+  if (tone === 'warn') return `${color.yellow}${text}${color.reset}`
+  if (tone === 'bad') return `${color.red}${text}${color.reset}`
+  return text
+}
+
+function renderCount(label, value, { warn = false } = {}) {
+  const num = Number(value) || 0
+  let rendered = `${num} 条`
+  if (warn && num > 0) {
+    rendered = paint(rendered, num >= 3 ? 'bad' : 'warn')
+  } else if (num === 0) {
+    rendered = paint(rendered, 'good')
+  }
+  return `${label}：${rendered}`
 }
 
 async function main() {
@@ -94,43 +131,74 @@ async function main() {
     cloudError = error.message
   }
 
-  const unactedNotifications = notifications.filter((item) => String(item.status || '').trim() !== 'acted')
+  const pendingNotifications = notifications.filter((item) => String(item.status || '').trim() !== 'acted')
   const unreadNotifications = notifications.filter((item) => item.read !== true)
   const openTasks = tasks.filter((item) => String(item.status || '').trim() !== '已完成')
   const seenCount = Object.keys(inboxState.seen || {}).length
+  const latestNotification = notifications[0] || null
+  const recentNotifications = notifications.slice(0, 3)
+  const pilotStatus = pm2Process ? normalizeProcessStatus(pm2Process.pm2_env?.status) : '未运行'
+  const pilotUptime = pm2Process?.pm2_env?.pm_uptime
+    ? formatDuration(Math.floor((Date.now() - pm2Process.pm2_env.pm_uptime) / 1000))
+    : '-'
+  const pilotRestarts = pm2Process?.pm2_env?.restart_time ?? 0
+  const cloudStatus = cloudError ? `离线（${cloudError}）` : `在线 · ${health?.version || '-'}`
+  const cloudStatusTone = cloudError ? 'bad' : 'good'
+  const pilotTone = pm2Process ? (pilotStatus === '在线' ? 'good' : 'warn') : 'bad'
 
-  const statusLines = [
-    '🧠 CortexOS Brain Status',
+  const lines = [
+    `${color.bold}${color.cyan}🧠 Webkubor 主脑状态${color.reset}`,
+    `${color.dim}────────────────────────${color.reset}`,
+    section('运行总览', [
+      `云端大脑：${paint(cloudStatus, cloudStatusTone)}`,
+      `主脑后台：${paint(`${pilotStatus} · 已运行 ${pilotUptime} · 重启 ${pilotRestarts} 次`, pilotTone)}`,
+      `最近收件箱检查：${formatLocalTime(inboxState.lastCheckedAt)}`
+    ]),
     '',
-    `Cloud Brain: ${cloudError ? `offline (${cloudError})` : `online · ${health?.version || '-'}`}`,
-    `Brain Pilot: ${pm2Process ? `${pm2Process.pm2_env?.status || 'unknown'} · uptime ${formatDuration(pm2Process.pm2_env?.pm_uptime ? Math.floor((Date.now() - pm2Process.pm2_env.pm_uptime) / 1000) : 0)} · restarts ${pm2Process.pm2_env?.restart_time ?? 0}` : 'not running'}`,
-    `Last Inbox Check: ${formatLocalTime(inboxState.lastCheckedAt)}`,
+    section('通知收件箱', [
+      renderCount('通知总数', notifications.length),
+      renderCount('待处理', pendingNotifications.length, { warn: true }),
+      renderCount('未读', unreadNotifications.length, { warn: true }),
+      renderCount('已记录缓存', seenCount),
+      `最近一条：${latestNotification ? `${latestNotification.title || latestNotification.id} · ${formatLocalTime(latestNotification.createdAt)}` : '暂无'}`
+    ]),
     '',
-    `Notifications: total ${notifications.length} · pending ${unactedNotifications.length} · unread ${unreadNotifications.length}`,
-    `Tasks: total ${tasks.length} · open ${openTasks.length}`,
-    `Seen Cache: ${seenCount}`,
+    section('任务状态', [
+      renderCount('任务总数', tasks.length),
+      renderCount('待处理任务', openTasks.length, { warn: true })
+    ]),
     '',
-    `Inbox File: ${fs.existsSync(inboxFilePath) ? inboxFilePath : 'missing'}`
+    section('本地落点', [
+      `收件箱文件：${fs.existsSync(inboxFilePath) ? inboxFilePath : '未生成'}`
+    ])
   ]
 
-  if (unactedNotifications.length > 0) {
-    statusLines.push('', 'Pending Notifications:')
-    unactedNotifications.slice(0, 5).forEach((item, index) => {
-      statusLines.push(`${index + 1}. ${item.title || item.id} · ${item.status || 'new'} · ${formatLocalTime(item.createdAt)}`)
+  if (recentNotifications.length > 0) {
+    lines.push('', section('最近 3 条通知', recentNotifications.map((item, index) => {
+      const acted = String(item.status || '').trim() === 'acted'
+      const statusText = acted ? paint('已处理', 'good') : paint(item.status || '新通知', 'warn')
+      return `${index + 1}. ${item.title || item.id} · ${statusText} · ${formatLocalTime(item.createdAt)}`
+    })))
+  }
+
+  if (pendingNotifications.length > 0) {
+    lines.push('', `${color.bold}${color.yellow}【待处理通知】${color.reset}`)
+    pendingNotifications.slice(0, 5).forEach((item, index) => {
+      lines.push(`  ${index + 1}. ${item.title || item.id} · ${item.status || '新通知'} · ${formatLocalTime(item.createdAt)}`)
     })
   }
 
   if (openTasks.length > 0) {
-    statusLines.push('', 'Open Tasks:')
+    lines.push('', `${color.bold}${color.yellow}【待处理任务】${color.reset}`)
     openTasks.slice(0, 5).forEach((item, index) => {
-      statusLines.push(`${index + 1}. ${item.title || item.id} · ${item.status || '待处理'}`)
+      lines.push(`  ${index + 1}. ${item.title || item.id} · ${item.status || '待处理'}`)
     })
   }
 
-  console.log(statusLines.join('\n'))
+  console.log(lines.filter(Boolean).join('\n'))
 }
 
 main().catch((error) => {
-  console.error(`brain:status 失败: ${error.message}`)
+  console.error(`brain:status 失败：${error.message}`)
   process.exit(1)
 })
