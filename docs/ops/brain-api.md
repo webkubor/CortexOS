@@ -82,6 +82,20 @@ cortexos
 - `nodeId`
 - `node_id`
 
+### Subagent 推荐身份字段
+
+如果调用方是外部子代理，推荐一并带上这些字段，后端会自动收进 `metadata`：
+
+- `node_id`
+- `node_name`
+- `runtime`
+- `model`
+- `role`
+- `workspace`
+- `environment`
+- `region`
+- `hostname`
+
 ### 状态枚举
 
 #### notification.status
@@ -252,6 +266,14 @@ curl -X POST 'https://brain-api-675793533606.asia-southeast2.run.app/notificatio
     "content": "Gemini 子代理已完成本轮接入验证，请主脑决定是否沉淀为记忆。",
     "agent": "gemini",
     "source": "jakarta-server",
+    "node_id": "jakarta-server",
+    "node_name": "Jakarta Agent",
+    "runtime": "@cortexos/jakarta-agent",
+    "model": "gemini",
+    "role": "subagent",
+    "workspace": "/opt/jakarta-agent",
+    "environment": "production",
+    "region": "asia-southeast2",
     "type": "notification",
     "priority": "medium",
     "tags": ["report", "jakarta"],

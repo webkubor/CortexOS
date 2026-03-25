@@ -206,6 +206,15 @@ pnpm write cortexos "雅加达节点完成了本轮任务。"
    - `source`
    - `content`
    - `tags`
+   - `node_id`
+   - `node_name`
+   - `runtime`
+   - `model`
+   - `role`
+   - `workspace`
+   - `environment`
+   - `region`
+   - `hostname`
 
 ## 本地主脑 inbox
 

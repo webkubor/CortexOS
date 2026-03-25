@@ -37,6 +37,28 @@ function normalizeSourcePayload (payload = {}) {
   return normalizeText(payload.source || payload.sourceId || payload.source_id || payload.nodeId || payload.node_id, 'unknown')
 }
 
+function buildContextMetadata (payload = {}) {
+  const metadata = normalizeMetadata(payload.metadata)
+  const context = {
+    nodeId: normalizeText(payload.nodeId || payload.node_id),
+    nodeName: normalizeText(payload.nodeName || payload.node_name),
+    runtime: normalizeText(payload.runtime),
+    model: normalizeText(payload.model),
+    role: normalizeText(payload.role),
+    workspace: normalizeText(payload.workspace),
+    environment: normalizeText(payload.environment),
+    region: normalizeText(payload.region),
+    hostname: normalizeText(payload.hostname)
+  }
+
+  return Object.fromEntries(
+    Object.entries({
+      ...metadata,
+      ...Object.fromEntries(Object.entries(context).filter(([, value]) => value))
+    }).filter(([, value]) => value !== undefined)
+  )
+}
+
 function normalizePriority (value, fallback = 'medium') {
   const text = String(value || '').trim().toLowerCase()
   if (['low', 'medium', 'high', 'urgent'].includes(text)) return text
@@ -159,7 +181,7 @@ export function validateMemoryPayload (payload = {}) {
       kind: normalizeText(payload.kind, 'note'),
       summary: normalizeText(payload.summary),
       tags: normalizeTags(payload.tags),
-      metadata: normalizeMetadata(payload.metadata),
+      metadata: buildContextMetadata(payload),
       createdAt: Timestamp.now()
     }
   }
@@ -188,7 +210,7 @@ export function validateNotificationPayload (payload = {}) {
       triageAction: normalizeText(payload.triageAction),
       triageSummary: normalizeText(payload.triageSummary),
       tags: normalizeTags(payload.tags),
-      metadata: normalizeMetadata(payload.metadata),
+      metadata: buildContextMetadata(payload),
       createdAt: now,
       updatedAt: now,
       actedAt: null
@@ -216,7 +238,7 @@ export function validateTaskPayload (payload = {}) {
       priority: normalizePriority(payload.priority),
       status: normalizeTaskStatus(payload.status),
       tags: normalizeTags(payload.tags),
-      metadata: normalizeMetadata(payload.metadata),
+      metadata: buildContextMetadata(payload),
       createdAt: now,
       updatedAt: now,
       completedAt: payload.status === 'done' ? now : null
