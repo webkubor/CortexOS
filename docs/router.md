@@ -11,7 +11,7 @@ description: CortexOS 中央大脑路由（精简版）
 
 ```
 大脑版本: v6.0.0 (Pure Brain Mode)
-用户: 王爷 | 对外 ID: webkubor
+用户标识: webkubor
 时区: Asia/Shanghai (UTC+8)
 工作时间: ~10:00-20:00
 

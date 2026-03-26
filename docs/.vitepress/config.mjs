@@ -102,7 +102,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           ...opsItems,
-          { text: "Brain Agent 路线图", link: "/ops/brain-agent-roadmap" },
+          { text: "中央大脑路线图", link: "/ops/brain-agent-roadmap" },
         ]
       },
       {

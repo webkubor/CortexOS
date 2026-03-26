@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/webkubor/CortexOS/main/docs/public/logo.svg" width="120" height="120" alt="CortexOS Logo">
   <h1>CortexOS</h1>
-  <p><b>个人外部大脑操作系统 · 核心中枢 v6.0.0</b></p>
+  <p><b>AI Agent 中央大脑操作系统 · 核心中枢 v6.0.0</b></p>
   <p>
     <img src="https://img.shields.io/badge/Version-v6.0.0-blue.svg?style=flat-square" alt="Version v6.0.0">
     <img src="https://img.shields.io/badge/CLI-cortexos-blue.svg?style=flat-square" alt="CortexOS CLI">
@@ -15,13 +15,13 @@
   </p>
 </div>
 
-> **【CortexOS · Codex 02】**
+> **【CortexOS · 中央大脑】**
 >
 > CortexOS 是 `webkubor` 的 AI Agent 中央大脑。它对内以 `MCP` 组织能力，对外通过 `CLI` 与 `HTTP API` 接收信息、分发任务，并与各类 `subagent` 持续互动。
 
 ## 🪐 关联项目 (Related Projects)
 
-- [CortexOS](https://github.com/webkubor/CortexOS): 本地优先的个人外部大脑与云端共享记忆入口。
+- [CortexOS](https://github.com/webkubor/CortexOS): 本地优先的 AI Agent 中央大脑与云端共享记忆入口。
 - [Prompt Lab](https://github.com/webkubor/prompt-lab): AI 影像工作流指南与创意参考库。
 - [nanobanana-plus](https://github.com/webkubor/nanobanana-plus): 强化型 Gemini 绘图扩展，支持逐调用模型切换。
 
@@ -45,7 +45,7 @@
 
 ## 💎 卓越能力
 
-### 1. cortexos CLI（主脑对外命令入口）
+### 1. cortexos CLI（中央大脑对外命令入口）
 通过 `cortexos` 命令行工具，任何 AI 都能访问大脑：
 ```bash
 cortexos brief          # 极简快照（~25行）
@@ -60,7 +60,7 @@ cortexos serve          # HTTP API 模式（端口3579）
 
 > 💡 **设计原则**：对内以 `MCP` 组织能力；对外优先暴露 `CLI` 与 `HTTP API`。任何能跑 shell 或发 HTTP 请求的 AI 工具，都可以接入 CortexOS 主脑。
 
-### 2. Cloud Brain API（主脑云端共享入口）
+### 2. Cloud Brain API（中央大脑云端共享入口）
 
 仓库内已经包含云端大脑接口服务，后续进入项目的 agent 不应忽略这层能力：
 

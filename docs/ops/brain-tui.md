@@ -1,10 +1,10 @@
 ---
-description: CortexOS 终端主脑控制台（Textual TUI）说明，展示 Cloud Brain、PM2、skills、agents、MCP、端口与日志总览。
+description: CortexOS 终端中央大脑控制台（Textual TUI）说明，展示 Cloud Brain、PM2、skills、agents、MCP、端口与日志总览。
 ---
 
 # Brain TUI
 
-> `brain-tui` 是 CortexOS 的终端主脑控制台。  
+> `brain-tui` 是 CortexOS 的终端中央大脑控制台。  
 > 它不是新的后端，也不是新的 API，而是给你自己用来观察主脑运行态的 TUI 前台。
 
 ## 定位
