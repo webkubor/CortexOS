@@ -139,7 +139,7 @@ flowchart LR
 
 ## 7. 云端大脑扩展
 
-你现在在做的 `Cloud Run + Firestore`，不是替换本地大脑，而是给这个 Brain Agent 加一个**跨地区共享层**。
+你现在在做的 `Cloud Run + Firestore`，不是替换本地大脑，而是给这个中央大脑加一个**跨地区共享层**。
 
 ```mermaid
 flowchart LR
@@ -241,7 +241,7 @@ flowchart LR
 
 ## 11. 下一步演进方向
 
-在当前架构基础上，`CortexOS` 最自然的下一步不是继续堆脚本，而是长出一个真正可交互的 Brain Agent 前台。
+在当前架构基础上，`CortexOS` 最自然的下一步不是继续堆脚本，而是长出一个真正可交互的中央大脑前台。
 
 建议路线：
 
@@ -264,7 +264,7 @@ flowchart LR
 
 1. 它是不是 CortexOS 自己的规则 / 记忆 / 接口 / 私有运行态？
 2. 它是不是必须跟着 CortexOS 一起存在？
-3. 如果去掉它，CortexOS 还能不能继续作为一个 Brain Agent 工作？
+3. 如果去掉它，CortexOS 还能不能继续作为一个中央大脑工作？
 
 如果答案是否定的，它多半就是**外部系统**，不是大脑本体。
 
