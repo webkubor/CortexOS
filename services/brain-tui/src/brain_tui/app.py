@@ -87,12 +87,15 @@ class BrainTuiApp(App):
         ("r", "refresh", "刷新"),
         ("n", "focus_notifications", "通知"),
         ("t", "focus_tasks", "任务"),
+        ("s", "show_skills", "Skills"),
+        ("m", "show_mcp", "MCP"),
         ("q", "quit", "退出"),
     ]
 
     snapshot: reactive[BrainSnapshot | None] = reactive(None)
     selected_notification_id: reactive[str | None] = reactive(None)
     selected_task_id: reactive[str | None] = reactive(None)
+    detail_mode: reactive[str] = reactive("notification")
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -138,10 +141,22 @@ class BrainTuiApp(App):
         self.refresh_snapshot()
 
     def action_focus_notifications(self) -> None:
+        self.detail_mode = "notification"
         self.query_one("#notifications-table", DataTable).focus()
+        self.update_detail()
 
     def action_focus_tasks(self) -> None:
+        self.detail_mode = "task"
         self.query_one("#tasks-table", DataTable).focus()
+        self.update_detail()
+
+    def action_show_skills(self) -> None:
+        self.detail_mode = "skills"
+        self.update_detail()
+
+    def action_show_mcp(self) -> None:
+        self.detail_mode = "mcp"
+        self.update_detail()
 
     def refresh_snapshot(self) -> None:
         self.snapshot = build_snapshot()
@@ -171,6 +186,7 @@ class BrainTuiApp(App):
                 f"MCP：{snapshot.mcp_server_count} 个服务器 · {snapshot.mcp_tool_count} 个工具",
                 f"Skills：{snapshot.skills_count} 个",
                 f"Agents：{snapshot.agent_count} 个文档档案",
+                "按 S 看 Skills · 按 M 看 MCP",
             ],
         )
         runtime.set_content(
@@ -248,6 +264,48 @@ class BrainTuiApp(App):
             return
 
         selected_notification = None
+        if self.detail_mode == "skills":
+            skills = snapshot.skills
+            if not skills:
+                detail_widget.update("当前没有检测到 skills。")
+                return
+            detail_widget.update(
+                "\n".join(
+                    ["[b]Skills 清单[/b]"]
+                    + [
+                        f"{index + 1}. {item['name']}  [{item['category']}]\n   {item['path']}"
+                        for index, item in enumerate(skills[:12])
+                    ]
+                )
+            )
+            return
+
+        if self.detail_mode == "mcp":
+            servers = snapshot.mcp_servers
+            tools = snapshot.mcp_tools
+            server_lines = (
+                [
+                    f"{index + 1}. {item['name']} · {item['command']}"
+                    for index, item in enumerate(servers[:8])
+                ]
+                if servers
+                else ["当前没有检测到 MCP Server。"]
+            )
+            tool_lines = (
+                [f"{index + 1}. {name}" for index, name in enumerate(tools[:12])]
+                if tools
+                else ["当前没有检测到 MCP Tools。"]
+            )
+            detail_widget.update(
+                "\n".join(
+                    ["[b]MCP 清单[/b]", "", "Server:"]
+                    + server_lines
+                    + ["", "Tools:"]
+                    + tool_lines
+                )
+            )
+            return
+
         if self.selected_notification_id:
             selected_notification = next(
                 (
@@ -309,8 +367,10 @@ class BrainTuiApp(App):
         table_id = event.data_table.id or ""
         row_key = str(event.row_key.value)
         if table_id == "notifications-table":
+            self.detail_mode = "notification"
             self.selected_notification_id = row_key
         elif table_id == "tasks-table":
+            self.detail_mode = "task"
             self.selected_task_id = row_key
         self.update_detail()
 

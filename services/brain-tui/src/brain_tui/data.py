@@ -37,6 +37,9 @@ class BrainSnapshot:
     agent_count: int
     mcp_server_count: int
     mcp_tool_count: int
+    skills: list[dict]
+    mcp_servers: list[dict]
+    mcp_tools: list[str]
     api_endpoints: list[tuple[str, str]]
     ports: list[tuple[str, str, str, str, str]]
     recent_logs: list[str]
@@ -116,6 +119,24 @@ def count_skills() -> int:
     return len(list(SKILLS_ROOT.glob("**/SKILL.md")))
 
 
+def list_skills(limit: int = 50) -> list[dict]:
+    if not SKILLS_ROOT.exists():
+        return []
+    rows: list[dict] = []
+    for skill_file in sorted(SKILLS_ROOT.glob("**/SKILL.md"))[:limit]:
+        skill_dir = skill_file.parent
+        name = skill_dir.name
+        category = skill_dir.parent.name if skill_dir.parent != SKILLS_ROOT else "skills"
+        rows.append(
+            {
+                "name": name,
+                "category": category,
+                "path": str(skill_dir),
+            }
+        )
+    return rows
+
+
 def count_agents() -> int:
     agents_dir = DOCS_ROOT / "agents"
     if not agents_dir.exists():
@@ -140,12 +161,50 @@ def count_mcp_servers() -> int:
         return 0
 
 
+def list_mcp_servers() -> list[dict]:
+    config_path = MCP_ROOT / "mcp_config.json"
+    if not config_path.exists():
+        return []
+    try:
+        data = json.loads(config_path.read_text("utf-8"))
+        servers = data.get("mcpServers", {})
+        return [
+            {
+                "name": name,
+                "command": str(config.get("command", "")),
+                "description": str(config.get("description", "")),
+            }
+            for name, config in servers.items()
+        ]
+    except Exception:
+        return []
+
+
 def count_mcp_tools() -> int:
     server_py = MCP_ROOT / "server.py"
     if not server_py.exists():
         return 0
     content = server_py.read_text("utf-8")
     return content.count("@mcp.tool()")
+
+
+def list_mcp_tools(limit: int = 50) -> list[str]:
+    server_py = MCP_ROOT / "server.py"
+    if not server_py.exists():
+        return []
+    lines = server_py.read_text("utf-8").splitlines()
+    tools: list[str] = []
+    for index, line in enumerate(lines):
+        if "@mcp.tool()" not in line:
+            continue
+        for next_line in lines[index + 1 : index + 7]:
+            stripped = next_line.strip()
+            if stripped.startswith("def "):
+                tools.append(stripped.split("def ", 1)[1].split("(", 1)[0])
+                break
+        if len(tools) >= limit:
+            break
+    return tools
 
 
 def list_api_endpoints() -> list[tuple[str, str]]:
@@ -250,6 +309,9 @@ def build_snapshot() -> BrainSnapshot:
         agent_count=count_agents(),
         mcp_server_count=count_mcp_servers(),
         mcp_tool_count=count_mcp_tools(),
+        skills=list_skills(),
+        mcp_servers=list_mcp_servers(),
+        mcp_tools=list_mcp_tools(),
         api_endpoints=list_api_endpoints(),
         ports=list_ports(),
         recent_logs=recent_log_lines(),
