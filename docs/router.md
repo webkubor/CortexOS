@@ -1,8 +1,11 @@
 ---
-description: CortexOS 大脑路由（精简版）
+description: CortexOS 中央大脑路由（精简版）
 ---
 
-# 🧠 CortexOS Brain Router
+# 🧠 CortexOS 中央大脑路由
+
+> `CortexOS` 是 `webkubor` 的 AI Agent 中央大脑。
+> 对内以 `MCP` 组织能力，对外通过 `CLI` 与 `HTTP API` 接收信息、分发任务，并与各类 `subagent` 持续互动。
 
 ## 🧠 快照区（每次必读，约 25 行）
 
@@ -61,7 +64,7 @@ description: CortexOS 大脑路由（精简版）
 
 ## 🔧 核心工具
 
-- MCP Server: `mcp_server/server.py`（14 个工具）
+- MCP Server: `mcp_server/server.py`（主脑内部能力协议）
 - 本地客户端: Gemini / Codex / Claude / 其他 Agent
 - Cloud Brain API: `services/brain-api/` -> Cloud Run (`/health`, `/memories`, `/notifications`, `/tasks`)
 

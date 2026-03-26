@@ -1,24 +1,27 @@
 ---
-description: CortexOS 作为单个外部大脑 Agent 的技术架构图，覆盖本地本体、知识边界与云端大脑扩展。
+description: CortexOS 作为 AI Agent 中央大脑的技术架构图，覆盖本地本体、知识边界与云端大脑扩展。
 ---
 # 技术架构图
 
 > 这份文档只描述 **CortexOS 自己**。
 >
 > 它不是 AI Team，不是任务看板，也不是任何外部调度器。
-> 你可以把它理解成：**一个有记忆、有规则、有接口的 Brain Agent**。
+> 你可以把它理解成：**一个有记忆、有规则、有接口的 AI Agent 中央大脑**。
 
 ## 1. CortexOS 的正确定位
 
-- `CortexOS` 是一个 **Brain Agent**
+- `CortexOS` 是 `webkubor` 的 **AI Agent 中央大脑**
 - `~/Documents/memory/` 是 **用户长期知识真源**
 - `Cloud Run + Firestore` 是 **云端共享大脑扩展**
+- 对内通过 **MCP**
+- 对外通过 **CLI / HTTP API**
+- 面向各类 **subagent / 客户端**
 
 所以边界应该这样理解：
 
 ```mermaid
 flowchart LR
-  user["用户长期知识真源\n~/Documents/memory"] --> brain["CortexOS\nBrain Agent"]
+  user["用户长期知识真源\n~/Documents/memory"] --> brain["CortexOS\nAI Agent 中央大脑"]
   brain --> clients["Gemini / Codex / Claude / 其他客户端"]
   brain --> cloud["Cloud Brain\nCloud Run + Firestore"]
 ```
@@ -63,7 +66,7 @@ flowchart TB
 ```mermaid
 flowchart LR
   A["身份层\nIDENTITY.md / soul.md"] --> B["协议层\ndocs/"]
-  B --> C["接口层\nMCP / CLI / HTTP"]
+  B --> C["接口层\n对内 MCP / 对外 CLI / HTTP"]
   C --> D["运行层\n.memory / scripts / chroma_db"]
 ```
 
@@ -98,7 +101,7 @@ flowchart TD
 
 ## 5. CortexOS 对外提供什么
 
-CortexOS 作为一个 Brain Agent，对外真正提供的是这些能力：
+CortexOS 作为一个 AI Agent 中央大脑，对外真正提供的是这些能力：
 
 ```mermaid
 flowchart LR
@@ -123,7 +126,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  brain["CortexOS\nBrain Agent"] --> openclaw["OpenClaw / Claude"]
+  brain["CortexOS\n中央大脑"] --> openclaw["OpenClaw / Claude"]
   brain --> gemini["Gemini CLI"]
   brain --> codex["Codex"]
 ```
@@ -194,7 +197,7 @@ flowchart LR
 
 这意味着：
 
-1. CortexOS 仍然是你的主脑
+1. CortexOS 仍然是你的中央大脑
 2. Cloud Run 只是让“多地点、多 Agent 共享记忆”变得可行
 3. 它不是新脑，只是 CortexOS 的云端延展
 
@@ -223,7 +226,7 @@ flowchart LR
 | 模块 | 路径 | 当前定位 |
 |---|---|---|
 | 大脑协议 | `docs/` | 路由、规则、SOP、架构、进化史 |
-| 大脑内核 | `mcp_server/` | Brain MCP 工具实现 |
+| 大脑内核 | `mcp_server/` | 主脑 MCP 工具实现 |
 | 大脑接口 | `bin/cortexos` | CLI / 本地 HTTP |
 | 大脑私有运行态 | `.memory/` | 日志、私有偏好、运行状态 |
 | 知识索引 | `chroma_db/` | 语义检索索引 |
@@ -231,7 +234,7 @@ flowchart LR
 
 ## 10. 读这张图时要记住的判断规则
 
-1. `CortexOS` 是单体主脑 Agent，不是 AI Team
+1. `CortexOS` 是 AI Agent 中央大脑，不是 AI Team
 2. `Cloud Brain` 是 CortexOS 的云端延展，不是另一套脑
 3. `~/Documents/memory/` 永远是用户长期知识真源
 4. 聊天、收件箱、任务、记忆以后都应围绕主脑前台统一组织

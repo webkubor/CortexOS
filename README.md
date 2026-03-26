@@ -17,7 +17,7 @@
 
 > **【CortexOS · Codex 02】**
 >
-> CortexOS 是一套本地优先 (Local-first) 的个人外部大脑架构。它把规则、意志、项目轨迹与跨会话记忆，稳定落到你的本地磁盘与云端共享层上。
+> CortexOS 是 `webkubor` 的 AI Agent 中央大脑。它对内以 `MCP` 组织能力，对外通过 `CLI` 与 `HTTP API` 接收信息、分发任务，并与各类 `subagent` 持续互动。
 
 ## 🪐 关联项目 (Related Projects)
 
@@ -45,7 +45,7 @@
 
 ## 💎 卓越能力
 
-### 1. cortexos CLI（全能接口）
+### 1. cortexos CLI（主脑对外命令入口）
 通过 `cortexos` 命令行工具，任何 AI 都能访问大脑：
 ```bash
 cortexos brief          # 极简快照（~25行）
@@ -58,9 +58,9 @@ cortexos search 关键词  # 知识库搜索
 cortexos serve          # HTTP API 模式（端口3579）
 ```
 
-> 💡 **设计原则**：不依赖 MCP 协议。CLI 命令是通用接口，HTTP API 是补充，任何能跑 shell 或发 HTTP 请求的 AI 工具都能调用。
+> 💡 **设计原则**：对内以 `MCP` 组织能力；对外优先暴露 `CLI` 与 `HTTP API`。任何能跑 shell 或发 HTTP 请求的 AI 工具，都可以接入 CortexOS 主脑。
 
-### 2. Cloud Brain API（云端共享记忆入口）
+### 2. Cloud Brain API（主脑云端共享入口）
 
 仓库内已经包含云端大脑接口服务，后续进入项目的 agent 不应忽略这层能力：
 
@@ -79,7 +79,7 @@ cortexos serve          # HTTP API 模式（端口3579）
 - `POST /tasks`
 - `GET /tasks`
 
-这层的定位是：让**杭州本地节点**与**雅加达远端节点**共享同一份云端大脑主库，而不是替代本地 CortexOS 本体。
+这层的定位是：让**杭州本地节点**、**雅加达远端节点**与其他 `subagent` 共享同一份云端大脑主库，而不是替代本地 CortexOS 本体。
 
 当前数据流已经收口为：
 
@@ -144,7 +144,7 @@ cortexos serve --port 3579
 
 ## ⚡️ 技术栈与架构 (Technical Stack & Architecture)
 
-- **总架构图**：[`docs/ops/architecture.md`](./docs/ops/architecture.md)（只描述 CortexOS 这个 Brain Agent 本体）
+- **总架构图**：[`docs/ops/architecture.md`](./docs/ops/architecture.md)（只描述 CortexOS 这个 AI Agent 中央大脑本体）
 
 CortexOS 的设计哲学是"纯本地、高自主、可进化"。整个系统被清晰地划分为三层，每一层都采用最适合其职责的工具链。
 
