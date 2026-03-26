@@ -5,7 +5,6 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from urllib.error import URLError
 from urllib.parse import urlencode
@@ -39,9 +38,11 @@ class BrainSnapshot:
     mcp_server_count: int
     mcp_tool_count: int
     api_endpoints: list[tuple[str, str]]
-    ports: list[tuple[str, str, str]]
+    ports: list[tuple[str, str, str, str, str]]
     recent_logs: list[str]
     latest_notification_titles: list[str]
+    notifications: list[dict]
+    tasks: list[dict]
 
 
 def _run(cmd: list[str]) -> str:
@@ -160,20 +161,41 @@ def list_api_endpoints() -> list[tuple[str, str]]:
     ]
 
 
-def list_ports(limit: int = 18) -> list[tuple[str, str, str]]:
+def _parse_listen_name(name: str) -> tuple[str, str, str]:
+    text = (name or "").strip()
+    if not text:
+        return "-", "-", "监听"
+
+    match = re.search(r"(.+):(\d+)$", text)
+    if match:
+        host = match.group(1)
+        port = match.group(2)
+    else:
+        host = text
+        port = "-"
+
+    host = host.replace("*", "全部地址")
+    host = host.replace("127.0.0.1", "本地回环")
+    host = host.replace("[::1]", "本地 IPv6")
+
+    return port, host, "监听"
+
+
+def list_ports(limit: int = 18) -> list[tuple[str, str, str, str, str]]:
     raw = _run(["lsof", "-nP", "-iTCP", "-sTCP:LISTEN"])
     lines = raw.splitlines()
     if len(lines) <= 1:
         return []
-    rows: list[tuple[str, str, str]] = []
+    rows: list[tuple[str, str, str, str, str]] = []
     for line in lines[1:]:
         parts = re.split(r"\s+", line.strip())
-        if len(parts) < 9:
+        if len(parts) < 10:
             continue
         command = parts[0]
         pid = parts[1]
-        name = parts[-1]
-        rows.append((command, pid, name))
+        name = parts[-2]
+        port, host, state = _parse_listen_name(name)
+        rows.append((command, pid, port, host, state))
         if len(rows) >= limit:
             break
     return rows
@@ -232,4 +254,6 @@ def build_snapshot() -> BrainSnapshot:
         ports=list_ports(),
         recent_logs=recent_log_lines(),
         latest_notification_titles=latest_titles,
+        notifications=notifications,
+        tasks=tasks,
     )
