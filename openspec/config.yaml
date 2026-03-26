@@ -1,0 +1,45 @@
+schema: spec-driven
+
+context: |
+  Project: CortexOS
+  Role: webkubor 的 AI Agent 中央大脑，不是外部执行编排器，不是 AI Team，不是 AetherFleet。
+  Internal protocol: MCP
+  External interfaces: CLI + HTTP API
+  Cloud extension: services/brain-api (Cloud Run + Firestore)
+  User knowledge SSOT: ~/Documents/memory/
+  CortexOS private runtime memory: CortexOS/.memory/
+  External skills SSOT: ~/Desktop/skills
+
+  CortexOS is responsible for:
+  - notifications: 接收各类 subagent / 外部系统通知
+  - tasks: 生成与分发需要后续动作的事项
+  - memories: 沉淀高价值事实、结论与上下文
+  - routing: 决定信息如何进入主脑、如何分诊、如何回流
+
+  Do not treat CortexOS as:
+  - A team dashboard
+  - A fleet runtime
+  - A substitute for execution agents
+
+  When proposing changes, prefer:
+  - small, reversible architectural moves
+  - clear SSOT boundaries
+  - CLI/API/MCP consistency
+  - subagent compatibility
+  - docs that are readable by both humans and AI tools
+
+rules:
+  proposal:
+    - 明确写出 Why / Scope / Non-goals / Risks。
+    - 如果改动涉及 notifications / tasks / memories，必须说明影响哪一层。
+    - 如果改动涉及主脑身份边界，必须显式说明是否影响 CLI、HTTP API、MCP、subagent。
+    - 不要把 AetherFleet、AI Team 或外部执行系统写成 CortexOS 本体的一部分。
+  design:
+    - 必须写清楚 SSOT（唯一真源）在哪里。
+    - 必须写清楚数据流：谁发送、谁接收、谁处理、谁持久化。
+    - 如果涉及前端，必须写本地入口地址与运行方式。
+    - 如果涉及后端，必须写 endpoint、字段、鉴权和部署位置。
+  tasks:
+    - 优先拆成 30-120 分钟粒度的可验证步骤。
+    - 每个任务要有明确产物或验证方式。
+    - 对 API、CLI、文档、运行时的改动尽量分开列出。
