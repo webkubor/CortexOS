@@ -40,7 +40,7 @@ class BrainSnapshot:
     skills: list[dict]
     mcp_servers: list[dict]
     mcp_tools: list[str]
-    api_endpoints: list[tuple[str, str]]
+    api_endpoints: list[tuple[str, str, str]]
     ports: list[tuple[str, str, str, str, str]]
     recent_logs: list[str]
     latest_notification_titles: list[str]
@@ -207,16 +207,16 @@ def list_mcp_tools(limit: int = 50) -> list[str]:
     return tools
 
 
-def list_api_endpoints() -> list[tuple[str, str]]:
+def list_api_endpoints() -> list[tuple[str, str, str]]:
     return [
-        ("GET", "/health"),
-        ("GET", "/notifications"),
-        ("POST", "/notifications"),
-        ("POST", "/notifications/:id/triage"),
-        ("GET", "/memories"),
-        ("POST", "/memories"),
-        ("GET", "/tasks"),
-        ("POST", "/tasks"),
+        ("GET", "/health", "健康检查，确认 Cloud Brain 在线状态、版本和能力清单。"),
+        ("GET", "/notifications", "读取主脑收件箱通知，可按 project 和 limit 拉取最近消息。"),
+        ("POST", "/notifications", "由 subagent 或外部系统上报通知，进入主脑收件箱。"),
+        ("POST", "/notifications/:id/triage", "把指定通知分诊为 memory、task 或 archive。"),
+        ("GET", "/memories", "读取长期记忆，供主脑或外部 agent 取上下文。"),
+        ("POST", "/memories", "写入长期记忆，沉淀高价值事实、结论和经验。"),
+        ("GET", "/tasks", "读取任务列表，查看主脑当前待办和执行状态。"),
+        ("POST", "/tasks", "创建任务，供主脑或外部系统分发后续动作。"),
     ]
 
 

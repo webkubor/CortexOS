@@ -87,6 +87,7 @@ class BrainTuiApp(App):
         ("r", "refresh", "刷新"),
         ("n", "focus_notifications", "通知"),
         ("t", "focus_tasks", "任务"),
+        ("a", "show_api", "API"),
         ("s", "show_skills", "Skills"),
         ("m", "show_mcp", "MCP"),
         ("q", "quit", "退出"),
@@ -158,6 +159,10 @@ class BrainTuiApp(App):
         self.detail_mode = "mcp"
         self.update_detail()
 
+    def action_show_api(self) -> None:
+        self.detail_mode = "api"
+        self.update_detail()
+
     def refresh_snapshot(self) -> None:
         self.snapshot = build_snapshot()
         self.render_snapshot()
@@ -197,8 +202,8 @@ class BrainTuiApp(App):
                 "外部入口：CLI + HTTP API",
             ],
         )
-        endpoint_lines = [f"{method} {path}" for method, path in snapshot.api_endpoints[:3]]
-        endpoint_lines.append(f"... 共 {len(snapshot.api_endpoints)} 个接口")
+        endpoint_lines = [f"{method} {path}" for method, path, _ in snapshot.api_endpoints[:3]]
+        endpoint_lines.append(f"按 A 看全部 {len(snapshot.api_endpoints)} 个接口")
         api.set_content("对外 API", endpoint_lines)
 
         log_widget = self.query_one("#log-lines", Static)
@@ -302,6 +307,20 @@ class BrainTuiApp(App):
                     + server_lines
                     + ["", "Tools:"]
                     + tool_lines
+                )
+            )
+            return
+
+        if self.detail_mode == "api":
+            endpoint_lines = []
+            for index, (method, path, description) in enumerate(snapshot.api_endpoints, start=1):
+                endpoint_lines.append(f"{index}. {method} {path}")
+                endpoint_lines.append(f"   {description}")
+            detail_widget.update(
+                "\n".join(
+                    ["[b]对外 API 清单[/b]", "", *endpoint_lines]
+                    if endpoint_lines
+                    else ["当前没有检测到对外 API。"]
                 )
             )
             return

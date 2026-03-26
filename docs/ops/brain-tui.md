@@ -34,9 +34,13 @@ pnpm brain:tui
 - `r`：刷新一次
 - `n`：聚焦通知表
 - `t`：聚焦任务表
+- `s`：查看完整 Skills 清单
+- `m`：查看完整 MCP 清单
+- `a`：查看完整对外 API 接口与功能说明
 - `q`：退出
 
 当光标位于通知或任务表时，移动选中行会自动更新右侧详情面板。
+右侧详情面板支持滚动，完整内容不会在这里做省略。
 
 ## 当前数据源
 
@@ -46,6 +50,12 @@ pnpm brain:tui
   - `GET /health`
   - `GET /notifications`
   - `GET /tasks`
+- API 清单：
+  - `/health`
+  - `/notifications`
+  - `/notifications/:id/triage`
+  - `/memories`
+  - `/tasks`
 - PM2:
   - `pm2 jlist`
 - skills:
