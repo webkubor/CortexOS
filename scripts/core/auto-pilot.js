@@ -60,6 +60,8 @@ const AUTO_MAINTENANCE_TASKS = [
   { key: 'error-retro', cmd: 'node scripts/maintenance/error-retro.mjs' },
   { key: 'memory-harvest', cmd: 'node scripts/maintenance/memory-harvest.mjs' },
 ];
+const LOOP_MODE = !['0', 'false', 'off'].includes(String(process.env.BRAIN_PILOT_LOOP || 'true').trim().toLowerCase());
+const LOOP_INTERVAL_MS = Math.max(Number(process.env.BRAIN_PILOT_INTERVAL_MS) || 300000, 30000);
 
 /**
  * 获取当前大脑的智力版本号
@@ -376,4 +378,19 @@ async function autoPilot() {
   }
 }
 
-autoPilot();
+async function runLoop() {
+  logEvent('状态', '自动巡航', '在线', `常驻模式已启用 · 间隔 ${Math.round(LOOP_INTERVAL_MS / 1000)} 秒`);
+
+  while (true) {
+    await autoPilot();
+    logEvent('状态', '自动巡航', '待命', `等待下一轮 ${Math.round(LOOP_INTERVAL_MS / 1000)} 秒`);
+    await new Promise((resolve) => setTimeout(resolve, LOOP_INTERVAL_MS));
+  }
+}
+
+const entry = LOOP_MODE ? runLoop : autoPilot
+
+entry().catch((error) => {
+  logEvent('错误', '自动巡航', '异常', error.message);
+  process.exit(1);
+});
