@@ -2,8 +2,8 @@
 layout: home
 hero:
   name: "CortexOS"
-  text: "多 Agent 协同外部大脑"
-  tagline: "让 Gemini、Claude、Codex 共享同一个大脑 —— 动态路由注入、上下文极简、多模型逻辑对齐。"
+  text: "AI Agent 中央大脑"
+  tagline: "让 Gemini、Claude、Codex 与各类 subagent 共享同一个中央大脑 —— 动态路由注入、上下文极简、多模型逻辑对齐。"
   image:
     src: /logo.svg
     alt: CortexOS

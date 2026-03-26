@@ -87,6 +87,7 @@ class BrainTuiApp(App):
         ("r", "refresh", "刷新"),
         ("n", "focus_notifications", "通知"),
         ("t", "focus_tasks", "任务"),
+        ("i", "show_nodes", "节点"),
         ("a", "show_api", "API"),
         ("s", "show_skills", "Skills"),
         ("m", "show_mcp", "MCP"),
@@ -163,6 +164,10 @@ class BrainTuiApp(App):
         self.detail_mode = "api"
         self.update_detail()
 
+    def action_show_nodes(self) -> None:
+        self.detail_mode = "nodes"
+        self.update_detail()
+
     def refresh_snapshot(self) -> None:
         self.snapshot = build_snapshot()
         self.render_snapshot()
@@ -198,8 +203,15 @@ class BrainTuiApp(App):
             "运行态",
             [
                 f"brain-cortex-pilot：{snapshot.pilot_status} · 重启 {snapshot.pilot_restarts} 次",
+                f"本机：{snapshot.local_node.get('hostname')} · {snapshot.local_node.get('ip')}",
+                (
+                    f"远端：{snapshot.remote_nodes[0].get('node_id')} · "
+                    f"{snapshot.remote_nodes[0].get('ip')}"
+                    if snapshot.remote_nodes
+                    else "远端：当前没有已上报节点"
+                ),
                 "前台形态：终端 TUI（brain-tui）",
-                "外部入口：CLI + HTTP API",
+                "按 I 看完整节点清单",
             ],
         )
         endpoint_lines = [f"Base URL：{snapshot.api_base_url}"]
@@ -329,6 +341,35 @@ class BrainTuiApp(App):
                     else ["当前没有检测到对外 API。"]
                 )
             )
+            return
+
+        if self.detail_mode == "nodes":
+            local = snapshot.local_node
+            remote = snapshot.remote_nodes
+            lines = [
+                "[b]节点清单[/b]",
+                "",
+                "本机节点：",
+                f"1. {local.get('name')} · {local.get('hostname')}",
+                f"   IP：{local.get('ip')}",
+                f"   环境：{local.get('environment')} · 区域：{local.get('region')}",
+                "",
+                "远端节点：",
+            ]
+            if remote:
+                for index, item in enumerate(remote, start=1):
+                    lines.extend(
+                        [
+                            f"{index}. {item.get('name')} · {item.get('node_id')}",
+                            f"   IP：{item.get('ip')}",
+                            f"   主机：{item.get('hostname')}",
+                            f"   环境：{item.get('environment')} · 区域：{item.get('region')}",
+                            f"   模型：{item.get('model')} · 来源：{item.get('source')}",
+                        ]
+                    )
+            else:
+                lines.append("当前没有远端节点汇报。")
+            detail_widget.update("\n".join(lines))
             return
 
         if self.selected_notification_id:

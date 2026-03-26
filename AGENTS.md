@@ -15,7 +15,6 @@ cortexos brief
 - `soul.md` 定义 CortexOS 怎么做事
 - `~/Documents/memory/` 是 **用户本人的唯一知识真源**
 - `CortexOS/.memory/` 是 **CortexOS 自己的运行态与私有记忆**
-- `AetherFleet/.memory/` 是 **AI 编排运行态**
 
 硬规则：
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import socket
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,6 +27,8 @@ PM2_OUT_LOG = Path(os.path.expanduser("~/.pm2/logs/brain-cortex-pilot-out.log"))
 @dataclass
 class BrainSnapshot:
     api_base_url: str
+    local_node: dict[str, str]
+    remote_nodes: list[dict[str, str]]
     cloud_online: bool
     cloud_version: str
     notifications_total: int
@@ -221,6 +224,81 @@ def list_api_endpoints() -> list[tuple[str, str, str]]:
     ]
 
 
+def get_local_node() -> dict[str, str]:
+    hostname = socket.gethostname()
+    ip = ""
+    for iface in ("en0", "en1", "bridge0"):
+        try:
+            out = subprocess.check_output(["ipconfig", "getifaddr", iface], text=True).strip()
+            if out:
+                ip = out
+                break
+        except Exception:
+            continue
+    if not ip:
+        try:
+            ip = socket.gethostbyname(hostname)
+        except Exception:
+            ip = "未识别"
+    return {
+        "name": "本机终端",
+        "node_id": "local-terminal",
+        "hostname": hostname,
+        "ip": ip or "未识别",
+        "environment": "local",
+        "region": "asia-shanghai",
+        "source": "cortexos",
+    }
+
+
+def _extract_public_ip(item: dict) -> str:
+    metadata = item.get("metadata") or {}
+    for key in ("publicIp", "public_ip", "nodeIp", "node_ip", "ip"):
+        value = str(metadata.get(key) or "").strip()
+        if value:
+            return value
+    content = str(item.get("content") or "")
+    matches = re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", content)
+    for ip in matches:
+        if not ip.startswith("127."):
+            return ip
+    return "未上报"
+
+
+def list_remote_nodes(notifications: list[dict], limit: int = 8) -> list[dict[str, str]]:
+    seen: set[str] = set()
+    nodes: list[dict[str, str]] = []
+    for item in notifications:
+        metadata = item.get("metadata") or {}
+        node_id = str(
+            metadata.get("nodeId")
+            or metadata.get("node_id")
+            or item.get("source")
+            or item.get("agent")
+            or ""
+        ).strip()
+        if not node_id or node_id == "cortexos":
+            continue
+        if node_id in seen:
+            continue
+        seen.add(node_id)
+        nodes.append(
+            {
+                "name": str(metadata.get("nodeName") or metadata.get("node_name") or item.get("source") or node_id),
+                "node_id": node_id,
+                "source": str(item.get("source") or item.get("agent") or "unknown"),
+                "model": str(metadata.get("model") or item.get("agent") or "unknown"),
+                "environment": str(metadata.get("environment") or "unknown"),
+                "region": str(metadata.get("region") or "unknown"),
+                "hostname": str(metadata.get("hostname") or "unknown"),
+                "ip": _extract_public_ip(item),
+            }
+        )
+        if len(nodes) >= limit:
+            break
+    return nodes
+
+
 def _parse_listen_name(name: str) -> tuple[str, str, str]:
     text = (name or "").strip()
     if not text:
@@ -304,6 +382,8 @@ def build_snapshot() -> BrainSnapshot:
 
     return BrainSnapshot(
         api_base_url=BRAIN_API_URL,
+        local_node=get_local_node(),
+        remote_nodes=list_remote_nodes(notifications),
         cloud_online=cloud_online,
         cloud_version=cloud_version,
         notifications_total=len(notifications),
