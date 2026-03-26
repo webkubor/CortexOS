@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+import fs from 'fs'
 import { execSync } from 'child_process'
+import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -8,6 +10,14 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.join(__dirname, '../..')
 const ecosystemPath = path.join(projectRoot, 'ecosystem.config.cjs')
+const pm2LogDir = path.join(os.homedir(), '.pm2', 'logs')
+
+const managedLogFiles = [
+  'brain-cortex-pilot-out.log',
+  'brain-cortex-pilot-error.log',
+  'brain-frontend-out.log',
+  'brain-frontend-error.log'
+].map((name) => path.join(pm2LogDir, name))
 
 function run (command) {
   return execSync(command, { cwd: projectRoot, encoding: 'utf8', stdio: 'pipe' }).trim()
@@ -21,9 +31,19 @@ function safeRun (command) {
   }
 }
 
+function resetManagedLogs () {
+  for (const filePath of managedLogFiles) {
+    try {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true })
+      fs.writeFileSync(filePath, '')
+    } catch {}
+  }
+}
+
 function main () {
   safeRun('pm2 delete brain-cortex-pilot')
   safeRun('pm2 delete brain-frontend')
+  resetManagedLogs()
   run(`pm2 start ${JSON.stringify(ecosystemPath)}`)
   safeRun('pm2 save')
 

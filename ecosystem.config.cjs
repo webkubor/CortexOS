@@ -14,9 +14,8 @@ module.exports = {
     {
       name: 'brain-frontend',
       cwd: __dirname,
-      script: 'pnpm',
-      args: 'brain:frontend',
-      interpreter: 'none',
+      script: 'scripts/core/brain-frontend.mjs',
+      interpreter: 'node',
       autorestart: true,
       env: {
         BROWSER: 'none'

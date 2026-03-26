@@ -139,7 +139,10 @@ async function buildSnapshot() {
     cloudError = error.message
   }
 
-  const pendingNotifications = notifications.filter((item) => String(item.status || '').trim() !== 'acted')
+  const pendingNotifications = notifications.filter((item) => {
+    const status = String(item.status || '').trim().toLowerCase()
+    return status === 'new' || status === 'triaged'
+  })
   const unreadNotifications = notifications.filter((item) => item.read !== true)
   const openTasks = tasks.filter((item) => String(item.status || '').trim() !== '已完成')
   const seenCount = Object.keys(inboxState.seen || {}).length

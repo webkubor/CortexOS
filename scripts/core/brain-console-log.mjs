@@ -72,5 +72,13 @@ export function logSection (title) {
 }
 
 export function firstLine (text) {
-  return String(text || '').split('\n').map(item => item.trim()).find(Boolean) || '无输出'
+  const stripAnsi = (value) => value.replace(/\x1B\[[0-9;]*m/g, '')
+  const lines = String(text || '')
+    .split('\n')
+    .map(item => item.trim())
+    .map(stripAnsi)
+    .filter(Boolean)
+    .filter(item => !/^[─-]+$/.test(item))
+
+  return lines[0] || '无输出'
 }
