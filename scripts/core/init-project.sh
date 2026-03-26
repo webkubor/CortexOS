@@ -68,27 +68,8 @@ node ./scripts/tools/sync-skills-management.mjs
 
 # 9. 启动或重启自动驾驶进程 (PM2)
 if command -v "pm2" &> /dev/null; then
-  printf "${GREEN}🔄 正在启动大脑自动驾驶仪 (PM2)...${NC}\n"
-  PILOT_ENABLED="true"
-  PILOT_SCHEDULE="*/5 * * * *"
-
-  if [ -f "$RUNTIME_CONFIG" ]; then
-    PILOT_ENABLED=$(node -e 'const fs=require("fs");const c=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(c?.daemons?.["brain-cortex-pilot"]?.enabled ?? true));' "$RUNTIME_CONFIG" 2>/dev/null || echo "true")
-    PILOT_SCHEDULE=$(node -e 'const fs=require("fs");const c=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(c?.daemons?.["brain-cortex-pilot"]?.schedule ?? "*/5 * * * *"));' "$RUNTIME_CONFIG" 2>/dev/null || echo "*/5 * * * *")
-    printf "   ✅ 已加载后台配置: %s\n" "$RUNTIME_CONFIG"
-  else
-    printf "${YELLOW}⚠️ 未找到后台配置文件，使用默认调度。${NC}\n"
-  fi
-
-  if [ "$PILOT_ENABLED" = "true" ]; then
-    pm2 delete brain-cortex-pilot 2>/dev/null || true
-    pm2 start scripts/core/auto-pilot.js --name brain-cortex-pilot --cron-restart="$PILOT_SCHEDULE" --no-autorestart
-  else
-    pm2 delete brain-cortex-pilot 2>/dev/null || true
-    printf "   ℹ️ brain-cortex-pilot 已按配置禁用。\n"
-  fi
-
-  pm2 save
+  printf "${GREEN}🔄 正在启动主脑常驻服务 (PM2)...${NC}\n"
+  node ./scripts/actions/brain-stack-up.mjs
 fi
 
 # 10. 智商自检
@@ -103,6 +84,7 @@ printf "----------------------------------------\n"
 printf "🧠 ${BLUE}智商状态: ${NC}$RAG_STATUS\n"
 printf "📡 ${BLUE}推送状态: ${NC}$LARK_STATUS\n"
 printf "💓 ${BLUE}自动驾驶: ${NC}${GREEN}ONLINE (PM2)${NC}\n"
+printf "🖥 ${BLUE}主脑前端: ${NC}${GREEN}http://127.0.0.1:5181/CortexOS/brain/${NC}\n"
 printf "----------------------------------------\n"
 printf "🛠 ${YELLOW}如何体验大脑的威力？${NC}\n"
 printf " 1. ${GREEN}测试语义记忆${NC}: 运行 ${YELLOW}node scripts/xiaozhu_chat.mjs${NC} 并问它关于本项目的规则。\n"
@@ -110,6 +92,7 @@ printf " 2. ${GREEN}测试实时战报${NC}: 在 ${BLUE}$LARK_ENV${NC} 填入 We
 printf " 3. ${GREEN}验证物理搜索${NC}: 运行 ${YELLOW}./scripts/rag_probe.sh \"你的查询\"${NC}\n"
 printf "----------------------------------------\n"
 printf "💡 ${BLUE}常用管理：${NC}\n"
-printf " - 查看大脑运行日志: ${YELLOW}pm2 logs brain-cortex-pilot${NC}\n"
-printf " - 启动文档预览: ${YELLOW}pnpm dev${NC}\n"
+printf " - 查看主脑统一日志: ${YELLOW}pnpm brain:logs${NC}\n"
+printf " - 查看主脑运行状态: ${YELLOW}pnpm brain:status${NC}\n"
+printf " - 打开主脑前端页面: ${YELLOW}http://127.0.0.1:5181/CortexOS/brain/${NC}\n"
 printf "----------------------------------------\n"

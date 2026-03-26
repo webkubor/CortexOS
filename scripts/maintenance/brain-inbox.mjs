@@ -5,6 +5,7 @@ import path from 'path'
 import { execSync } from 'child_process'
 import { fileURLToPath, pathToFileURL } from 'url'
 import { suggestTriageAction } from '../../services/brain-api/src/triage.js'
+import { logEvent, logSection } from '../core/brain-console-log.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -506,6 +507,8 @@ async function autoTriageNotification (notification) {
 async function main () {
   ensureDirs()
   const state = readState()
+  logSection('Cloud Brain 收件箱检查')
+  logEvent('通知', '收件箱', '开始', `项目 ${BRAIN_PROJECT} · 目标 ${BRAIN_API_URL}`)
 
   const notificationsResponse = await fetchJson(`/notifications?project=${encodeURIComponent(BRAIN_PROJECT)}&limit=${BRAIN_INBOX_LIMIT}`, {
     headers: getHeaders(false)
@@ -517,10 +520,11 @@ async function main () {
   const triageResults = []
 
   for (const notification of fresh) {
-    console.log(`[brain-inbox] 新通知: ${notification.title || notification.id} <${notification.id}>`)
+    logEvent('通知', notification.title || notification.id, '开始', `收到新通知 <${notification.id}>`)
     notifyNative(notification)
     const triageResult = await autoTriageNotification(notification)
     triageResults.push(triageResult)
+    logEvent('通知', notification.title || notification.id, triageResult.skipped ? '跳过' : '完成', `分诊动作 ${triageResult.action}`)
     state.seen[notification.id] = {
       seenAt: new Date().toISOString(),
       title: notification.title || '',
@@ -572,6 +576,8 @@ async function main () {
     openInboxHtml()
   }
 
+  logEvent('状态', '收件箱', '完成', `新通知 ${fresh.length} 条 · 自动分诊 ${triageResults.filter(item => !item.skipped).length} 条`)
+
   console.log(JSON.stringify({
     ok: true,
     project: BRAIN_PROJECT,
@@ -585,4 +591,7 @@ async function main () {
   }))
 }
 
-await main()
+main().catch((error) => {
+  logEvent('错误', '收件箱', '异常', error.message)
+  process.exit(1)
+})

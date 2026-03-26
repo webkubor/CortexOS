@@ -32,7 +32,7 @@ Auto-Pilot 是 `CortexOS` 主脑的后台维护层，不是外部执行系统。
 ## 4. 运行模式
 
 - **CLI 模式**: 手动执行相关维护脚本。
-- **PM2 模式**: `brain-cortex-pilot` 常驻托管，持续维护主脑收件箱与运行健康。
+- **PM2 模式**: `brain-cortex-pilot` 常驻托管后台；`brain-frontend` 常驻托管前台页面。
 - **Git Hook 模式**: 仅保留与 CortexOS 自身安全相关的检查。
 
 ## 5. 设计原则

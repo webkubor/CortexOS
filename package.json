@@ -8,6 +8,9 @@
   },
   "scripts": {
     "dev": "vitepress dev docs",
+    "brain:frontend": "vitepress dev docs --host 127.0.0.1 --port 5181 --strictPort",
+    "brain:up": "node scripts/actions/brain-stack-up.mjs",
+    "brain:logs": "pm2 logs brain-cortex-pilot brain-frontend --lines 120",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "brain-api:dev": "pnpm --dir services/brain-api dev",

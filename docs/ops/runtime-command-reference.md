@@ -19,15 +19,29 @@ bash scripts/core/init-project.sh
 ```bash
 pm2 ls
 pm2 describe brain-cortex-pilot
+pm2 describe brain-frontend
 pm2 logs brain-cortex-pilot --lines 100
+pm2 logs brain-frontend --lines 100
 pm2 restart brain-cortex-pilot
+pm2 restart brain-frontend
 pm2 stop brain-cortex-pilot
+pm2 stop brain-frontend
 pm2 save
 pm2 startup
 ```
 
+### 推荐命令
+
+```bash
+pnpm brain:up
+pnpm brain:logs
+pnpm brain:status
+pnpm brain:watch
+```
+
 ## 3. 判定标准
 
-- `pm2 ls` 中 `brain-cortex-pilot` 为 `online`
-- `pm2 logs` 中能看到同步、维护、写日志输出
+- `pm2 ls` 中 `brain-cortex-pilot` 与 `brain-frontend` 为 `online`
+- `pnpm brain:status` 中云端、后台、前端三项都在线
+- `pm2 logs` 中能看到带类型标签的结构化输出
 - 修改脚本后执行一次 `pm2 restart brain-cortex-pilot`

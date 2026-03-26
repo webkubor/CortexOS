@@ -12,6 +12,7 @@ const memoryRoot = path.join(projectRoot, '.memory')
 const inboxStatePath = path.join(memoryRoot, 'cache/cloud-brain-inbox-state.json')
 const inboxFilePath = path.join(memoryRoot, 'inbox/cloud-brain-inbox.md')
 const brainApiUrl = process.env.BRAIN_API_URL || 'https://brain-api-675793533606.asia-southeast2.run.app'
+const brainFrontendUrl = 'http://127.0.0.1:5181/CortexOS/brain/'
 const isWatchMode = process.argv.includes('--watch')
 const color = {
   reset: '\x1b[0m',
@@ -62,13 +63,12 @@ function loadInboxState() {
   }
 }
 
-function loadPm2Process() {
+function loadPm2Processes() {
   try {
     const raw = execSync('pm2 jlist', { cwd: projectRoot, encoding: 'utf8' })
-    const list = JSON.parse(raw)
-    return list.find((item) => item.name === 'brain-cortex-pilot') || null
+    return JSON.parse(raw)
   } catch {
-    return null
+    return []
   }
 }
 
@@ -117,7 +117,9 @@ async function main() {
 
 async function buildSnapshot() {
   const inboxState = loadInboxState()
-  const pm2Process = loadPm2Process()
+  const pm2Processes = loadPm2Processes()
+  const pilotProcess = pm2Processes.find((item) => item.name === 'brain-cortex-pilot') || null
+  const frontendProcess = pm2Processes.find((item) => item.name === 'brain-frontend') || null
 
   let health = null
   let notifications = []
@@ -143,14 +145,16 @@ async function buildSnapshot() {
   const seenCount = Object.keys(inboxState.seen || {}).length
   const latestNotification = notifications[0] || null
   const recentNotifications = notifications.slice(0, 3)
-  const pilotStatus = pm2Process ? normalizeProcessStatus(pm2Process.pm2_env?.status) : '未运行'
-  const pilotUptime = pm2Process?.pm2_env?.pm_uptime
-    ? formatDuration(Math.floor((Date.now() - pm2Process.pm2_env.pm_uptime) / 1000))
+  const pilotStatus = pilotProcess ? normalizeProcessStatus(pilotProcess.pm2_env?.status) : '未运行'
+  const pilotUptime = pilotProcess?.pm2_env?.pm_uptime
+    ? formatDuration(Math.floor((Date.now() - pilotProcess.pm2_env.pm_uptime) / 1000))
     : '-'
-  const pilotRestarts = pm2Process?.pm2_env?.restart_time ?? 0
+  const pilotRestarts = pilotProcess?.pm2_env?.restart_time ?? 0
+  const frontendStatus = frontendProcess ? normalizeProcessStatus(frontendProcess.pm2_env?.status) : '未运行'
+  const frontendTone = frontendProcess ? (frontendStatus === '在线' ? 'good' : 'warn') : 'bad'
   const cloudStatus = cloudError ? `离线（${cloudError}）` : `在线 · ${health?.version || '-'}`
   const cloudStatusTone = cloudError ? 'bad' : 'good'
-  const pilotTone = pm2Process ? (pilotStatus === '在线' ? 'good' : 'warn') : 'bad'
+  const pilotTone = pilotProcess ? (pilotStatus === '在线' ? 'good' : 'warn') : 'bad'
 
   const lines = [
     `${color.bold}${color.cyan}🧠 Webkubor 主脑状态${color.reset}`,
@@ -158,6 +162,7 @@ async function buildSnapshot() {
     section('运行总览', [
       `云端大脑：${paint(cloudStatus, cloudStatusTone)}`,
       `主脑后台：${paint(`${pilotStatus} · 已运行 ${pilotUptime} · 重启 ${pilotRestarts} 次`, pilotTone)}`,
+      `主脑前端：${paint(`${frontendStatus} · ${brainFrontendUrl}`, frontendTone)}`,
       `最近收件箱检查：${formatLocalTime(inboxState.lastCheckedAt)}`
     ]),
     '',
@@ -207,6 +212,7 @@ async function buildSnapshot() {
     healthVersion: health?.version || '',
     pilotStatus,
     pilotRestarts,
+    frontendStatus,
     inboxLastCheckedAt: inboxState.lastCheckedAt,
     notifications: notifications.map(item => [item.id, item.status, item.read, item.updatedAt, item.actedAt]),
     tasks: tasks.map(item => [item.id || item.taskId, item.status, item.updatedAt]),

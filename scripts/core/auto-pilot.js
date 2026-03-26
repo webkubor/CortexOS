@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { consumeBuffer, addToLog, getCurrentTimestamp, sendNativeNotification } from './sentinel.js';
 import { sendToLark } from '../services/lark-service.mjs';
+import { firstLine, logEvent, logSection } from './brain-console-log.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -274,7 +275,12 @@ async function autoPilot() {
   const buffer = consumeBuffer();
 
   try {
+    logSection('CortexOS 主脑自动巡航');
+    logEvent('状态', '自动巡航', '开始', `${brainVersion} · 启动本轮后台维护`);
     const maintenanceResults = runAutoMaintenance();
+    maintenanceResults.forEach(item => {
+      logEvent('任务', item.key, item.ok ? '完成' : '失败', firstLine(item.output));
+    });
     const statusOutput = execSync('git status --short', { encoding: 'utf-8', cwd: PROJECT_ROOT });
     const rawLines = statusOutput
       .split('\n')
@@ -342,6 +348,9 @@ async function autoPilot() {
       if (commitError) {
         detailedMessage += `\n[ 自动提交 ]\n  - 状态: 失败\n  - 原因: ${commitError}\n`;
         larkMessage += `\n⚠️ 自动提交失败: ${commitError}\n`;
+        logEvent('错误', '自动提交', '失败', commitError);
+      } else if (hasFileChanges) {
+        logEvent('同步', 'Git 提交', '完成', `${totalStat || '已完成同步'} · 模式 ${modeLabel}`);
       }
 
       // 推送 (标题带关键词和核心状态)
@@ -350,16 +359,19 @@ async function autoPilot() {
 
       addToLog({ title: '大脑同步', body: detailedMessage });
       if (larkResult?.ok) {
-        console.log('🚀 飞书定制版战报已送达！');
+        logEvent('通知', '飞书战报', '完成', '飞书定制版战报已送达');
       } else {
         const reason = larkResult?.reason || 'unknown';
         if (shouldPrintLarkSkip(reason)) {
-          console.log(`ℹ️ 飞书推送未发送: ${reason}`);
+          logEvent('通知', '飞书战报', '跳过', reason);
         }
       }
+    } else {
+      logEvent('状态', '自动巡航', '待命', '本轮没有文件变更，也没有待同步缓冲任务');
     }
+    logEvent('状态', '自动巡航', '完成', '本轮主脑后台维护结束');
   } catch (e) {
-    console.error('⚠️ 运行异常:', e.message);
+    logEvent('错误', '自动巡航', '异常', e.message);
     sendNativeNotification('⚠️ 大脑神经元异常', `自动记录与同步失败: ${e.message}`);
   }
 }
