@@ -202,7 +202,8 @@ class BrainTuiApp(App):
                 "外部入口：CLI + HTTP API",
             ],
         )
-        endpoint_lines = [f"{method} {path}" for method, path, _ in snapshot.api_endpoints[:3]]
+        endpoint_lines = [f"Base URL：{snapshot.api_base_url}"]
+        endpoint_lines.extend(f"{method} {path}" for method, path, _ in snapshot.api_endpoints[:2])
         endpoint_lines.append(f"按 A 看全部 {len(snapshot.api_endpoints)} 个接口")
         api.set_content("对外 API", endpoint_lines)
 
@@ -318,7 +319,12 @@ class BrainTuiApp(App):
                 endpoint_lines.append(f"   {description}")
             detail_widget.update(
                 "\n".join(
-                    ["[b]对外 API 清单[/b]", "", *endpoint_lines]
+                    [
+                        "[b]对外 API 清单[/b]",
+                        f"Base URL：{snapshot.api_base_url}",
+                        "",
+                        *endpoint_lines,
+                    ]
                     if endpoint_lines
                     else ["当前没有检测到对外 API。"]
                 )

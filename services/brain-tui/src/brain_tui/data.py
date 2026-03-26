@@ -25,6 +25,7 @@ PM2_OUT_LOG = Path(os.path.expanduser("~/.pm2/logs/brain-cortex-pilot-out.log"))
 
 @dataclass
 class BrainSnapshot:
+    api_base_url: str
     cloud_online: bool
     cloud_version: str
     notifications_total: int
@@ -246,6 +247,7 @@ def list_ports(limit: int = 18) -> list[tuple[str, str, str, str, str]]:
     if len(lines) <= 1:
         return []
     rows: list[tuple[str, str, str, str, str]] = []
+    seen: set[tuple[str, str, str, str]] = set()
     for line in lines[1:]:
         parts = re.split(r"\s+", line.strip())
         if len(parts) < 10:
@@ -254,6 +256,10 @@ def list_ports(limit: int = 18) -> list[tuple[str, str, str, str, str]]:
         pid = parts[1]
         name = parts[-2]
         port, host, state = _parse_listen_name(name)
+        dedupe_key = (command, pid, port, host)
+        if dedupe_key in seen:
+            continue
+        seen.add(dedupe_key)
         rows.append((command, pid, port, host, state))
         if len(rows) >= limit:
             break
@@ -297,6 +303,7 @@ def build_snapshot() -> BrainSnapshot:
         latest_titles.append(f"{title} · {created[:19].replace('T', ' ')}")
 
     return BrainSnapshot(
+        api_base_url=BRAIN_API_URL,
         cloud_online=cloud_online,
         cloud_version=cloud_version,
         notifications_total=len(notifications),
