@@ -18,14 +18,6 @@
       "script": "scripts/core/auto-pilot.js",
       "schedule": "*/5 * * * *",
       "purpose": "大脑内核同步、栖洲资产保护、僵尸进程清理、环境态势感知"
-    },
-    "brain-frontend": {
-      "enabled": true,
-      "managedBy": "pm2",
-      "script": "pnpm brain:frontend",
-      "port": 5181,
-      "url": "http://127.0.0.1:5181/CortexOS/brain/",
-      "purpose": "CortexOS 中央大脑前台常驻页面"
     }
   }
 }

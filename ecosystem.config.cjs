@@ -10,16 +10,6 @@ module.exports = {
       env: {
         CORTEXOS_LOG_STYLE: 'pm2'
       }
-    },
-    {
-      name: 'brain-frontend',
-      cwd: __dirname,
-      script: 'scripts/core/brain-frontend.mjs',
-      interpreter: 'node',
-      autorestart: true,
-      env: {
-        BROWSER: 'none'
-      }
     }
   ]
 }

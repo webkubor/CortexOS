@@ -14,9 +14,7 @@ const pm2LogDir = path.join(os.homedir(), '.pm2', 'logs')
 
 const managedLogFiles = [
   'brain-cortex-pilot-out.log',
-  'brain-cortex-pilot-error.log',
-  'brain-frontend-out.log',
-  'brain-frontend-error.log'
+  'brain-cortex-pilot-error.log'
 ].map((name) => path.join(pm2LogDir, name))
 
 function run (command) {
@@ -42,7 +40,6 @@ function resetManagedLogs () {
 
 function main () {
   safeRun('pm2 delete brain-cortex-pilot')
-  safeRun('pm2 delete brain-frontend')
   resetManagedLogs()
   run(`pm2 start ${JSON.stringify(ecosystemPath)}`)
   safeRun('pm2 save')
@@ -51,8 +48,6 @@ function main () {
   process.stdout.write(`${status}\n`)
   process.stdout.write('\n🧠 主脑常驻服务已启动\n')
   process.stdout.write('  - 后台: brain-cortex-pilot\n')
-  process.stdout.write('  - 前端: brain-frontend\n')
-  process.stdout.write('  - 地址: http://127.0.0.1:5181/CortexOS/brain/\n')
 }
 
 main()

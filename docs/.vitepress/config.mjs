@@ -5,7 +5,6 @@ const nav = [
   { text: "📚 DOC", link: "/" },
   { text: "🚀 使用指引", link: "/guide/" },
   { text: "📏 规则中心", link: "/rules/" },
-  { text: "🧠 Brain Agent", link: "/brain/" },
   { text: "🤖 Agent 配置", link: "/agents/" }
 ]
 
@@ -68,13 +67,6 @@ export default defineConfig({
         ],
       },
       {
-        text: "🧠 主脑 Agent",
-        items: [
-          { text: "Brain Agent 原型", link: "/brain/" },
-          { text: "Brain Agent 路线图", link: "/ops/brain-agent-roadmap" },
-        ],
-      },
-      {
         text: "🧩 技能矩阵 (Skills)",
         items: [
           { text: "🎮 技能指挥部", link: "/skills" },
@@ -108,7 +100,10 @@ export default defineConfig({
       {
         text: "🖥 运行与运维 (Ops)",
         collapsed: false,
-        items: opsItems
+        items: [
+          ...opsItems,
+          { text: "Brain Agent 路线图", link: "/ops/brain-agent-roadmap" },
+        ]
       },
       {
         text: "👋 关于",

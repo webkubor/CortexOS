@@ -1,0 +1,235 @@
+from __future__ import annotations
+
+import json
+import os
+import re
+import subprocess
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from urllib.error import URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
+DOCS_ROOT = PROJECT_ROOT / "docs"
+MCP_ROOT = PROJECT_ROOT / "mcp_server"
+BRAIN_API_URL = os.environ.get(
+    "BRAIN_API_URL",
+    "https://brain-api-675793533606.asia-southeast2.run.app",
+).strip()
+SKILLS_ROOT = Path(os.path.expanduser("~/Desktop/skills"))
+PM2_ERROR_LOG = Path(os.path.expanduser("~/.pm2/logs/brain-cortex-pilot-error.log"))
+PM2_OUT_LOG = Path(os.path.expanduser("~/.pm2/logs/brain-cortex-pilot-out.log"))
+
+
+@dataclass
+class BrainSnapshot:
+    cloud_online: bool
+    cloud_version: str
+    notifications_total: int
+    notifications_pending: int
+    tasks_total: int
+    tasks_open: int
+    pilot_status: str
+    pilot_restarts: int
+    skills_count: int
+    agent_count: int
+    mcp_server_count: int
+    mcp_tool_count: int
+    api_endpoints: list[tuple[str, str]]
+    ports: list[tuple[str, str, str]]
+    recent_logs: list[str]
+    latest_notification_titles: list[str]
+
+
+def _run(cmd: list[str]) -> str:
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return ""
+        return result.stdout.strip()
+    except Exception:
+        return ""
+
+
+def _fetch_json(pathname: str, query: dict[str, str] | None = None) -> dict:
+    url = f"{BRAIN_API_URL}{pathname}"
+    if query:
+        url += "?" + urlencode(query)
+    request = Request(url, headers={"accept": "application/json"})
+    with urlopen(request, timeout=5) as response:
+        body = response.read().decode("utf-8")
+        return json.loads(body)
+
+
+def get_cloud_data() -> tuple[bool, str, list[dict], list[dict]]:
+    try:
+        health = _fetch_json("/health")
+        notifications = _fetch_json("/notifications", {"project": "cortexos", "limit": "20"})
+        tasks = _fetch_json("/tasks", {"project": "cortexos", "limit": "20"})
+        return (
+            True,
+            str(health.get("version", "-")),
+            list(notifications.get("notifications", [])),
+            list(tasks.get("tasks", [])),
+        )
+    except (URLError, TimeoutError, json.JSONDecodeError, OSError):
+        return False, "-", [], []
+
+
+def get_pm2_processes() -> dict[str, dict]:
+    raw = _run(["pm2", "jlist"])
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    return {item.get("name", ""): item for item in data if item.get("name")}
+
+
+def normalize_status(value: str) -> str:
+    text = (value or "").strip().lower()
+    if text == "online":
+        return "在线"
+    if text == "stopped":
+        return "已停止"
+    if text == "errored":
+        return "异常"
+    if text == "launching":
+        return "启动中"
+    return value or "未运行"
+
+
+def count_skills() -> int:
+    if not SKILLS_ROOT.exists():
+        return 0
+    return len(list(SKILLS_ROOT.glob("**/SKILL.md")))
+
+
+def count_agents() -> int:
+    agents_dir = DOCS_ROOT / "agents"
+    if not agents_dir.exists():
+        return 0
+    count = 0
+    for child in agents_dir.iterdir():
+        if not child.is_dir():
+            continue
+        if (child / "README.md").exists():
+            count += 1
+    return count
+
+
+def count_mcp_servers() -> int:
+    config_path = MCP_ROOT / "mcp_config.json"
+    if not config_path.exists():
+        return 0
+    try:
+        data = json.loads(config_path.read_text("utf-8"))
+        return len(data.get("mcpServers", {}))
+    except Exception:
+        return 0
+
+
+def count_mcp_tools() -> int:
+    server_py = MCP_ROOT / "server.py"
+    if not server_py.exists():
+        return 0
+    content = server_py.read_text("utf-8")
+    return content.count("@mcp.tool()")
+
+
+def list_api_endpoints() -> list[tuple[str, str]]:
+    return [
+        ("GET", "/health"),
+        ("GET", "/notifications"),
+        ("POST", "/notifications"),
+        ("POST", "/notifications/:id/triage"),
+        ("GET", "/memories"),
+        ("POST", "/memories"),
+        ("GET", "/tasks"),
+        ("POST", "/tasks"),
+    ]
+
+
+def list_ports(limit: int = 18) -> list[tuple[str, str, str]]:
+    raw = _run(["lsof", "-nP", "-iTCP", "-sTCP:LISTEN"])
+    lines = raw.splitlines()
+    if len(lines) <= 1:
+        return []
+    rows: list[tuple[str, str, str]] = []
+    for line in lines[1:]:
+        parts = re.split(r"\s+", line.strip())
+        if len(parts) < 9:
+            continue
+        command = parts[0]
+        pid = parts[1]
+        name = parts[-1]
+        rows.append((command, pid, name))
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def _tail_lines(path: Path, limit: int = 10) -> list[str]:
+    if not path.exists():
+        return []
+    try:
+        lines = path.read_text("utf-8", errors="ignore").splitlines()
+        cleaned = [line.strip() for line in lines if line.strip()]
+        return cleaned[-limit:]
+    except Exception:
+        return []
+
+
+def recent_log_lines() -> list[str]:
+    lines = _tail_lines(PM2_OUT_LOG, 8)
+    if not lines:
+        lines = _tail_lines(PM2_ERROR_LOG, 8)
+    return lines
+
+
+def build_snapshot() -> BrainSnapshot:
+    cloud_online, cloud_version, notifications, tasks = get_cloud_data()
+    pending_notifications = [
+        item for item in notifications if str(item.get("status", "")).lower() in {"new", "triaged"}
+    ]
+    open_tasks = [item for item in tasks if str(item.get("status", "")) != "已完成"]
+
+    pm2_processes = get_pm2_processes()
+    pilot = pm2_processes.get("brain-cortex-pilot", {})
+    pilot_status = normalize_status(str(pilot.get("pm2_env", {}).get("status", "未运行")))
+    pilot_restarts = int(pilot.get("pm2_env", {}).get("restart_time", 0) or 0)
+
+    latest_titles = []
+    for item in notifications[:3]:
+        title = str(item.get("title") or item.get("id") or "未命名通知")
+        created = str(item.get("createdAt") or "")
+        latest_titles.append(f"{title} · {created[:19].replace('T', ' ')}")
+
+    return BrainSnapshot(
+        cloud_online=cloud_online,
+        cloud_version=cloud_version,
+        notifications_total=len(notifications),
+        notifications_pending=len(pending_notifications),
+        tasks_total=len(tasks),
+        tasks_open=len(open_tasks),
+        pilot_status=pilot_status,
+        pilot_restarts=pilot_restarts,
+        skills_count=count_skills(),
+        agent_count=count_agents(),
+        mcp_server_count=count_mcp_servers(),
+        mcp_tool_count=count_mcp_tools(),
+        api_endpoints=list_api_endpoints(),
+        ports=list_ports(),
+        recent_logs=recent_log_lines(),
+        latest_notification_titles=latest_titles,
+    )

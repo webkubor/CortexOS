@@ -62,7 +62,7 @@ flowchart LR
 | 重点记忆 | 已在 `memories` 落地 | 继续放在 CortexOS |
 | 任务分诊 | 已在 `notifications -> triage -> tasks` 落地 | 继续放在 CortexOS |
 | 主入口叙事 | 已从文档中去 AetherFleet 化 | 保持 CortexOS 唯一入口 |
-| 用户对话前台 | `BrainAgentConsole` 原型已存在 | 继续在 CortexOS 内演进 |
+| 用户操作前台 | `brain-tui` 终端主脑控制台 | 继续在 CortexOS 内演进 |
 
 ### 3. 可以从 CortexOS 中删除的 AetherFleet 残留
 

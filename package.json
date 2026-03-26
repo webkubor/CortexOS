@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "vitepress dev docs",
-    "brain:frontend": "node scripts/core/brain-frontend.mjs",
+    "brain:tui": "uv run --project services/brain-tui brain-tui",
     "brain:up": "node scripts/actions/brain-stack-up.mjs",
-    "brain:logs": "pm2 logs brain-cortex-pilot brain-frontend --lines 120",
+    "brain:logs": "pm2 logs brain-cortex-pilot --lines 120",
     "spec:list": "npx @fission-ai/openspec list",
     "spec:status": "npx @fission-ai/openspec status",
     "spec:validate": "npx @fission-ai/openspec validate",
