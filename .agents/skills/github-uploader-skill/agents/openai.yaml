@@ -1,0 +1,7 @@
+interface:
+  display_name: "GitHub 图床设置"
+  short_description: "配置并管理 GitHub 图床仓库 (webkubor/upic-images) 及 jsDelivr 分发。"
+  default_prompt: "使用 $github-uploader-skill 来上传文档资产或配置 GitHub 图床仓库。"
+
+policy:
+  allow_implicit_invocation: true

@@ -31,14 +31,13 @@ cortexos serve          # HTTP API 模式
 ## Skills 架构
 
 ```
-通用 skills  →  CortexOS/.agents/skills/      (本仓库统一维护)
-私人 skills  →  personal-skills/arsenal/      (含凭证，独立仓库)
+所有 skills  →  CortexOS/.agents/skills/      (唯一真源)
 ~/.agents/skills/  →  symlink 挂载点          (无实体文件，不漂移)
 ```
 
-- 修改通用 skill：直接改 `CortexOS/.agents/skills/`
-- 修改私人 skill：改 `personal-skills/arsenal/`
+- 修改任何 skill：直接改 `CortexOS/.agents/skills/`
 - 索引同步：`pnpm skills:sync`
+- 私人凭证：通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码
 
 ## 原则
 

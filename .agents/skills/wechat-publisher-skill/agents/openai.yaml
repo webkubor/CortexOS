@@ -1,0 +1,7 @@
+interface:
+  display_name: "微信公众号发布"
+  short_description: "自动化发布文章/图文至微信公众号 (基于宝玉老师版本)。"
+  default_prompt: "使用 $wechat-publisher-skill 来转换 Markdown 或发布公众号文章。"
+
+policy:
+  allow_implicit_invocation: true

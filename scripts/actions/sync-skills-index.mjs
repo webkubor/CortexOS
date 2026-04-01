@@ -30,7 +30,7 @@ function inferCategory (name) {
   if (name.startsWith('openspec-')) return 'workflow'
   if (/logo|design|ui|ux|cinematic|storyboard/.test(name)) return 'creative'
   if (/audio|music/.test(name)) return 'media'
-  if (/ecommerce|wechat|xhs|github|r2|uploader/.test(name)) return 'integration'
+  if (/ecommerce|wechat|github|r2|uploader/.test(name)) return 'integration'
   if (/modification|vitepress|code|standards|pwa|chrome|debug/.test(name)) return 'engineering'
   if (/think|advisor/.test(name)) return 'cognition'
   if (/agent|reach|obsidian/.test(name)) return 'integration'
@@ -77,12 +77,11 @@ function buildMarkdown (skills) {
 
   const lines = [
     '---',
-    'description: CortexOS 主脑技能库索引。通用 skills 的真源在 CortexOS 仓库内，私人 skills 保留在 personal-skills 独立仓库。',
+    'description: CortexOS 主脑技能库统一索引。所有 skills 真源均在本仓库 .agents/skills/ 下管理。',
     '---',
     '# Skills 总览',
     '',
-    '> 通用 skills 的 **代码真源在 CortexOS 仓库内**（`.agents/skills/`）。',
-    '> 私人 skills（含凭证、Cookie、个人账号配置）的真源在独立的 `personal-skills` 仓库。',
+    '> 所有 skills 的 **代码真源统一在 CortexOS 仓库内**（`.agents/skills/`）。',
     '> `~/.agents/skills/` 只是挂载点，全部为 symlink，不存放实体文件。',
     '',
     '## 当前主脑技能库',
@@ -93,11 +92,10 @@ function buildMarkdown (skills) {
     '',
     '## 架构原则',
     '',
-    '1. **CortexOS 是主脑**：通用、可共享的 skills 统一收拢到 CortexOS 内部。',
-    '2. **personal-skills 是私人配置层**：只保留含个人凭证、账号、私有配置的 skills（如 GitHub 图床、R2 上传、公众号发布）。',
-    '3. **~/.agents/skills/ 是挂载点**：全部为 symlink，通用技能指向 CortexOS，私人技能指向 personal-skills。',
-    '4. **修改通用 skill**：直接改 CortexOS 里的真源，所有 Agent 即时生效。',
-    '5. **修改私人 skill**：改 personal-skills 里的真源，避免私人凭证进入主脑仓库。',
+    '1. **CortexOS 是唯一真源**：所有 skills 统一收拢到 CortexOS 内部管理。',
+    '2. **~/.agents/skills/ 是挂载点**：全部为 symlink，通用技能和个人技能都指向 CortexOS。',
+    '3. **修改任何 skill**：直接改 `CortexOS/.agents/skills/`，所有 Agent 即时生效。',
+    '4. **私人凭证隔离**：含 Token/Key 的 skill 内部通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码。',
     '',
     '## 当前技能清单',
     '',
@@ -121,9 +119,9 @@ function buildMarkdown (skills) {
   lines.push(
     '## 使用原则',
     '',
-    '1. 新增通用 skill 时，放入 `CortexOS/.agents/skills/`，然后执行 `pnpm skills:sync` 更新索引。',
-    '2. 新增私人 skill 时，放入 `personal-skills/arsenal/`，并在 `~/.agents/skills/` 创建 symlink。',
-    '3. 不要在 `~/.agents/skills/` 直接放实体目录，避免真源漂移。',
+    '1. 新增 skill 时，放入 `CortexOS/.agents/skills/`，然后执行 `pnpm skills:sync` 更新索引。',
+    '2. 不要在 `~/.agents/skills/` 直接放实体目录，避免真源漂移。',
+    '3. 涉及私人凭证的 skill，优先从环境变量读取，避免硬编码密钥进入 Git 历史。',
     ''
   )
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "R2 图床设置"
+  short_description: "配置并管理个人 Cloudflare R2 图床 (img.webkubor.online)。"
+  default_prompt: "使用 $r2-uploader-skill 来上传资产或配置图床链路。"
+
+policy:
+  allow_implicit_invocation: true
