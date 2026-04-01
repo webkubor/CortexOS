@@ -9,6 +9,8 @@ Cloud Run 上的云端大脑接口服务。
 - `GET /memories`
 - `POST /notifications`
 - `GET /notifications`
+- `DELETE /notifications/:id`
+- `POST /notifications/delete-batch`
 - `POST /notifications/:id/triage`
 - `POST /tasks`
 - `GET /tasks`
@@ -126,6 +128,22 @@ curl -X POST http://127.0.0.1:3679/notifications/<notification-id>/triage \
   -d '{
     "action": "task",
     "summary": "确认 cloud brain 鉴权收口"
+  }'
+```
+
+删除单条通知：
+
+```bash
+curl -X DELETE http://127.0.0.1:3679/notifications/<notification-id>
+```
+
+批量删除通知：
+
+```bash
+curl -X POST http://127.0.0.1:3679/notifications/delete-batch \
+  -H 'content-type: application/json' \
+  -d '{
+    "ids": ["id-1", "id-2"]
   }'
 ```
 

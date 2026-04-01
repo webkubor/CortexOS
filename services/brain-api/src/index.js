@@ -5,6 +5,8 @@ import {
   createMemory,
   createNotification,
   createTask,
+  deleteNotification,
+  deleteNotificationsByIds,
   getNotificationById,
   listMemories,
   listNotifications,
@@ -59,9 +61,9 @@ app.get('/health', async () => {
   return {
     ok: true,
     service: 'brain-api',
-    version: '0.2.0',
+    version: '0.2.1',
     authMode: apiToken ? 'bearer' : 'disabled',
-    capabilities: ['memories', 'notifications', 'tasks', 'triage'],
+    capabilities: ['memories', 'notifications', 'tasks', 'triage', 'delete'],
     timestamp: new Date().toISOString()
   }
 })
@@ -119,6 +121,29 @@ app.get('/notifications', async (request) => {
     ok: true,
     count: notifications.length,
     notifications
+  }
+})
+
+app.delete('/notifications/:id', async (request, reply) => {
+  const result = await deleteNotification(request.params.id)
+  if (!result.ok) return replyBadRequest(reply, result)
+
+  return {
+    ok: true,
+    deleted: result.value
+  }
+})
+
+app.post('/notifications/delete-batch', async (request, reply) => {
+  const result = await deleteNotificationsByIds(request.body?.ids)
+  if (!result.ok) return replyBadRequest(reply, result)
+
+  reply.code(200)
+  return {
+    ok: true,
+    deletedCount: result.value.deleted.length,
+    missingCount: result.value.missing.length,
+    ...result.value
   }
 })
 

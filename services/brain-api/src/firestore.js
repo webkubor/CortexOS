@@ -308,6 +308,48 @@ export async function getNotificationById (id) {
   return serializeNotification(snapshot)
 }
 
+export async function deleteNotification (id) {
+  const docRef = notificationsCollection.doc(id)
+  const snapshot = await docRef.get()
+  if (!snapshot.exists) return { ok: false, error: 'notification not found' }
+
+  const value = serializeNotification(snapshot)
+  await docRef.delete()
+
+  return { ok: true, value }
+}
+
+export async function deleteNotificationsByIds (ids = []) {
+  const uniqueIds = Array.from(
+    new Set(
+      (Array.isArray(ids) ? ids : [])
+        .map(id => String(id || '').trim())
+        .filter(Boolean)
+    )
+  )
+
+  if (uniqueIds.length === 0) {
+    return { ok: false, error: 'ids is required' }
+  }
+
+  const deleted = []
+  const missing = []
+
+  for (const id of uniqueIds) {
+    const result = await deleteNotification(id)
+    if (result.ok) deleted.push(result.value)
+    else missing.push(id)
+  }
+
+  return {
+    ok: true,
+    value: {
+      deleted,
+      missing
+    }
+  }
+}
+
 export async function updateNotification (id, patch = {}) {
   const docRef = notificationsCollection.doc(id)
   const snapshot = await docRef.get()
