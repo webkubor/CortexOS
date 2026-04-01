@@ -6,25 +6,19 @@
 ## 当前 Skills
 
 1. `ai-modification-skill`
-2. `agent-reach`
-3. `audio-music-engineer-skill`
-4. `chrome-native-debug`
-5. `cinematic-storyboard-skill`
-6. `code-standards-skill`
-7. `github-uploader-skill`
-8. `logo-designer`
-9. `obsidian`
-10. `openspec-apply-change`
-11. `openspec-archive-change`
-12. `openspec-explore`
-13. `openspec-propose`
-14. `pk-ecommerce-init`
-15. `pwa-master-skill`
-16. `r2-uploader-skill`
-17. `think-skill`
-18. `true-advisor-skill`
-19. `vitepress-init-skill`
-20. `wechat-publisher-skill`
+2. `audio-music-engineer-skill`
+3. `chrome-native-debug`
+4. `cinematic-storyboard-skill`
+5. `code-standards-skill`
+6. `github-uploader-skill`
+7. `logo-designer`
+8. `pk-ecommerce-init`
+9. `pwa-master-skill`
+10. `r2-uploader-skill`
+11. `think-skill`
+12. `true-advisor-skill`
+13. `vitepress-init-skill`
+14. `wechat-publisher-skill`
 
 ## 当前边界
 
