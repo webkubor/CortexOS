@@ -5,7 +5,8 @@ import path from 'path'
 import { execSync } from 'child_process'
 
 const PROJECT_ROOT = process.cwd()
-const SKILLS_ROOT = path.join(PROJECT_ROOT, '.agents', 'skills')
+const THIRD_PARTY_SKILLS_ROOT = path.join(PROJECT_ROOT, '.agents', 'skills')
+const PERSONAL_SKILLS_ROOT = path.join(PROJECT_ROOT, 'skills')
 const OUTPUT_PATH = path.join(PROJECT_ROOT, 'docs/skills/index.md')
 
 function run (cmd, cwd = PROJECT_ROOT) {
@@ -13,6 +14,7 @@ function run (cmd, cwd = PROJECT_ROOT) {
 }
 
 function walkSkillFiles (dir) {
+  if (!fs.existsSync(dir)) return []
   const entries = fs.readdirSync(dir, { withFileTypes: true })
   const results = []
   for (const entry of entries) {
@@ -59,7 +61,7 @@ function parseSkillMeta (filePath) {
   const skillDir = path.dirname(filePath)
   const name = meta.name || path.basename(skillDir)
   const category = inferCategory(name)
-  const relativeDir = path.relative(SKILLS_ROOT, skillDir)
+  const relativeDir = path.relative(PROJECT_ROOT, skillDir)
   const lastCommit = run(`git log -1 --format=%cs -- ${JSON.stringify(relativeDir)}`, PROJECT_ROOT) || '-'
 
   return {
@@ -77,24 +79,25 @@ function buildMarkdown (skills) {
 
   const lines = [
     '---',
-    'description: CortexOS 主脑技能库统一索引。所有 skills 真源均在本仓库 .agents/skills/ 下管理。',
+    'description: CortexOS 主脑技能库统一索引。第三方 skills 保留在 .agents/skills/，个人开发 skills 存放在 skills/ 并通过兼容 symlink 暴露。',
     '---',
     '# Skills 总览',
     '',
-    '> 所有 skills 的 **代码真源统一在 CortexOS 仓库内**（`.agents/skills/`）。',
-    '> `~/.agents/skills/` 只是挂载点，全部为 symlink，不存放实体文件。',
+    '> 第三方 skills 保留在 `.agents/skills/`。',
+    '> 个人开发 skills 存放在 `skills/`，并在 `.agents/skills/` 中保留兼容 symlink。',
     '',
     '## 当前主脑技能库',
     '',
-    '- 本地路径：`/Users/webkubor/Documents/CortexOS/.agents/skills/`',
+    '- 第三方目录：`/Users/webkubor/Documents/CortexOS/.agents/skills/`',
+    '- 个人目录：`/Users/webkubor/Documents/CortexOS/skills/`',
     `- 最近提交：\`${repoHead}\``,
     `- 同步命令：\`pnpm skills:sync\``,
     '',
     '## 架构原则',
     '',
-    '1. **CortexOS 是唯一真源**：所有 skills 统一收拢到 CortexOS 内部管理。',
-    '2. **~/.agents/skills/ 是挂载点**：全部为 symlink，通用技能和个人技能都指向 CortexOS。',
-    '3. **修改任何 skill**：直接改 `CortexOS/.agents/skills/`，所有 Agent 即时生效。',
+    '1. **个人与第三方分层**：个人开发 skills 放 `CortexOS/skills/`，第三方 skills 留在 `CortexOS/.agents/skills/`。',
+    '2. **兼容层保留**：个人 skills 在 `.agents/skills/` 中可通过同名 symlink 暴露，避免现有 Agent 调用断裂。',
+    '3. **修改个人 skill**：直接改 `CortexOS/skills/`；不要把第三方 skills 混搬到这里。',
     '4. **私人凭证隔离**：含 Token/Key 的 skill 内部通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码。',
     '',
     '## 当前技能清单',
@@ -119,8 +122,8 @@ function buildMarkdown (skills) {
   lines.push(
     '## 使用原则',
     '',
-    '1. 新增 skill 时，放入 `CortexOS/.agents/skills/`，然后执行 `pnpm skills:sync` 更新索引。',
-    '2. 不要在 `~/.agents/skills/` 直接放实体目录，避免真源漂移。',
+    '1. 新增个人 skill 时，放入 `CortexOS/skills/`，并建立 `.agents/skills/` 同名兼容链接。',
+    '2. 第三方 skills 继续留在 `.agents/skills/`，不要混搬到 `skills/`。',
     '3. 涉及私人凭证的 skill，优先从环境变量读取，避免硬编码密钥进入 Git 历史。',
     ''
   )
@@ -129,8 +132,11 @@ function buildMarkdown (skills) {
 }
 
 function main () {
-  const skillFiles = walkSkillFiles(SKILLS_ROOT)
-  const skills = skillFiles.map(parseSkillMeta).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+  const personalSkillFiles = walkSkillFiles(PERSONAL_SKILLS_ROOT)
+  const thirdPartySkillFiles = walkSkillFiles(THIRD_PARTY_SKILLS_ROOT)
+  const skills = [...personalSkillFiles, ...thirdPartySkillFiles]
+    .map(parseSkillMeta)
+    .sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true })
   fs.writeFileSync(OUTPUT_PATH, buildMarkdown(skills), 'utf-8')
   console.log(JSON.stringify({ ok: true, output: OUTPUT_PATH, count: skills.length }, null, 2))
