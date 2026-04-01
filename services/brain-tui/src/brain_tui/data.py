@@ -15,11 +15,17 @@ from urllib.request import Request, urlopen
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 DOCS_ROOT = PROJECT_ROOT / "docs"
 MCP_ROOT = PROJECT_ROOT / "mcp_server"
+GEMINI_SETTINGS = Path(os.path.expanduser("~/.gemini/settings.json"))
 BRAIN_API_URL = os.environ.get(
     "BRAIN_API_URL",
     "https://brain-api-675793533606.asia-southeast2.run.app",
 ).strip()
-SKILLS_ROOT = Path(os.path.expanduser("~/Desktop/skills"))
+SKILL_SCAN_DIRS = [
+    PROJECT_ROOT / ".agents" / "skills",
+    Path(os.path.expanduser("~/.agents/skills")),
+    Path(os.path.expanduser("~/.agent/skills")),
+    Path(os.path.expanduser("~/.codex/skills")),
+]
 PM2_ERROR_LOG = Path(os.path.expanduser("~/.pm2/logs/brain-cortex-pilot-error.log"))
 PM2_OUT_LOG = Path(os.path.expanduser("~/.pm2/logs/brain-cortex-pilot-out.log"))
 
@@ -117,28 +123,74 @@ def normalize_status(value: str) -> str:
     return value or "未运行"
 
 
+def canonical_skill_name(name: str) -> str:
+    return (
+        str(name or "")
+        .strip()
+        .lower()
+        .removeprefix("gemini-skill-")
+        .removesuffix("-skills")
+        .removesuffix("-skill")
+    )
+
+
+def _collect_skill_rows() -> list[dict]:
+    rows: dict[str, dict] = {}
+    for base_dir in SKILL_SCAN_DIRS:
+        if not base_dir.exists():
+            continue
+        try:
+            entries = list(base_dir.iterdir())
+        except Exception:
+            continue
+        for entry in entries:
+            if entry.name.startswith("."):
+                continue
+            if not entry.is_dir() and not entry.is_symlink():
+                continue
+            try:
+                resolved = entry.resolve()
+            except Exception:
+                resolved = entry
+            skill_file = resolved / "SKILL.md"
+            alt_skill_file = resolved / "skill.md"
+            if not skill_file.exists() and not alt_skill_file.exists():
+                continue
+            canonical = canonical_skill_name(entry.name)
+            row = rows.setdefault(
+                canonical,
+                {
+                    "name": entry.name,
+                    "category": resolved.parent.name if resolved.parent != base_dir else "skills",
+                    "canonical": canonical,
+                    "sources": set(),
+                    "paths": set(),
+                },
+            )
+            row["name"] = entry.name
+            row["sources"].add(str(base_dir))
+            row["paths"].add(str(resolved))
+
+    output = []
+    for row in rows.values():
+        output.append(
+            {
+                "name": row["name"],
+                "category": row["category"],
+                "canonical": row["canonical"],
+                "sources": sorted(row["sources"]),
+                "path": sorted(row["paths"])[0],
+            }
+        )
+    return sorted(output, key=lambda item: item["name"].lower())
+
+
 def count_skills() -> int:
-    if not SKILLS_ROOT.exists():
-        return 0
-    return len(list(SKILLS_ROOT.glob("**/SKILL.md")))
+    return len(_collect_skill_rows())
 
 
 def list_skills(limit: int = 50) -> list[dict]:
-    if not SKILLS_ROOT.exists():
-        return []
-    rows: list[dict] = []
-    for skill_file in sorted(SKILLS_ROOT.glob("**/SKILL.md"))[:limit]:
-        skill_dir = skill_file.parent
-        name = skill_dir.name
-        category = skill_dir.parent.name if skill_dir.parent != SKILLS_ROOT else "skills"
-        rows.append(
-            {
-                "name": name,
-                "category": category,
-                "path": str(skill_dir),
-            }
-        )
-    return rows
+    return _collect_skill_rows()[:limit]
 
 
 def count_agents() -> int:
@@ -154,19 +206,7 @@ def count_agents() -> int:
     return count
 
 
-def count_mcp_servers() -> int:
-    config_path = MCP_ROOT / "mcp_config.json"
-    if not config_path.exists():
-        return 0
-    try:
-        data = json.loads(config_path.read_text("utf-8"))
-        return len(data.get("mcpServers", {}))
-    except Exception:
-        return 0
-
-
-def list_mcp_servers() -> list[dict]:
-    config_path = MCP_ROOT / "mcp_config.json"
+def _load_mcp_servers(config_path: Path) -> list[dict]:
     if not config_path.exists():
         return []
     try:
@@ -177,11 +217,25 @@ def list_mcp_servers() -> list[dict]:
                 "name": name,
                 "command": str(config.get("command", "")),
                 "description": str(config.get("description", "")),
+                "source": str(config_path),
             }
             for name, config in servers.items()
         ]
     except Exception:
         return []
+
+
+def count_mcp_servers() -> int:
+    names = {item["name"] for item in (_load_mcp_servers(MCP_ROOT / "mcp_config.json") + _load_mcp_servers(GEMINI_SETTINGS))}
+    return len(names)
+
+
+def list_mcp_servers() -> list[dict]:
+    rows = _load_mcp_servers(MCP_ROOT / "mcp_config.json") + _load_mcp_servers(GEMINI_SETTINGS)
+    deduped: dict[str, dict] = {}
+    for item in rows:
+      deduped[item["name"]] = item
+    return sorted(deduped.values(), key=lambda item: item["name"].lower())
 
 
 def count_mcp_tools() -> int:
@@ -216,6 +270,8 @@ def list_api_endpoints() -> list[tuple[str, str, str]]:
         ("GET", "/health", "健康检查，确认 Cloud Brain 在线状态、版本和能力清单。"),
         ("GET", "/notifications", "读取主脑收件箱通知，可按 project 和 limit 拉取最近消息。"),
         ("POST", "/notifications", "由 subagent 或外部系统上报通知，进入主脑收件箱。"),
+        ("DELETE", "/notifications/:id", "删除单条通知，适合清理测试数据或误写入记录。"),
+        ("POST", "/notifications/delete-batch", "按一组 ids 批量删除通知。"),
         ("POST", "/notifications/:id/triage", "把指定通知分诊为 memory、task 或 archive。"),
         ("GET", "/memories", "读取长期记忆，供主脑或外部 agent 取上下文。"),
         ("POST", "/memories", "写入长期记忆，沉淀高价值事实、结论和经验。"),

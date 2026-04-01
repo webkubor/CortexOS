@@ -55,17 +55,23 @@ pnpm brain:tui
 - API 清单：
   - `/health`
   - `/notifications`
+  - `/notifications/:id`
+  - `/notifications/delete-batch`
   - `/notifications/:id/triage`
   - `/memories`
   - `/tasks`
 - PM2:
   - `pm2 jlist`
 - skills:
-  - `~/Desktop/skills/**/SKILL.md`
+  - `CortexOS/.agents/skills/`
+  - `~/.agents/skills`
+  - `~/.agent/skills`
+  - `~/.codex/skills`
 - agents:
   - `docs/agents/*/README.md`
 - MCP:
   - `mcp_server/mcp_config.json`
+  - `~/.gemini/settings.json`
   - `mcp_server/server.py`
 - ports:
   - `lsof -nP -iTCP -sTCP:LISTEN`

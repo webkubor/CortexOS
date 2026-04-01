@@ -56,6 +56,7 @@ function shouldPrintLarkSkip(reason) {
 const AUTO_MAINTENANCE_TASKS = [
   { key: 'brain-inbox', cmd: 'node scripts/maintenance/brain-inbox.mjs' },
   { key: 'mcp-guard', cmd: 'node scripts/maintenance/mcp-guard.mjs' },
+  { key: 'inventory-watch', cmd: 'node scripts/maintenance/inventory-watch.mjs' },
   { key: 'memory-index', cmd: 'python3 scripts/ingest/build_memory_index.py' },
   { key: 'error-retro', cmd: 'node scripts/maintenance/error-retro.mjs' },
   { key: 'memory-harvest', cmd: 'node scripts/maintenance/memory-harvest.mjs' },

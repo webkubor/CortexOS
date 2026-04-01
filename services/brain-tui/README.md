@@ -18,10 +18,14 @@ pnpm brain:tui
 
 - Cloud Brain: `/health`、`/notifications`、`/tasks`
 - PM2: `pm2 jlist`
-- Skills: `~/Desktop/skills/**/SKILL.md`
+- Skills:
+  - `CortexOS/.agents/skills/`
+  - `~/.agents/skills`
+  - `~/.agent/skills`
+  - `~/.codex/skills`
 - Agent 文档: `docs/agents/`
 - MCP:
-  - 服务器数量：`mcp_server/mcp_config.json`
+  - 服务器数量：`mcp_server/mcp_config.json` + `~/.gemini/settings.json`
   - 工具数量：`mcp_server/server.py` 中 `@mcp.tool()`
 - 端口：`lsof -nP -iTCP -sTCP:LISTEN`
 
