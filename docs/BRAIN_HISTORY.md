@@ -48,11 +48,14 @@ v7.0.0 虽然完成了前端瘦身与 Cloud Brain 收口，但真正落到日常
 
 - **通知删除能力回收进 API**：为 `brain-api` 增加 `DELETE /notifications/:id` 和 `POST /notifications/delete-batch`，让测试数据清理重新回到主脑接口层，而不是绕过接口直删 Firestore。
 
+- **安装感知回收到主脑维护链**：新增 `inventory-watch` 维护任务，每轮比对 Skills 与 MCP 快照，有新增、移除或配置变化时自动写入主脑通知收件箱。
+
 ### 解决了什么
 
 - **冷启动真实可用**：`pnpm bootstrap` 现在能真正把“大脑”拉起来，而不是只留下半套说明文档。
 - **本地 / 云端同构**：`services/brain-api` 不再只是 Cloud Run 的部署骨架，而是形成“本地常驻 + 云端共享”两种部署形态。
 - **运维动作回到协议层**：删除通知、探活本地 API、查看本地状态，不再需要临时脚本直连底层存储。
+- **环境变化开始可感知**：新装的 Skill、变更的 Gemini MCP 配置、仓库 MCP 工具变化，开始能被主脑以通知的方式主动看见。
 - **默认值更可信**：`3679`、`brain-api-local`、`~/.local/bin/cortexos` 这些默认路径让主脑更接近“拿来就能用”的系统，而不是需要现场拼装的工程。
 
 ### 思考沉淀

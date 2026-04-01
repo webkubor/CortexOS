@@ -145,7 +145,8 @@ function listMcpTools () {
     for (const nextLine of lines.slice(index + 1, index + 7)) {
       const stripped = nextLine.trim()
       if (!stripped.startsWith('def ')) continue
-      tools.push(stripped.split('def ', 1)[1].split('(', 1)[0])
+      const match = stripped.match(/^def\s+([^(]+)\(/)
+      if (match?.[1]) tools.push(match[1].trim())
       break
     }
   }
