@@ -31,12 +31,11 @@ cortexos serve          # HTTP API 模式
 ## Skills 架构
 
 ```
-个人 skills   →  CortexOS/skills/
-第三方 skills →  CortexOS/.agents/skills/
+全部 skills → CortexOS/skills/
 ```
 
-- 个人 skills 直接改 `CortexOS/skills/`
-- 第三方 skills 只留在 `CortexOS/.agents/skills/`
+- 所有 skills 直接改 `CortexOS/skills/`
+- `CortexOS/.agents/` 下不再放 skills
 - 索引同步：`pnpm skills:sync`
 - 私人凭证：通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码
 

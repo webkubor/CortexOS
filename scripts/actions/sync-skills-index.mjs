@@ -5,8 +5,7 @@ import path from 'path'
 import { execSync } from 'child_process'
 
 const PROJECT_ROOT = process.cwd()
-const THIRD_PARTY_SKILLS_ROOT = path.join(PROJECT_ROOT, '.agents', 'skills')
-const PERSONAL_SKILLS_ROOT = path.join(PROJECT_ROOT, 'skills')
+const SKILLS_ROOT = path.join(PROJECT_ROOT, 'skills')
 const OUTPUT_PATH = path.join(PROJECT_ROOT, 'docs/skills/index.md')
 
 function run (cmd, cwd = PROJECT_ROOT) {
@@ -79,25 +78,23 @@ function buildMarkdown (skills) {
 
   const lines = [
     '---',
-    'description: CortexOS 主脑技能库统一索引。个人开发 skills 真源在 skills/，第三方 skills 保留在 .agents/skills/。',
+    'description: CortexOS 主脑技能库统一索引。所有项目 skills 真源统一在 skills/。',
     '---',
     '# Skills 总览',
     '',
-    '> 个人开发 skills 真源在 `skills/`。',
-    '> 第三方 skills 保留在 `.agents/skills/`。',
+    '> 所有项目 skills 真源统一在 `skills/`。',
     '',
     '## 当前主脑技能库',
     '',
-    '- 第三方目录：`/Users/webkubor/Documents/CortexOS/.agents/skills/`',
-    '- 个人目录：`/Users/webkubor/Documents/CortexOS/skills/`',
+    '- Skills 目录：`/Users/webkubor/Documents/CortexOS/skills/`',
     `- 最近提交：\`${repoHead}\``,
     `- 同步命令：\`pnpm skills:sync\``,
     '',
     '## 架构原则',
     '',
-    '1. **个人与第三方分层**：个人开发 skills 放 `CortexOS/skills/`，第三方 skills 留在 `CortexOS/.agents/skills/`。',
-    '2. **个人 skill 的 SSOT 在项目内**：原文档、脚本、references 直接收进 `CortexOS/skills/`，不要再用软链接冒充真源。',
-    '3. **修改个人 skill**：直接改 `CortexOS/skills/`；不要把第三方 skills 混搬到这里。',
+    '1. **项目内 skills 单目录收敛**：所有 skills 统一放在 `CortexOS/skills/`。',
+    '2. **skills 的 SSOT 在项目内**：原文档、脚本、references 直接收进 `CortexOS/skills/`，不要再用软链接或隐藏目录冒充真源。',
+    '3. **修改 skill**：直接改 `CortexOS/skills/`。',
     '4. **私人凭证隔离**：含 Token/Key 的 skill 内部通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码。',
     '',
     '## 当前技能清单',
@@ -122,8 +119,8 @@ function buildMarkdown (skills) {
   lines.push(
     '## 使用原则',
     '',
-    '1. 新增个人 skill 时，直接放入 `CortexOS/skills/`，把原文档、脚本、references 一起收进来。',
-    '2. 第三方 skills 继续留在 `.agents/skills/`，不要混搬到 `skills/`。',
+    '1. 新增 skill 时，直接放入 `CortexOS/skills/`，把原文档、脚本、references 一起收进来。',
+    '2. `CortexOS/.agents/` 下不再放 skills。',
     '3. 涉及私人凭证的 skill，优先从环境变量读取，避免硬编码密钥进入 Git 历史。',
     ''
   )
@@ -132,9 +129,8 @@ function buildMarkdown (skills) {
 }
 
 function main () {
-  const personalSkillFiles = walkSkillFiles(PERSONAL_SKILLS_ROOT)
-  const thirdPartySkillFiles = walkSkillFiles(THIRD_PARTY_SKILLS_ROOT)
-  const skills = [...personalSkillFiles, ...thirdPartySkillFiles]
+  const skillFiles = walkSkillFiles(SKILLS_ROOT)
+  const skills = skillFiles
     .map(parseSkillMeta)
     .sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true })

@@ -1,32 +1,39 @@
 # Personal Skills
 
-这个目录现在存放你在 `CortexOS` 里维护的个人开发 skills。
-这里就是个人 skills 的真源目录，不再依赖 `.agents/skills/` 软链接。
+这个目录现在存放 `CortexOS` 项目内全部 skills。
+这里就是项目 skills 的唯一真源目录。
 
-## 个人 Skills
+## 当前 Skills
 
 1. `ai-modification-skill`
+2. `agent-reach`
 2. `audio-music-engineer-skill`
 3. `chrome-native-debug`
 4. `cinematic-storyboard-skill`
 5. `code-standards-skill`
 6. `github-uploader-skill`
 7. `logo-designer`
+8. `obsidian`
+9. `openspec-apply-change`
+10. `openspec-archive-change`
+11. `openspec-explore`
+12. `openspec-propose`
 8. `pk-ecommerce-init`
 9. `pwa-master-skill`
 10. `r2-uploader-skill`
 11. `think-skill`
+12. `true-advisor-skill`
 12. `vitepress-init-skill`
 13. `wechat-publisher-skill`
 
 ## 当前边界
 
-- 你的个人 skills 真正放在 `skills/`
-- 第三方 agent skills 继续留在 `.agents/skills/`
-- 个人 skills 的原文档、脚本、references 都直接收在这里
+- `CortexOS` 项目内所有 skills 都放在 `skills/`
+- `CortexOS/.agents/` 下不再放 skills
+- 每个 skill 的原文档、脚本、references 都直接收在这里
 
 ## 维护规则
 
-- 改个人 skills：直接改这里
-- 不要再把第三方 skills 混搬进来
-- 如果新增个人 skill，这里继续追加
+- 改 skill：直接改这里
+- 不要再把 skill 塞回 `.agents/`
+- 如果新增 skill，这里继续追加
