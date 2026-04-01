@@ -1,0 +1,7 @@
+interface:
+  display_name: "音频工程"
+  short_description: "管理语音设计 SOP 及音频后期处理工程。"
+  default_prompt: "使用 $audio-music-engineer-skill 来协助进行角色语音设计或音频脚本处理。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "True Advisor"
+  short_description: "Give blunt judgment instead of polite agreement."
+  default_prompt: "Use $true-advisor-skill to red-team this decision and give a clear recommendation."
+
+policy:
+  allow_implicit_invocation: true

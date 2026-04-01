@@ -1,0 +1,7 @@
+interface:
+  display_name: "Code Standards"
+  short_description: "Review maintainability and reduce code complexity."
+  default_prompt: "Use $code-standards-skill to review maintainability risks and propose the smallest useful refactor."
+
+policy:
+  allow_implicit_invocation: true

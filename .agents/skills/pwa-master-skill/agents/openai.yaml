@@ -1,0 +1,7 @@
+interface:
+  display_name: "PWA Master"
+  short_description: "Add or repair reliable PWA behavior."
+  default_prompt: "Use $pwa-master-skill to add or repair manifest, service worker, and install UX for this web app."
+
+policy:
+  allow_implicit_invocation: true
