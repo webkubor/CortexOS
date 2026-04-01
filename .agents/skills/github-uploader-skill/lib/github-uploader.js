@@ -8,15 +8,6 @@ import os from 'os';
  */
 
 function loadConfig() {
-    // 1. 优先环境变量
-    if (process.env.GITHUB_UPLOADER_TOKEN) {
-        return {
-            token: process.env.GITHUB_UPLOADER_TOKEN,
-            repo: process.env.GITHUB_UPLOADER_REPO || 'webkubor/upic-images'
-        };
-    }
-
-    // 2.  fallback 到 secrets 文件
     const secretPath = path.join(os.homedir(), 'Documents', 'memory', 'secrets', 'github-uploader.json');
     if (fs.existsSync(secretPath)) {
         try {
@@ -27,11 +18,10 @@ function loadConfig() {
                 repo: cfg.repo || 'webkubor/upic-images'
             };
         } catch (e) {
-            console.error('❌ 读取 secrets 文件失败:', secretPath, e.message);
+            console.error('❌ 读取 secrets 失败:', e.message);
         }
     }
-
-    console.error('❌ 未找到 GitHub Token。请设置环境变量 GITHUB_UPLOADER_TOKEN，或创建 ~/Documents/memory/secrets/github-uploader.json');
+    console.error('❌ 未找到 ~/Documents/memory/secrets/github-uploader.json');
     process.exit(1);
 }
 

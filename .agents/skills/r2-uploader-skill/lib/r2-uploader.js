@@ -5,17 +5,6 @@ import os from 'os';
 // 🛠️ R2 直连上传工具 (稳定版)
 
 function loadConfig() {
-    // 1. 优先环境变量
-    if (process.env.CF_API_TOKEN) {
-        return {
-            accountId: process.env.CF_ACCOUNT_ID,
-            apiToken: process.env.CF_API_TOKEN,
-            bucketName: process.env.CF_BUCKET_NAME || 'images',
-            domain: process.env.CF_DOMAIN || 'img.webkubor.online'
-        };
-    }
-
-    // 2. fallback 到 secrets 文件
     const secretPath = path.join(os.homedir(), 'Documents', 'memory', 'secrets', 'r2-uploader.json');
     if (fs.existsSync(secretPath)) {
         try {
@@ -28,11 +17,10 @@ function loadConfig() {
                 domain: cfg.domain || 'img.webkubor.online'
             };
         } catch (e) {
-            console.error('❌ 读取 secrets 文件失败:', secretPath, e.message);
+            console.error('❌ 读取 secrets 失败:', e.message);
         }
     }
-
-    console.error('❌ 未找到 R2 配置。请设置环境变量 CF_API_TOKEN / CF_ACCOUNT_ID，或创建 ~/Documents/memory/secrets/r2-uploader.json');
+    console.error('❌ 未找到 ~/Documents/memory/secrets/r2-uploader.json');
     process.exit(1);
 }
 
