@@ -11,10 +11,13 @@ const __dirname = path.dirname(__filename)
 const projectRoot = path.join(__dirname, '../..')
 const ecosystemPath = path.join(projectRoot, 'ecosystem.config.cjs')
 const pm2LogDir = path.join(os.homedir(), '.pm2', 'logs')
+const managedApps = ['brain-cortex-pilot', 'brain-api-local']
 
 const managedLogFiles = [
   'brain-cortex-pilot-out.log',
-  'brain-cortex-pilot-error.log'
+  'brain-cortex-pilot-error.log',
+  'brain-api-local-out.log',
+  'brain-api-local-error.log'
 ].map((name) => path.join(pm2LogDir, name))
 
 function run (command) {
@@ -39,7 +42,9 @@ function resetManagedLogs () {
 }
 
 function main () {
-  safeRun('pm2 delete brain-cortex-pilot')
+  for (const appName of managedApps) {
+    safeRun(`pm2 delete ${appName}`)
+  }
   resetManagedLogs()
   run(`pm2 start ${JSON.stringify(ecosystemPath)}`)
   safeRun('pm2 save')
@@ -48,6 +53,7 @@ function main () {
   process.stdout.write(`${status}\n`)
   process.stdout.write('\n🧠 主脑常驻服务已启动\n')
   process.stdout.write('  - 后台: brain-cortex-pilot\n')
+  process.stdout.write('  - 本地 API: brain-api-local (http://127.0.0.1:3679)\n')
 }
 
 main()

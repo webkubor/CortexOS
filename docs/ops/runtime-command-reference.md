@@ -6,12 +6,14 @@
 
 ```bash
 cd CortexOS
-bash scripts/core/init-project.sh
+pnpm bootstrap
 ```
 
 用途：
 
 - 首次安装后初始化后台任务
+- 自动安装 `cortexos` / `cs` CLI 命令入口
+- 自动拉起本地 `brain-api`（默认 `127.0.0.1:3679`）
 - 修改运行时配置后重新应用默认状态
 
 ## 2. PM2 日常运维

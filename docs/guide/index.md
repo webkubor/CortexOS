@@ -5,17 +5,14 @@
 ```bash
 git clone git@github.com:webkubor/CortexOS.git
 cd CortexOS
-pnpm install
+pnpm bootstrap
 ```
 
 ## 配置
 
 ```bash
-# 添加 PATH
-echo 'export PATH="$PATH:/path/to/CortexOS/bin"' >> ~/.zshrc
+# 初始化脚本会自动安装 CLI 入口到 ~/.local/bin
 source ~/.zshrc
-
-# 验证
 cortexos brief
 ```
 

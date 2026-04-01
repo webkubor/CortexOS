@@ -15,12 +15,18 @@
 ## 使用
 
 ```bash
+# 首次初始化
+pnpm bootstrap
+
 # 获取上下文快照
 cortexos brief
 
 # HTTP API 模式
 cortexos serve
 curl http://localhost:3579/api/brief
+
+# 本地 brain-api
+curl http://127.0.0.1:3679/health
 ```
 
 ## 结构

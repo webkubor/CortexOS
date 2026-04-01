@@ -78,10 +78,18 @@ export $(cat .env | xargs)
 pnpm start
 ```
 
+本地默认监听端口是 `3679`。
+如需覆盖，可显式设置：
+
+```bash
+export BRAIN_API_PORT=4680
+pnpm brain-api:start
+```
+
 ## 请求示例
 
 ```bash
-curl -X POST http://127.0.0.1:8080/memories \
+curl -X POST http://127.0.0.1:3679/memories \
   -H 'content-type: application/json' \
   -H 'authorization: Bearer replace-with-a-long-random-token' \
   -d '{
@@ -96,7 +104,7 @@ curl -X POST http://127.0.0.1:8080/memories \
 通知写入：
 
 ```bash
-curl -X POST http://127.0.0.1:8080/notifications \
+curl -X POST http://127.0.0.1:3679/notifications \
   -H 'content-type: application/json' \
   -H 'authorization: Bearer replace-with-a-long-random-token' \
   -d '{
@@ -112,7 +120,7 @@ curl -X POST http://127.0.0.1:8080/notifications \
 分诊执行：
 
 ```bash
-curl -X POST http://127.0.0.1:8080/notifications/<notification-id>/triage \
+curl -X POST http://127.0.0.1:3679/notifications/<notification-id>/triage \
   -H 'content-type: application/json' \
   -H 'authorization: Bearer replace-with-a-long-random-token' \
   -d '{

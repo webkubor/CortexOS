@@ -176,7 +176,8 @@ app.get('/tasks', async (request) => {
   }
 })
 
-const port = Number(process.env.PORT) || 8080
+const defaultLocalPort = 3679
+const port = Number(process.env.PORT || process.env.BRAIN_API_PORT) || defaultLocalPort
 const host = process.env.HOST || '0.0.0.0'
 
 try {

@@ -12,6 +12,8 @@ const memoryRoot = path.join(projectRoot, '.memory')
 const inboxStatePath = path.join(memoryRoot, 'cache/cloud-brain-inbox-state.json')
 const inboxFilePath = path.join(memoryRoot, 'inbox/cloud-brain-inbox.md')
 const brainApiUrl = process.env.BRAIN_API_URL || 'https://brain-api-675793533606.asia-southeast2.run.app'
+const localBrainApiPort = Number(process.env.BRAIN_API_PORT || 3679)
+const localBrainApiUrl = `http://127.0.0.1:${localBrainApiPort}`
 const isWatchMode = process.argv.includes('--watch')
 const color = {
   reset: '\x1b[0m',
@@ -118,11 +120,14 @@ async function buildSnapshot() {
   const inboxState = loadInboxState()
   const pm2Processes = loadPm2Processes()
   const pilotProcess = pm2Processes.find((item) => item.name === 'brain-cortex-pilot') || null
+  const localApiProcess = pm2Processes.find((item) => item.name === 'brain-api-local') || null
 
   let health = null
+  let localHealth = null
   let notifications = []
   let tasks = []
   let cloudError = ''
+  let localError = ''
 
   try {
     const [healthPayload, notificationsPayload, tasksPayload] = await Promise.all([
@@ -135,6 +140,12 @@ async function buildSnapshot() {
     tasks = Array.isArray(tasksPayload.tasks) ? tasksPayload.tasks : []
   } catch (error) {
     cloudError = error.message
+  }
+
+  try {
+    localHealth = await fetchJson(`${localBrainApiUrl}/health`)
+  } catch (error) {
+    localError = error.message
   }
 
   const pendingNotifications = notifications.filter((item) => {
@@ -150,17 +161,27 @@ async function buildSnapshot() {
   const pilotUptime = pilotProcess?.pm2_env?.pm_uptime
     ? formatDuration(Math.floor((Date.now() - pilotProcess.pm2_env.pm_uptime) / 1000))
     : '-'
+  const localApiStatus = localApiProcess ? normalizeProcessStatus(localApiProcess.pm2_env?.status) : '未运行'
+  const localApiUptime = localApiProcess?.pm2_env?.pm_uptime
+    ? formatDuration(Math.floor((Date.now() - localApiProcess.pm2_env.pm_uptime) / 1000))
+    : '-'
   const pilotRestarts = pilotProcess?.pm2_env?.restart_time ?? 0
+  const localApiRestarts = localApiProcess?.pm2_env?.restart_time ?? 0
   const cloudStatus = cloudError ? `离线（${cloudError}）` : `在线 · ${health?.version || '-'}`
+  const localStatus = localError ? `离线（${localError}）` : `在线 · ${localHealth?.version || '-'}`
   const cloudStatusTone = cloudError ? 'bad' : 'good'
+  const localStatusTone = localError ? 'bad' : 'good'
   const pilotTone = pilotProcess ? (pilotStatus === '在线' ? 'good' : 'warn') : 'bad'
+  const localApiTone = localApiProcess ? (localApiStatus === '在线' ? 'good' : 'warn') : 'bad'
 
   const lines = [
     `${color.bold}${color.cyan}🧠 Webkubor 主脑状态${color.reset}`,
     `${color.dim}────────────────────────${color.reset}`,
     section('运行总览', [
       `云端大脑：${paint(cloudStatus, cloudStatusTone)}`,
+      `本地 API：${paint(`${localStatus} · ${localBrainApiUrl}`, localStatusTone)}`,
       `主脑后台：${paint(`${pilotStatus} · 已运行 ${pilotUptime} · 重启 ${pilotRestarts} 次`, pilotTone)}`,
+      `本地 API 进程：${paint(`${localApiStatus} · 已运行 ${localApiUptime} · 重启 ${localApiRestarts} 次`, localApiTone)}`,
       `最近收件箱检查：${formatLocalTime(inboxState.lastCheckedAt)}`
     ]),
     '',
@@ -208,8 +229,12 @@ async function buildSnapshot() {
   const comparable = JSON.stringify({
     cloudError,
     healthVersion: health?.version || '',
+    localHealthVersion: localHealth?.version || '',
     pilotStatus,
     pilotRestarts,
+    localApiStatus,
+    localApiRestarts,
+    localError,
     inboxLastCheckedAt: inboxState.lastCheckedAt,
     notifications: notifications.map(item => [item.id, item.status, item.read, item.updatedAt, item.actedAt]),
     tasks: tasks.map(item => [item.id || item.taskId, item.status, item.updatedAt]),
