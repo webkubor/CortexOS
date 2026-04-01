@@ -79,12 +79,12 @@ function buildMarkdown (skills) {
 
   const lines = [
     '---',
-    'description: CortexOS 主脑技能库统一索引。第三方 skills 保留在 .agents/skills/，个人开发 skills 存放在 skills/ 并通过兼容 symlink 暴露。',
+    'description: CortexOS 主脑技能库统一索引。个人开发 skills 真源在 skills/，第三方 skills 保留在 .agents/skills/。',
     '---',
     '# Skills 总览',
     '',
+    '> 个人开发 skills 真源在 `skills/`。',
     '> 第三方 skills 保留在 `.agents/skills/`。',
-    '> 个人开发 skills 存放在 `skills/`，并在 `.agents/skills/` 中保留兼容 symlink。',
     '',
     '## 当前主脑技能库',
     '',
@@ -96,7 +96,7 @@ function buildMarkdown (skills) {
     '## 架构原则',
     '',
     '1. **个人与第三方分层**：个人开发 skills 放 `CortexOS/skills/`，第三方 skills 留在 `CortexOS/.agents/skills/`。',
-    '2. **兼容层保留**：个人 skills 在 `.agents/skills/` 中可通过同名 symlink 暴露，避免现有 Agent 调用断裂。',
+    '2. **个人 skill 的 SSOT 在项目内**：原文档、脚本、references 直接收进 `CortexOS/skills/`，不要再用软链接冒充真源。',
     '3. **修改个人 skill**：直接改 `CortexOS/skills/`；不要把第三方 skills 混搬到这里。',
     '4. **私人凭证隔离**：含 Token/Key 的 skill 内部通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码。',
     '',
@@ -122,7 +122,7 @@ function buildMarkdown (skills) {
   lines.push(
     '## 使用原则',
     '',
-    '1. 新增个人 skill 时，放入 `CortexOS/skills/`，并建立 `.agents/skills/` 同名兼容链接。',
+    '1. 新增个人 skill 时，直接放入 `CortexOS/skills/`，把原文档、脚本、references 一起收进来。',
     '2. 第三方 skills 继续留在 `.agents/skills/`，不要混搬到 `skills/`。',
     '3. 涉及私人凭证的 skill，优先从环境变量读取，避免硬编码密钥进入 Git 历史。',
     ''

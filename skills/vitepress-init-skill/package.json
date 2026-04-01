@@ -1,0 +1,20 @@
+{
+  "name": "vitepress-init-skill",
+  "version": "1.2.1",
+  "description": "Universal VitePress Documentation Scaffolding Protocol. Model-agnostic site initialization and automated configuration for any documentation project.",
+  "type": "module",
+  "author": "司南烛 (Si Nan Zhu)",
+  "license": "MIT",
+  "keywords": [
+    "vitepress",
+    "documentation",
+    "scaffolding",
+    "static-site",
+    "ai-skill",
+    "mcp"
+  ],
+  "homepage": "https://github.com/webkubor/vitepress-init-skill",
+  "scripts": {
+    "validate": "node scripts/validate.js"
+  }
+}

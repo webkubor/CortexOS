@@ -36,7 +36,7 @@ cortexos serve          # HTTP API 模式
 ```
 
 - 个人 skills 直接改 `CortexOS/skills/`
-- `.agents/skills/` 中个人同名目录允许作为兼容 symlink 存在
+- 第三方 skills 只留在 `CortexOS/.agents/skills/`
 - 索引同步：`pnpm skills:sync`
 - 私人凭证：通过环境变量或 `~/Documents/memory/secrets/` 读取，不硬编码
 

@@ -1,6 +1,7 @@
 # Personal Skills
 
 这个目录现在存放你在 `CortexOS` 里维护的个人开发 skills。
+这里就是个人 skills 的真源目录，不再依赖 `.agents/skills/` 软链接。
 
 ## 个人 Skills
 
@@ -21,8 +22,8 @@
 ## 当前边界
 
 - 你的个人 skills 真正放在 `skills/`
-- `.agents/skills/` 里对应这些名字的是兼容 symlink
 - 第三方 agent skills 继续留在 `.agents/skills/`
+- 个人 skills 的原文档、脚本、references 都直接收在这里
 
 ## 维护规则
 
