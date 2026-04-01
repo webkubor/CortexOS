@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 import fs from 'fs'
-import os from 'os'
 import path from 'path'
 import { execSync } from 'child_process'
 
 const PROJECT_ROOT = process.cwd()
-const SKILLS_ROOT = path.join(os.homedir(), 'Desktop', 'skills')
+const SKILLS_ROOT = path.join(PROJECT_ROOT, '.agents', 'skills')
 const OUTPUT_PATH = path.join(PROJECT_ROOT, 'docs/skills/index.md')
 
 function run (cmd, cwd = PROJECT_ROOT) {
@@ -25,6 +24,17 @@ function walkSkillFiles (dir) {
     if (entry.isFile() && entry.name === 'SKILL.md') results.push(full)
   }
   return results
+}
+
+function inferCategory (name) {
+  if (name.startsWith('openspec-')) return 'workflow'
+  if (/logo|design|ui|ux|cinematic|storyboard/.test(name)) return 'creative'
+  if (/audio|music/.test(name)) return 'media'
+  if (/ecommerce|wechat|xhs|github|r2|uploader/.test(name)) return 'integration'
+  if (/modification|vitepress|code|standards|pwa|chrome|debug/.test(name)) return 'engineering'
+  if (/think|advisor/.test(name)) return 'cognition'
+  if (/agent|reach|obsidian/.test(name)) return 'integration'
+  return 'core'
 }
 
 function parseSkillMeta (filePath) {
@@ -46,47 +56,48 @@ function parseSkillMeta (filePath) {
     if (match) meta[match[1]] = match[2].replace(/^['"]|['"]$/g, '')
   }
 
-  const relative = path.relative(SKILLS_ROOT, filePath)
-  const parts = relative.split(path.sep)
-  const category = parts[0] || 'uncategorized'
   const skillDir = path.dirname(filePath)
-  const lastCommit = run(`git log -1 --format=%cs -- ${JSON.stringify(skillDir)}`, SKILLS_ROOT) || '-'
+  const name = meta.name || path.basename(skillDir)
+  const category = inferCategory(name)
+  const relativeDir = path.relative(SKILLS_ROOT, skillDir)
+  const lastCommit = run(`git log -1 --format=%cs -- ${JSON.stringify(relativeDir)}`, PROJECT_ROOT) || '-'
 
   return {
-    name: meta.name || path.basename(skillDir),
+    name,
     description: meta.description || '未填写描述',
     category,
-    relativeDir: path.dirname(relative),
+    relativeDir,
     lastCommit
   }
 }
 
 function buildMarkdown (skills) {
-  const repoRemote = run('git remote get-url origin', SKILLS_ROOT)
-  const repoHead = run("git log -1 --format='%h %cs %s'", SKILLS_ROOT)
+  const repoHead = run("git log -1 --format='%h %cs %s'", PROJECT_ROOT)
   const categories = [...new Set(skills.map(skill => skill.category))]
 
   const lines = [
     '---',
-    'description: CortexOS 对外部桌面 skills 母库的正式索引。skills 保持独立存在，主脑只维护索引、治理与使用协议。',
+    'description: CortexOS 主脑技能库索引。通用 skills 的真源在 CortexOS 仓库内，私人 skills 保留在 personal-skills 独立仓库。',
     '---',
     '# Skills 总览',
     '',
-    '> 这些 skills 的 **代码真源不在 CortexOS 仓库内**，而在独立母库：`~/Desktop/skills`。',
-    '> CortexOS 只负责：识别、索引、治理、同步状态与使用入口。',
+    '> 通用 skills 的 **代码真源在 CortexOS 仓库内**（`.agents/skills/`）。',
+    '> 私人 skills（含凭证、Cookie、个人账号配置）的真源在独立的 `personal-skills` 仓库。',
+    '> `~/.agents/skills/` 只是挂载点，全部为 symlink，不存放实体文件。',
     '',
-    '## 当前母库',
+    '## 当前主脑技能库',
     '',
-    '- 本地路径：`~/Desktop/skills`',
-    `- 远端仓库：\`${repoRemote}\``,
+    '- 本地路径：`/Users/webkubor/Documents/CortexOS/.agents/skills/`',
     `- 最近提交：\`${repoHead}\``,
     `- 同步命令：\`pnpm skills:sync\``,
     '',
-    '## 为什么要独立存在',
+    '## 架构原则',
     '',
-    '1. Skills 是横跨多个 agent 的能力资产，不应绑定在 CortexOS 单仓库里。',
-    '2. CortexOS 是主脑；skills 是外挂能力母库。',
-    '3. 让 skills 单独存在，才能一边维护、一边优化，不被主脑项目节奏绑死。',
+    '1. **CortexOS 是主脑**：通用、可共享的 skills 统一收拢到 CortexOS 内部。',
+    '2. **personal-skills 是私人配置层**：只保留含个人凭证、账号、私有配置的 skills（如 GitHub 图床、R2 上传、公众号发布）。',
+    '3. **~/.agents/skills/ 是挂载点**：全部为 symlink，通用技能指向 CortexOS，私人技能指向 personal-skills。',
+    '4. **修改通用 skill**：直接改 CortexOS 里的真源，所有 Agent 即时生效。',
+    '5. **修改私人 skill**：改 personal-skills 里的真源，避免私人凭证进入主脑仓库。',
     '',
     '## 当前技能清单',
     '',
@@ -99,7 +110,7 @@ function buildMarkdown (skills) {
   }
 
   lines.push('', '## 分类视图', '')
-  for (const category of categories) {
+  for (const category of categories.sort()) {
     lines.push(`### ${category}`, '')
     for (const skill of skills.filter(item => item.category === category)) {
       lines.push(`- \`${skill.name}\`：${skill.description}`)
@@ -107,7 +118,14 @@ function buildMarkdown (skills) {
     lines.push('')
   }
 
-  lines.push('## 使用原则', '', '1. 修改 skill 内容时，改母库 `Desktop/skills`，不要在 CortexOS 里复制一份。', '2. 修改后执行 `pnpm skills:sync`，让主脑重新生成技能索引。', '3. 主脑只保留文档入口、治理规则和最近同步状态，不保留冗余 skill 代码。', '')
+  lines.push(
+    '## 使用原则',
+    '',
+    '1. 新增通用 skill 时，放入 `CortexOS/.agents/skills/`，然后执行 `pnpm skills:sync` 更新索引。',
+    '2. 新增私人 skill 时，放入 `personal-skills/arsenal/`，并在 `~/.agents/skills/` 创建 symlink。',
+    '3. 不要在 `~/.agents/skills/` 直接放实体目录，避免真源漂移。',
+    ''
+  )
 
   return `${lines.join('\n')}\n`
 }
