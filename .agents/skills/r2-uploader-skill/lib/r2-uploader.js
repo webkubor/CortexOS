@@ -1,12 +1,42 @@
-
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 
 // 🛠️ R2 直连上传工具 (稳定版)
-const CF_ACCOUNT_ID = '916ebb1b9f240bf4c8826021dd161692';
-const CF_API_TOKEN = 'kpn1Q6_mOUTPB5sBdbw9azhQKcTrwdaKpaSjN2-5';
-const BUCKET_NAME = 'images';
-const DOMAIN = 'img.webkubor.online';
+
+function loadConfig() {
+    // 1. 优先环境变量
+    if (process.env.CF_API_TOKEN) {
+        return {
+            accountId: process.env.CF_ACCOUNT_ID,
+            apiToken: process.env.CF_API_TOKEN,
+            bucketName: process.env.CF_BUCKET_NAME || 'images',
+            domain: process.env.CF_DOMAIN || 'img.webkubor.online'
+        };
+    }
+
+    // 2. fallback 到 secrets 文件
+    const secretPath = path.join(os.homedir(), 'Documents', 'memory', 'secrets', 'r2-uploader.json');
+    if (fs.existsSync(secretPath)) {
+        try {
+            const raw = fs.readFileSync(secretPath, 'utf-8');
+            const cfg = JSON.parse(raw);
+            return {
+                accountId: cfg.accountId,
+                apiToken: cfg.apiToken,
+                bucketName: cfg.bucketName || 'images',
+                domain: cfg.domain || 'img.webkubor.online'
+            };
+        } catch (e) {
+            console.error('❌ 读取 secrets 文件失败:', secretPath, e.message);
+        }
+    }
+
+    console.error('❌ 未找到 R2 配置。请设置环境变量 CF_API_TOKEN / CF_ACCOUNT_ID，或创建 ~/Documents/memory/secrets/r2-uploader.json');
+    process.exit(1);
+}
+
+const { accountId: CF_ACCOUNT_ID, apiToken: CF_API_TOKEN, bucketName: BUCKET_NAME, domain: DOMAIN } = loadConfig();
 
 async function run() {
     const localPath = process.argv[2];
