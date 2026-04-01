@@ -15,8 +15,7 @@ $CODEX_HOME/.memory/
 ├─ persona/                         # 助手私有策略文件（历史目录名，非公开人格绑定）
 ├─ plans/                           # 项目计划与指挥中心
 ├─ projects/                        # 项目索引
-├─ retros/                          # 错误复盘
-└─ sqlite/                          # 本地主库
+└─ retros/                          # 错误复盘
 ```
 
 ## 2. 存放边界
@@ -26,7 +25,7 @@ $CODEX_HOME/.memory/
 | 助手私有策略、提示策略、失败重试模式 | `$CODEX_HOME/.memory/persona/` | 仅助手使用，不是项目公开人格定义 |
 | 运行日志 | `$CODEX_HOME/.memory/logs/` | 仅记录操作轨迹，不写密钥 |
 | 项目索引与协作计划 | `$CODEX_HOME/.memory/{projects,plans}/` | 作为控制层入口 |
-| 系统运行状态 | `$CODEX_HOME/.memory/sqlite/`、`$CODEX_HOME/.memory/cache/` | 主库与本地快照 |
+| 系统运行状态 | `$CODEX_HOME/.memory/cache/` | 本地快照（主库已迁移至 Cloud Brain） |
 | 用户技术知识、复盘、方案、素材 | `~/Documents/memory/{knowledge,shares,publish}/` | 属于用户资产，不写入 `.memory` |
 | 与 CortexOS 运行无关的个人资料、脚本、素材、项目备忘 | `~/Documents/memory/` | 属于用户个人资产 |
 | 用户高敏凭证 | `~/Documents/memory/secrets/` | 永不进入 Git 仓库 |

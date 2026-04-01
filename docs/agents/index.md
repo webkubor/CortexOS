@@ -1,52 +1,35 @@
-# Agent 接入总览
+# 影子接入
 
-> 本页只说明：不同 Agent 如何接入 `CortexOS` 中央大脑。
-> 它不是舰队编排页，也不是指挥链说明页。
+> 任何 AI 工具都可以通过以下方式接入 CortexOS：
 
----
+## 方式一：CLI（推荐）
 
-## Agent 能力速查
+```bash
+cortexos brief
+```
 
-| Agent | 模型 | 配置位置 | 独家能力 | 花钱? |
-| :--- | :--- | :--- | :--- | :--- |
-| **OpenClaw** | Claude Sonnet 4.6 | OpenClaw (`~/.openclaw/`) | 高强度执行 / 复杂上下文协作 | 💸 是 |
-| **Codex** | gpt-5.3-codex | `~/.codex/config.toml` | 全自动执行(approval=never) | 🆓 免费 |
-| **Gemini CLI** | Gemini 2.0 Flash | `~/.gemini/settings.json` | 图像生成(nanobanana-plus) | 🆓 免费 |
-| **Claude Code** | Claude v2.1.12 | `~/.claude/settings.json` | frontend-design/think skill | 🆓 Antigravity额度 |
-| **OpenCode** | — | `.opencode/` | 项目级执行 | — |
+所有 AI 工具统一通过这个命令获取上下文。
 
-**推荐分工**: 图像→Gemini / 代码→Codex / 前端设计→Claude Code / 项目级执行→OpenClaw
+## 方式二：HTTP API
 
----
+```bash
+cortexos serve --port 3579
+curl http://127.0.0.1:3579/api/brief
+```
 
-## 大脑访问方式
+## 支持的 AI 工具
 
-所有 Agent 统一通过 `cortexos` CLI 访问大脑：
-
-| Agent | 启动指令 |
-| :--- | :--- |
-| OpenClaw | `cortexos brief`（OpenClaw 内直接调用） |
-| Gemini CLI | `cortexos brief`（GEMINI.md 配置） |
-| Codex | `cortexos brief`（AGENTS.md 配置） |
-| Claude Code | `cortexos brief`（CLAUDE.md 配置） |
-
-> 其他 AI 工具也可通过 HTTP API 调用：`cortexos serve --port 3579`
+| 工具 | 启动方式 |
+|:---|:---|
+| Gemini CLI | `cortexos brief` |
+| Claude Code | `cortexos brief` |
+| Codex | `cortexos brief` |
+| Kimi Code | `cortexos brief` |
+| 任何支持 MCP 的工具 | HTTP API |
 
 ---
 
-## 详细档案
+**核心原则**：没有"Agent 团队"，只有**主人**和**影子**。
 
-- [OpenClaw / 小龙虾手册](./qiyue/openclaw.md)
-- CortexOS 身份真源：`IDENTITY.md`
-- [Gemini 配置档案](./gemini/README.md)
-- [Codex 配置档案](./codex/README.md)
-- [Claude Code 配置档案](./claude/README.md)
-- [OpenCode 配置档案](./opencode/README.md)
-
----
-
-## 维护约定
-
-- 新增 Agent 时在 `docs/agents/<agent>/` 建目录并补 `README.md`
-- 各 Agent 的启动配置文件（GEMINI.md / AGENTS.md / CLAUDE.md）统一指向 `cortexos brief`
-- 配置变更后必须同步更新本页"Agent 能力速查"表
+- 主人：webkubor
+- 影子：CortexOS（通过任何 AI 工具呈现）

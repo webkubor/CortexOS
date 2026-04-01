@@ -201,25 +201,25 @@ flowchart LR
 2. Cloud Run 只是让“多地点、多 Agent 共享记忆”变得可行
 3. 它不是新脑，只是 CortexOS 的云端延展
 
-## 8. 外部编排层的位置
+## 8. 外部接口的唯一性
 
-如果 `AetherFleet` 继续存在，它只能被视为 **CortexOS 的外部执行编排层**，而不是大脑本体。
+自 v7.0.0 起，CortexOS 仅保留 **Cloud Brain** 作为唯一的外部交互接口：
 
 ```mermaid
 flowchart LR
-  brain["CortexOS\n主脑前台"] --> fleet["AetherFleet\n后台执行编排层"]
-  fleet --> workers["外部执行节点"]
+  brain["CortexOS\n本地核心"] --> cloud["Cloud Brain API\n云端唯一接口"]
+  cloud --> agents["Gemini / Claude / Codex\n各类 Agent 节点"]
 ```
 
-边界规则：
+**历史注记**:
+- v5.x-v6.x 期间曾存在 `AetherFleet` 本地执行编排层（Vue 控制台 + 18790 Bridge + SQLite）
+- v7.0.0 遵循 Harness Engineering 原则，将"用户可见的复杂度"全部退役
+- 4400+ 行前端代码、本地 Bridge 服务、SQLite 双轨制一并移除
 
+**当前原则**:
 1. `CortexOS` 决定收到什么、记住什么、分发什么
-2. `AetherFleet` 负责谁在线、谁执行、任务执行态如何变化
-3. `AetherFleet` 不再承担 CortexOS 的主入口叙事
-
-更具体的去留判断见：
-
-- [cortexos-aetherfleet-boundary](./cortexos-aetherfleet-boundary)
+2. `Cloud Brain` 是唯一的外部状态接口（Firestore + REST API）
+3. 本地仅保留 CLI 轻量入口，不再承载运行时编排
 
 ## 9. 当前目录映射
 
