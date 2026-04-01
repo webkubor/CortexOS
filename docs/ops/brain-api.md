@@ -10,8 +10,9 @@ description: CortexOS Cloud Brain 对外 HTTP API 参考，包含 health、memor
 
 - 服务名：`brain-api`
 - 线上地址：[https://brain-api-675793533606.asia-southeast2.run.app](https://brain-api-675793533606.asia-southeast2.run.app)
+- 本地地址：`http://127.0.0.1:3679`
 - 本地代码：`services/brain-api/`
-- 当前版本：`0.2.0`
+- 当前版本：`0.2.1`
 
 ## 当前能力
 
@@ -20,6 +21,24 @@ description: CortexOS Cloud Brain 对外 HTTP API 参考，包含 health、memor
 - `notifications`
 - `tasks`
 - `triage`
+- `delete`
+
+## 存储位置
+
+`brain-api` 当前使用的是 **Google Firestore**，不是本地 SQLite。
+
+- GCP 项目：`webkubor`
+- 存储类型：Firestore Native
+- 主要集合：
+  - `brain_notifications`
+  - `brain_tasks`
+  - `brain_memories`
+
+这意味着：
+
+- 本地 `brain-api-local` 与 Cloud Run 共用同一套 Firestore 数据模型
+- 通知收件箱的真实来源是 `brain_notifications`
+- 删除、分诊、任务生成最终都落在 Firestore，而不是 `.memory/sqlite/`
 
 ## 鉴权
 
@@ -142,9 +161,9 @@ curl https://brain-api-675793533606.asia-southeast2.run.app/health
 {
   "ok": true,
   "service": "brain-api",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "authMode": "disabled",
-  "capabilities": ["memories", "notifications", "tasks", "triage"],
+  "capabilities": ["memories", "notifications", "tasks", "triage", "delete"],
   "timestamp": "2026-03-25T10:00:00.000Z"
 }
 ```
