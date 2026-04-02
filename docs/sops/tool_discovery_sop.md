@@ -10,7 +10,7 @@
 
 ### Step 1: 能力对齐 (Capability Alignment)
 
-- 强制读取 `docs/guide/feature-matrix.md`。
+- 优先读取 `docs/guide.md` 与相关 `docs/skills/*`、`docs/ops/*` 页面确认现有能力边界。
 - **禁止** 在未读取能力总表的情况下执行 `ls ~/.agents/skills`。
 
 ### Step 2: 决策路由 (Router Decision)

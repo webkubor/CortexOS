@@ -29,7 +29,6 @@ export default defineConfig({
         text: "指南",
         items: [
           { text: "快速开始", link: "/guide/" },
-          { text: "功能总表", link: "/guide/feature-matrix" },
           { text: "路由", link: "/router" }
         ]
       },
