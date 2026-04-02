@@ -6,12 +6,13 @@ description: CortexOS 作为 AI Agent 中央大脑的技术架构图，覆盖本
 > 这份文档只描述 **CortexOS 自己**。
 >
 > 它不是 AI Team，不是任务看板，也不是任何外部调度器。
-> 你可以把它理解成：**一个有记忆、有规则、有接口的 AI Agent 中央大脑**。
+> 你可以把它理解成：**一个有规则、有接口、会处理运行态并持续维护个人 skills 的电子大脑**。
 
 ## 1. CortexOS 的正确定位
 
 - `CortexOS` 是 `webkubor` 的 **AI Agent 中央大脑**
 - `~/Documents/memory/` 是 **用户长期知识真源**
+- `skills/` 是 **个人 skills 真源**
 - `services/brain-api` 是 **同一套 Brain API 的本地 / 云端双形态实现**
 - `Cloud Run + Firestore` 是 **云端共享大脑扩展**
 - `PM2 + brain-api-local (127.0.0.1:3679)` 是 **本地常驻入口**
@@ -33,7 +34,7 @@ flowchart LR
 
 1. `CortexOS` 不是调度器
 2. `CortexOS` 不是队长系统
-3. `CortexOS` 的本职是：规则、记忆、路由、上下文对齐
+3. `CortexOS` 的本职是：规则、运行态处理、skills 维护、路由、上下文对齐
 
 ## 2. 当前本地本体结构
 
@@ -101,11 +102,12 @@ flowchart TD
 
 ### 当前边界原则
 
-1. `~/Documents/memory/` 是用户知识真源
-2. `CortexOS/.memory/` 是 CortexOS 自己的私有运行态
-3. `Cloud Brain` 是 CortexOS 的云端共享延展，不是另一套脑
-4. Firestore 现在承载共享通知、任务、记忆三类结构化状态
-5. 外部执行系统如果存在，也只能作为 CortexOS 的**外部输入源**
+1. `~/Documents/memory/` 是用户长期知识真源
+2. `CortexOS/.memory/` 是 CortexOS 自己的私有运行态，不承担用户长期记忆
+3. `skills/` 是个人 skills 真源，由 CortexOS 维护索引与治理
+4. `Cloud Brain` 是 CortexOS 的云端共享延展，不是另一套脑
+5. Firestore 现在承载共享通知、任务、记忆三类结构化状态
+6. 外部执行系统如果存在，也只能作为 CortexOS 的**外部输入源**
 
 ## 5. CortexOS 对外提供什么
 

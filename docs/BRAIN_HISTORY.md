@@ -154,6 +154,8 @@ v5.8.0 完成了规则系统收口和 MCP 热路径的 Python 化，但 CortexOS
 
 - **OpenSpec 接入**：在仓库根目录引入 `openspec/`，将重大变更纳入 proposal / design / specs / tasks 的正式流程，让 CortexOS 进入"规范先行、实现后置"的产品化阶段。
 
+- **长期记忆与技能边界补全**：进一步明确 `CortexOS` 不拥有独立的私人长期记忆库，`.memory/` 只保存运行态；真正长期保留的知识进入 `~/Documents/memory/`。同时把 `skills/` 明确为个人 skills 真源，CortexOS 负责持续维护、索引与优化。
+
 ### 解决了什么
 
 - **身份统一**：CortexOS 不再是"看板、舰队、团队、主脑"的混合体，而是一个边界明确的中央大脑。
