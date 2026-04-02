@@ -35,6 +35,8 @@ pnpm brain:up
 pnpm brain:logs
 pnpm brain:status
 pnpm brain:watch
+pnpm brain:inbox:check
+pnpm brain:memory:route
 ```
 
 ## 3. 判定标准
@@ -44,3 +46,27 @@ pnpm brain:watch
 - `pm2 logs` 中能看到带类型标签的结构化输出
 - 修改脚本后执行一次 `pm2 restart brain-cortex-pilot`
 - `pnpm brain:tui` 可正常进入终端主脑控制台
+
+## 4. 信息落点链路
+
+```bash
+pnpm brain:inbox:check
+pnpm brain:memory:route
+```
+
+用途：
+
+- `brain:inbox:check`
+  - 拉取 Cloud Brain 通知
+  - 执行本地分诊与收件箱更新
+- `brain:memory:route`
+  - 把新通知落到 `~/Documents/memory/`
+  - 自动生成记忆草稿 / 文档草稿 / 任务简报
+
+默认落点：
+
+- `~/Documents/memory/inbox/brain-notifications/`
+- `~/Documents/memory/drafts/memory/`
+- `~/Documents/memory/drafts/docs/`
+- `~/Documents/memory/drafts/tasks/`
+- `~/Documents/memory/inbox/brain-router.md`

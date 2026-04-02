@@ -63,7 +63,7 @@ pnpm brain:tui
 - PM2:
   - `pm2 jlist`
 - skills:
-  - `CortexOS/.agents/skills/`
+  - `CortexOS/skills/`
   - `~/.agents/skills`
   - `~/.agent/skills`
   - `~/.codex/skills`

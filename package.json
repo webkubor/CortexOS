@@ -21,6 +21,7 @@
     "brain-api:start": "pnpm --dir services/brain-api start",
     "brain-api:deploy": "node scripts/actions/deploy-brain-api.mjs",
     "brain:inbox:check": "node scripts/maintenance/brain-inbox.mjs",
+    "brain:memory:route": "node scripts/maintenance/memory-router.mjs",
     "brain:status": "node scripts/actions/brain-status.mjs",
     "brain:watch": "node scripts/actions/brain-status.mjs --watch",
     "mcp:reload": "node scripts/actions/reload-brain-mcp.mjs",

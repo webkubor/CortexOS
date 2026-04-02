@@ -240,6 +240,36 @@ pnpm brain:inbox:check
 
 - `brain-cortex-pilot` 每轮会自动跑一次 `brain-inbox`
 
+## 信息如何真正落进记忆
+
+现在主脑不再只是“收到通知”，而是已经新增第一版 `memory-router`：
+
+```bash
+pnpm brain:memory:route
+```
+
+它会把 Cloud Brain 中的新通知自动路由到 `~/Documents/memory/`：
+
+- 原始收件副本：`~/Documents/memory/inbox/brain-notifications/`
+- 记忆草稿：`~/Documents/memory/drafts/memory/`
+- 文档草稿：`~/Documents/memory/drafts/docs/`
+- 任务简报：`~/Documents/memory/drafts/tasks/`
+- 路由总表：`~/Documents/memory/inbox/brain-router.md`
+
+当前第一版的默认路由是：
+
+- `report` + 高价值结论 -> `memory_draft`
+- `report` + 架构/协议/部署类内容 -> `doc_draft`
+- `task` 或需要继续动作 -> `task_brief`
+- `heartbeat` / 普通同步 -> `archive`
+
+后台自动维护现在也会顺序执行：
+
+1. `brain-inbox`
+2. `memory-router`
+
+这样远端汇报不再只停留在通知层，而是会自动变成你能继续处理的记忆草稿或文档草稿。
+
 可选环境变量：
 
 ```bash

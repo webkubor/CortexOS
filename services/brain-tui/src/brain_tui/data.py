@@ -21,7 +21,7 @@ BRAIN_API_URL = os.environ.get(
     "https://brain-api-675793533606.asia-southeast2.run.app",
 ).strip()
 SKILL_SCAN_DIRS = [
-    PROJECT_ROOT / ".agents" / "skills",
+    PROJECT_ROOT / "skills",
     Path(os.path.expanduser("~/.agents/skills")),
     Path(os.path.expanduser("~/.agent/skills")),
     Path(os.path.expanduser("~/.codex/skills")),

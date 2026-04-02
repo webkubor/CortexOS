@@ -19,7 +19,7 @@ pnpm brain:tui
 - Cloud Brain: `/health`、`/notifications`、`/tasks`
 - PM2: `pm2 jlist`
 - Skills:
-  - `CortexOS/.agents/skills/`
+  - `CortexOS/skills/`
   - `~/.agents/skills`
   - `~/.agent/skills`
   - `~/.codex/skills`

@@ -287,9 +287,10 @@ flowchart LR
   runtime --> tools["工具调用"]
 ```
 
-更完整的分阶段计划见：
+这一步当前先落在：
 
-- [brain-agent-roadmap](./brain-agent-roadmap)
+- [brain-tui](./brain-tui)
+- [runtime-command-reference](./runtime-command-reference)
 
 ### 某个东西是不是 CortexOS 本体的一部分？
 

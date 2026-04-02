@@ -21,7 +21,7 @@ const BRAIN_API_CANDIDATES = Array.from(new Set([
 ].filter(Boolean)))
 const BRAIN_API_TOKEN = String(process.env.BRAIN_API_TOKEN || '').trim()
 const SKILL_SCAN_DIRS = [
-  path.join(PROJECT_ROOT, '.agents/skills'),
+  path.join(PROJECT_ROOT, 'skills'),
   path.join(os.homedir(), '.agents/skills'),
   path.join(os.homedir(), '.agent/skills'),
   path.join(os.homedir(), '.codex/skills')
