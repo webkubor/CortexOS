@@ -23,6 +23,11 @@ GEMINI_MEMORY_FILE = GEMINI_ROOT / "GEMINI.md"
 GEMINI_STATE_FILE = GEMINI_ROOT / "state.json"
 GEMINI_PROJECTS_FILE = GEMINI_ROOT / "projects.json"
 GEMINI_HISTORY_DIR = GEMINI_ROOT / "history"
+CLAUDE_ROOT = Path(os.path.expanduser("~/.claude"))
+CLAUDE_MEMORY_FILE = CLAUDE_ROOT / "CLAUDE.md"
+CLAUDE_HISTORY_FILE = CLAUDE_ROOT / "history.jsonl"
+CLAUDE_PROJECTS_ROOT = CLAUDE_ROOT / "projects"
+CLAUDE_CORTEXOS_INDEX = CLAUDE_PROJECTS_ROOT / "-Users-webkubor-Documents-CortexOS" / "sessions-index.json"
 OPENCLAW_ROOT = Path(os.path.expanduser("~/.openclaw"))
 OPENCLAW_CONFIG_FILE = OPENCLAW_ROOT / "openclaw.json"
 OPENCLAW_MEMORY_FILE = OPENCLAW_ROOT / "memory/main.sqlite"
@@ -62,6 +67,7 @@ class BrainSnapshot:
     mcp_servers: list[dict]
     mcp_tools: list[str]
     agent_memories: list[dict]
+    memory_daily_summary: list[str]
     api_endpoints: list[tuple[str, str, str]]
     ports: list[tuple[str, str, str, str, str]]
     recent_logs: list[str]
@@ -509,6 +515,49 @@ def load_gemini_memory() -> dict:
     }
 
 
+def _claude_latest_session() -> tuple[str, str, str]:
+    if not CLAUDE_CORTEXOS_INDEX.exists():
+        return "未识别", "未记录", "当前没有 CortexOS 会话索引"
+    try:
+        data = json.loads(CLAUDE_CORTEXOS_INDEX.read_text("utf-8"))
+        entries = data.get("entries", [])
+    except Exception:
+        return "未识别", "未记录", "CortexOS sessions-index 无法解析"
+    if not entries:
+        return "未识别", "未记录", "当前没有 CortexOS 会话记录"
+
+    latest = max(entries, key=lambda item: str(item.get("modified") or item.get("created") or ""))
+    focus = str(latest.get("firstPrompt") or "未识别").strip().replace("\n", " ")
+    if len(focus) > 48:
+        focus = focus[:48] + "..."
+    message_count = int(latest.get("messageCount") or 0)
+    last_active = str(latest.get("modified") or latest.get("created") or "")
+    if last_active:
+        last_active = last_active[:16].replace("T", " ")
+    else:
+        last_active = "未记录"
+    return focus, last_active, f"CortexOS 会话：{len(entries)} 条 · 最近消息 {message_count} 条"
+
+
+def load_claude_memory() -> dict:
+    summary = _read_markdown_summary(CLAUDE_MEMORY_FILE, limit=5)
+    focus, last_active, progress = _claude_latest_session()
+    history_time = _format_timestamp(CLAUDE_HISTORY_FILE.stat().st_mtime) if CLAUDE_HISTORY_FILE.exists() else "未记录"
+    if last_active == "未记录":
+        last_active = history_time
+    return {
+        "agent_id": "claude-local",
+        "name": "Claude",
+        "source": str(CLAUDE_MEMORY_FILE),
+        "summary": summary or ["当前没有读取到 Claude 长期记忆摘要。"],
+        "status": "可读取" if CLAUDE_MEMORY_FILE.exists() else "缺失",
+        "current_focus": focus,
+        "last_active_at": last_active,
+        "progress_hint": progress,
+        "memory_scope": "markdown + sessions-index",
+    }
+
+
 def _safe_session_label(origin: dict | None, session_key: str) -> str:
     if not isinstance(origin, dict):
         return session_key
@@ -605,8 +654,23 @@ def load_openclaw_memory() -> dict:
     }
 
 
+def build_memory_daily_summary(items: list[dict]) -> list[str]:
+    lines: list[str] = []
+    for item in items:
+        lines.append(
+            f"{item['name']}：{item.get('current_focus') or '未识别'} · 最近 {item.get('last_active_at') or '未记录'}"
+        )
+        progress = str(item.get("progress_hint") or "").strip()
+        if progress:
+            lines.append(f"  {progress}")
+        summary = item.get("summary") or []
+        if summary:
+            lines.append(f"  摘要：{summary[0]}")
+    return lines
+
+
 def list_agent_memories() -> list[dict]:
-    items = [load_gemini_memory(), load_openclaw_memory()]
+    items = [load_claude_memory(), load_gemini_memory(), load_openclaw_memory()]
     return sorted(items, key=lambda item: item["name"].lower())
 
 
@@ -628,6 +692,8 @@ def build_snapshot() -> BrainSnapshot:
         created = str(item.get("createdAt") or "")
         latest_titles.append(f"{title} · {created[:19].replace('T', ' ')}")
 
+    agent_memories = list_agent_memories()
+
     return BrainSnapshot(
         api_base_url=BRAIN_API_URL,
         local_node=get_local_node(),
@@ -647,7 +713,8 @@ def build_snapshot() -> BrainSnapshot:
         skills=list_skills(),
         mcp_servers=list_mcp_servers(),
         mcp_tools=list_mcp_tools(),
-        agent_memories=list_agent_memories(),
+        agent_memories=agent_memories,
+        memory_daily_summary=build_memory_daily_summary(agent_memories),
         api_endpoints=list_api_endpoints(),
         ports=list_ports(),
         recent_logs=recent_log_lines(),

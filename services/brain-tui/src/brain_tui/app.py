@@ -27,7 +27,7 @@ class BrainTuiApp(App):
     }
 
     #top {
-      height: 16;
+      height: 12;
       margin-bottom: 1;
     }
 
@@ -57,16 +57,16 @@ class BrainTuiApp(App):
       margin-right: 1;
     }
 
-    #ports-panel {
-      width: 1.1fr;
+    #left-panel {
+      width: 1.15fr;
     }
 
     #center-panel {
-      width: 1.6fr;
+      width: 1.7fr;
     }
 
     #right-panel {
-      width: 1.3fr;
+      width: 1.15fr;
     }
 
     DataTable {
@@ -77,7 +77,7 @@ class BrainTuiApp(App):
       height: 1fr;
     }
 
-    #detail-body, #log-lines {
+    #memory-summary, #detail-body, #log-lines {
       height: 1fr;
       overflow: auto;
     }
@@ -99,7 +99,7 @@ class BrainTuiApp(App):
     selected_notification_id: reactive[str | None] = reactive(None)
     selected_task_id: reactive[str | None] = reactive(None)
     selected_agent_memory_id: reactive[str | None] = reactive(None)
-    detail_mode: reactive[str] = reactive("notification")
+    detail_mode: reactive[str] = reactive("agent_memory")
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -110,17 +110,19 @@ class BrainTuiApp(App):
                 yield MetricCard(id="card-runtime")
                 yield MetricCard(id="card-api")
             with Horizontal(id="bottom"):
-                with Vertical(id="ports-panel", classes="panel"):
+                with Vertical(id="left-panel", classes="panel"):
                     yield Static("端口占用", classes="panel-title")
                     yield DataTable(id="ports-table")
-                with Vertical(id="center-panel", classes="panel"):
                     yield Static("通知收件箱", classes="panel-title")
                     yield DataTable(id="notifications-table")
                     yield Static("任务面板", classes="panel-title")
                     yield DataTable(id="tasks-table")
-                with Vertical(id="right-panel", classes="panel"):
-                    yield Static("Agent 记忆", classes="panel-title")
+                with Vertical(id="center-panel", classes="panel"):
+                    yield Static("今日记忆汇总", classes="panel-title")
+                    yield Static(id="memory-summary")
+                    yield Static("Agent 记忆总表", classes="panel-title")
                     yield DataTable(id="agent-memory-table")
+                with Vertical(id="right-panel", classes="panel"):
                     yield Static("详情", classes="panel-title")
                     yield Static(id="detail-body")
                     yield Static("结构化日志", classes="panel-title")
@@ -209,7 +211,7 @@ class BrainTuiApp(App):
                 f"MCP：{snapshot.mcp_server_count} 个服务器 · {snapshot.mcp_tool_count} 个工具",
                 f"Skills：{snapshot.skills_count} 个",
                 f"Agents：{snapshot.agent_count} 个文档档案 · 记忆适配器 {len(snapshot.agent_memories)} 个",
-                "按 S 看 Skills · 按 M 看 MCP · 按 G 看记忆",
+                "按 G 看记忆详情 · 按 S 看 Skills · 按 M 看 MCP",
             ],
         )
         runtime.set_content(
@@ -237,6 +239,12 @@ class BrainTuiApp(App):
             log_widget.update("\n".join(f"• {line}" for line in snapshot.recent_logs))
         else:
             log_widget.update("当前没有最近日志")
+
+        memory_summary_widget = self.query_one("#memory-summary", Static)
+        if snapshot.memory_daily_summary:
+            memory_summary_widget.update("\n".join(f"• {line}" for line in snapshot.memory_daily_summary))
+        else:
+            memory_summary_widget.update("当前还没有可展示的 Agent 记忆汇总。")
 
         table = self.query_one("#ports-table", DataTable)
         table.clear(columns=False)
