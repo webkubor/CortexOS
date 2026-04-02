@@ -88,6 +88,7 @@ class BrainTuiApp(App):
         ("n", "focus_notifications", "通知"),
         ("t", "focus_tasks", "任务"),
         ("i", "show_nodes", "节点"),
+        ("g", "show_agent_memory", "记忆"),
         ("a", "show_api", "API"),
         ("s", "show_skills", "Skills"),
         ("m", "show_mcp", "MCP"),
@@ -168,6 +169,10 @@ class BrainTuiApp(App):
         self.detail_mode = "nodes"
         self.update_detail()
 
+    def action_show_agent_memory(self) -> None:
+        self.detail_mode = "agent_memory"
+        self.update_detail()
+
     def refresh_snapshot(self) -> None:
         self.snapshot = build_snapshot()
         self.render_snapshot()
@@ -195,8 +200,8 @@ class BrainTuiApp(App):
             [
                 f"MCP：{snapshot.mcp_server_count} 个服务器 · {snapshot.mcp_tool_count} 个工具",
                 f"Skills：{snapshot.skills_count} 个",
-                f"Agents：{snapshot.agent_count} 个文档档案",
-                "按 S 看 Skills · 按 M 看 MCP",
+                f"Agents：{snapshot.agent_count} 个文档档案 · 记忆适配器 {len(snapshot.agent_memories)} 个",
+                "按 S 看 Skills · 按 M 看 MCP · 按 G 看记忆",
             ],
         )
         runtime.set_content(
@@ -341,6 +346,29 @@ class BrainTuiApp(App):
                     else ["当前没有检测到对外 API。"]
                 )
             )
+            return
+
+        if self.detail_mode == "agent_memory":
+            items = snapshot.agent_memories
+            if not items:
+                detail_widget.update("当前没有检测到 Agent 记忆入口。")
+                return
+            lines = ["[b]Agent 记忆入口[/b]"]
+            for index, item in enumerate(items, start=1):
+                lines.extend(
+                    [
+                        "",
+                        f"{index}. {item['name']} · {item['status']}",
+                        f"   入口：{item['source']}",
+                        f"   范围：{item['memory_scope']}",
+                        f"   最近活动：{item['last_active_at']}",
+                        f"   当前进度：{item['current_focus']}",
+                        f"   运行提示：{item['progress_hint']}",
+                    ]
+                )
+                for line in item.get("summary", []):
+                    lines.append(f"   - {line}")
+            detail_widget.update("\n".join(lines))
             return
 
         if self.detail_mode == "nodes":
