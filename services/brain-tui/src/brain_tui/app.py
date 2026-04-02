@@ -73,7 +73,7 @@ class BrainTuiApp(App):
       height: 1fr;
     }
 
-    #notifications-table, #tasks-table {
+    #notifications-table, #tasks-table, #agent-memory-table {
       height: 1fr;
     }
 
@@ -98,6 +98,7 @@ class BrainTuiApp(App):
     snapshot: reactive[BrainSnapshot | None] = reactive(None)
     selected_notification_id: reactive[str | None] = reactive(None)
     selected_task_id: reactive[str | None] = reactive(None)
+    selected_agent_memory_id: reactive[str | None] = reactive(None)
     detail_mode: reactive[str] = reactive("notification")
 
     def compose(self) -> ComposeResult:
@@ -118,6 +119,8 @@ class BrainTuiApp(App):
                     yield Static("任务面板", classes="panel-title")
                     yield DataTable(id="tasks-table")
                 with Vertical(id="right-panel", classes="panel"):
+                    yield Static("Agent 记忆", classes="panel-title")
+                    yield DataTable(id="agent-memory-table")
                     yield Static("详情", classes="panel-title")
                     yield Static(id="detail-body")
                     yield Static("结构化日志", classes="panel-title")
@@ -136,6 +139,10 @@ class BrainTuiApp(App):
         tasks = self.query_one("#tasks-table", DataTable)
         tasks.add_columns("状态", "任务", "优先级", "来源")
         tasks.cursor_type = "row"
+
+        agent_memory = self.query_one("#agent-memory-table", DataTable)
+        agent_memory.add_columns("Agent", "状态", "当前进度", "最近活动")
+        agent_memory.cursor_type = "row"
 
         self.refresh_snapshot()
         self.set_interval(5, self.refresh_snapshot)
@@ -171,6 +178,7 @@ class BrainTuiApp(App):
 
     def action_show_agent_memory(self) -> None:
         self.detail_mode = "agent_memory"
+        self.query_one("#agent-memory-table", DataTable).focus()
         self.update_detail()
 
     def refresh_snapshot(self) -> None:
@@ -277,6 +285,27 @@ class BrainTuiApp(App):
                     snapshot.tasks[0].get("id") or snapshot.tasks[0].get("taskId") or snapshot.tasks[0].get("title")
                 )
 
+        agent_memory_table = self.query_one("#agent-memory-table", DataTable)
+        agent_memory_table.clear(columns=False)
+        for item in snapshot.agent_memories:
+            row_key = str(item.get("agent_id") or item.get("name") or len(agent_memory_table.rows))
+            agent_memory_table.add_row(
+                str(item.get("name") or "未知 Agent"),
+                str(item.get("status") or "未识别"),
+                str(item.get("current_focus") or "未识别"),
+                str(item.get("last_active_at") or "未记录"),
+                key=row_key,
+            )
+
+        if snapshot.agent_memories:
+            if not self.selected_agent_memory_id or not any(
+                str(item.get("agent_id") or item.get("name")) == self.selected_agent_memory_id
+                for item in snapshot.agent_memories
+            ):
+                self.selected_agent_memory_id = str(
+                    snapshot.agent_memories[0].get("agent_id") or snapshot.agent_memories[0].get("name")
+                )
+
         self.update_detail()
 
     def update_detail(self) -> None:
@@ -353,21 +382,29 @@ class BrainTuiApp(App):
             if not items:
                 detail_widget.update("当前没有检测到 Agent 记忆入口。")
                 return
-            lines = ["[b]Agent 记忆入口[/b]"]
-            for index, item in enumerate(items, start=1):
-                lines.extend(
-                    [
-                        "",
-                        f"{index}. {item['name']} · {item['status']}",
-                        f"   入口：{item['source']}",
-                        f"   范围：{item['memory_scope']}",
-                        f"   最近活动：{item['last_active_at']}",
-                        f"   当前进度：{item['current_focus']}",
-                        f"   运行提示：{item['progress_hint']}",
-                    ]
-                )
-                for line in item.get("summary", []):
-                    lines.append(f"   - {line}")
+            selected_item = next(
+                (
+                    item
+                    for item in items
+                    if str(item.get("agent_id") or item.get("name")) == self.selected_agent_memory_id
+                ),
+                items[0],
+            )
+            lines = [
+                "[b]Agent 记忆入口[/b]",
+                "",
+                f"名称：{selected_item['name']}",
+                f"状态：{selected_item['status']}",
+                f"入口：{selected_item['source']}",
+                f"范围：{selected_item['memory_scope']}",
+                f"最近活动：{selected_item['last_active_at']}",
+                f"当前进度：{selected_item['current_focus']}",
+                f"运行提示：{selected_item['progress_hint']}",
+                "",
+                "摘要：",
+            ]
+            for line in selected_item.get("summary", []):
+                lines.append(f"• {line}")
             detail_widget.update("\n".join(lines))
             return
 
@@ -466,6 +503,9 @@ class BrainTuiApp(App):
         elif table_id == "tasks-table":
             self.detail_mode = "task"
             self.selected_task_id = row_key
+        elif table_id == "agent-memory-table":
+            self.detail_mode = "agent_memory"
+            self.selected_agent_memory_id = row_key
         self.update_detail()
 
 

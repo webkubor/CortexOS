@@ -10,6 +10,7 @@ cortexos CLI — CortexOS 大脑命令行入口
   cortexos log <内容>     记录日志
   cortexos logs [N]       查看最近 N 条日志（默认5）
   cortexos status         大脑状态概览
+  cortexos tui            打开终端中央大脑面板
   cortexos secrets        列出凭证文件名
   cortexos search <关键词> 知识库语义搜索
   cortexos serve [--port 3579]  HTTP API 模式
@@ -583,6 +584,16 @@ def cmd_status(args):
     return 0
 
 
+def cmd_tui(args):
+    """打开终端中央大脑控制台"""
+    command = ["pnpm", "brain:tui"]
+    try:
+        return subprocess.call(command, cwd=str(BRAIN_ROOT))
+    except FileNotFoundError:
+        print("❌ 未找到 pnpm，请先安装 pnpm 后再运行 `cortexos tui`。", file=sys.stderr)
+        return 1
+
+
 def cmd_log(args):
     """记录一条日志"""
     MEMORY_LOGS.mkdir(parents=True, exist_ok=True)
@@ -933,6 +944,7 @@ def main():
     sub.add_parser("status", help="大脑状态概览")
     sub.add_parser("list-rules", help="列出所有规则")
     sub.add_parser("secrets", help="列出凭证文件名")
+    sub.add_parser("tui", help="打开终端中央大脑面板")
     
     p_rule = sub.add_parser("rule", help="加载具体规则")
     p_rule.add_argument("name", help="规则名称（支持模糊匹配）")
@@ -962,6 +974,7 @@ def main():
         "init": cmd_init,
         "router": cmd_router,
         "status": cmd_status,
+        "tui": cmd_tui,
         "list-rules": cmd_list_rules,
         "rule": cmd_rule,
         "log": cmd_log,
