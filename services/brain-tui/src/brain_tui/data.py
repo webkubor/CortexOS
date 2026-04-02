@@ -4,8 +4,10 @@ import json
 import os
 import re
 import socket
+import sqlite3
 import subprocess
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from urllib.error import URLError
 from urllib.parse import urlencode
@@ -15,7 +17,16 @@ from urllib.request import Request, urlopen
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 DOCS_ROOT = PROJECT_ROOT / "docs"
 MCP_ROOT = PROJECT_ROOT / "mcp_server"
-GEMINI_SETTINGS = Path(os.path.expanduser("~/.gemini/settings.json"))
+GEMINI_ROOT = Path(os.path.expanduser("~/.gemini"))
+GEMINI_SETTINGS = GEMINI_ROOT / "settings.json"
+GEMINI_MEMORY_FILE = GEMINI_ROOT / "GEMINI.md"
+GEMINI_STATE_FILE = GEMINI_ROOT / "state.json"
+GEMINI_PROJECTS_FILE = GEMINI_ROOT / "projects.json"
+GEMINI_HISTORY_DIR = GEMINI_ROOT / "history"
+OPENCLAW_ROOT = Path(os.path.expanduser("~/.openclaw"))
+OPENCLAW_CONFIG_FILE = OPENCLAW_ROOT / "openclaw.json"
+OPENCLAW_MEMORY_FILE = OPENCLAW_ROOT / "memory/main.sqlite"
+OPENCLAW_MAIN_SESSIONS_FILE = OPENCLAW_ROOT / "agents/main/sessions/sessions.json"
 BRAIN_API_URL = os.environ.get(
     "BRAIN_API_URL",
     "https://brain-api-675793533606.asia-southeast2.run.app",
@@ -50,6 +61,7 @@ class BrainSnapshot:
     skills: list[dict]
     mcp_servers: list[dict]
     mcp_tools: list[str]
+    agent_memories: list[dict]
     api_endpoints: list[tuple[str, str, str]]
     ports: list[tuple[str, str, str, str, str]]
     recent_logs: list[str]
@@ -234,7 +246,7 @@ def list_mcp_servers() -> list[dict]:
     rows = _load_mcp_servers(MCP_ROOT / "mcp_config.json") + _load_mcp_servers(GEMINI_SETTINGS)
     deduped: dict[str, dict] = {}
     for item in rows:
-      deduped[item["name"]] = item
+        deduped[item["name"]] = item
     return sorted(deduped.values(), key=lambda item: item["name"].lower())
 
 
@@ -418,6 +430,186 @@ def recent_log_lines() -> list[str]:
     return lines
 
 
+def _format_timestamp(value: int | float | None, milliseconds: bool = False) -> str:
+    if not value:
+        return "未记录"
+    try:
+        ts = float(value)
+        if milliseconds:
+            ts /= 1000.0
+        return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return "未记录"
+
+
+def _read_markdown_summary(path: Path, limit: int = 4) -> list[str]:
+    if not path.exists():
+        return []
+    lines = path.read_text("utf-8", errors="ignore").splitlines()
+    summary: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("#"):
+            summary.append(stripped.lstrip("# "))
+        elif stripped.startswith(("- ", "* ")):
+            summary.append(stripped[2:])
+        elif stripped.startswith(">"):
+            summary.append(stripped.lstrip("> "))
+        else:
+            summary.append(stripped)
+        if len(summary) >= limit:
+            break
+    return summary
+
+
+def _gemini_latest_project() -> tuple[str, str]:
+    latest_label = "未识别"
+    latest_time = "未记录"
+    if GEMINI_HISTORY_DIR.exists():
+        try:
+            files = [p for p in GEMINI_HISTORY_DIR.rglob("*") if p.is_file()]
+            if files:
+                latest = max(files, key=lambda p: p.stat().st_mtime)
+                latest_label = latest.parent.name
+                latest_time = _format_timestamp(latest.stat().st_mtime)
+        except Exception:
+            pass
+    return latest_label, latest_time
+
+
+def load_gemini_memory() -> dict:
+    summary = _read_markdown_summary(GEMINI_MEMORY_FILE, limit=5)
+    latest_project, latest_time = _gemini_latest_project()
+    project_count = 0
+    if GEMINI_PROJECTS_FILE.exists():
+        try:
+            projects = json.loads(GEMINI_PROJECTS_FILE.read_text("utf-8")).get("projects", {})
+            project_count = len(projects)
+        except Exception:
+            project_count = 0
+    tips_shown = "-"
+    if GEMINI_STATE_FILE.exists():
+        try:
+            state = json.loads(GEMINI_STATE_FILE.read_text("utf-8"))
+            tips_shown = str(state.get("tipsShown", "-"))
+        except Exception:
+            tips_shown = "-"
+    return {
+        "agent_id": "gemini-local",
+        "name": "Gemini",
+        "source": str(GEMINI_MEMORY_FILE),
+        "summary": summary or ["当前没有读取到 Gemini 长期记忆摘要。"],
+        "status": "可读取" if GEMINI_MEMORY_FILE.exists() else "缺失",
+        "current_focus": latest_project,
+        "last_active_at": latest_time,
+        "progress_hint": f"项目映射 {project_count} 个 · tipsShown {tips_shown}",
+        "memory_scope": "markdown + state/history",
+    }
+
+
+def _safe_session_label(origin: dict | None, session_key: str) -> str:
+    if not isinstance(origin, dict):
+        return session_key
+    for key in ("label", "provider", "surface", "from", "to"):
+        value = str(origin.get(key) or "").strip()
+        if value:
+            return value
+    return session_key
+
+
+def _load_openclaw_config_summary() -> tuple[list[str], str]:
+    if not OPENCLAW_CONFIG_FILE.exists():
+        return ["当前没有读取到 OpenClaw 配置。"], "未记录"
+    try:
+        config = json.loads(OPENCLAW_CONFIG_FILE.read_text("utf-8"))
+    except Exception:
+        return ["OpenClaw 配置存在，但当前无法解析。"], "未记录"
+
+    agents_list = config.get("agents", {}).get("list", [])
+    channels = sorted((config.get("channels") or {}).keys())
+    skills_entries = len((config.get("skills") or {}).get("entries", []))
+    summary = [
+        f"已注册 agent：{len(agents_list)} 个",
+        f"频道绑定：{', '.join(channels) if channels else '无'}",
+        f"技能条目：{skills_entries} 个",
+    ]
+    primary = (
+        config.get("agents", {})
+        .get("defaults", {})
+        .get("model", {})
+        .get("primary")
+    )
+    if primary:
+        summary.append(f"主模型：{primary}")
+    updated = _format_timestamp(OPENCLAW_CONFIG_FILE.stat().st_mtime)
+    return summary, updated
+
+
+def _load_openclaw_memory_summary() -> tuple[str, str]:
+    if not OPENCLAW_MEMORY_FILE.exists():
+        return "主记忆库缺失", "未记录"
+    try:
+        conn = sqlite3.connect(OPENCLAW_MEMORY_FILE)
+        files_count = conn.execute("select count(*) from files").fetchone()[0]
+        chunks_count = conn.execute("select count(*) from chunks").fetchone()[0]
+        meta = conn.execute("select value from meta where key = 'memory_index_meta_v1'").fetchone()
+        provider = "未知"
+        model = "未知"
+        if meta and meta[0]:
+            meta_json = json.loads(meta[0])
+            provider = str(meta_json.get("provider") or "未知")
+            model = str(meta_json.get("model") or "未知")
+        conn.close()
+        return f"主记忆库：files {files_count} · chunks {chunks_count}", f"索引：{model} / {provider}"
+    except Exception:
+        return "主记忆库可见，但当前无法解析", "索引：未识别"
+
+
+def _load_openclaw_sessions_summary() -> tuple[str, str, str]:
+    if not OPENCLAW_MAIN_SESSIONS_FILE.exists():
+        return "未识别", "未记录", "当前没有 main sessions.json"
+    try:
+        sessions = json.loads(OPENCLAW_MAIN_SESSIONS_FILE.read_text("utf-8"))
+    except Exception:
+        return "未识别", "未记录", "main sessions.json 无法解析"
+    if not isinstance(sessions, dict) or not sessions:
+        return "未识别", "未记录", "当前没有 main session 数据"
+
+    latest_key, latest_value = max(
+        sessions.items(),
+        key=lambda item: float((item[1] or {}).get("updatedAt") or 0),
+    )
+    latest_value = latest_value or {}
+    focus = _safe_session_label(latest_value.get("origin"), latest_key)
+    last_active = _format_timestamp(latest_value.get("updatedAt"), milliseconds=True)
+    progress = f"main sessions：{len(sessions)} 条"
+    return focus, last_active, progress
+
+
+def load_openclaw_memory() -> dict:
+    config_summary, config_time = _load_openclaw_config_summary()
+    memory_summary, index_summary = _load_openclaw_memory_summary()
+    focus, last_active, session_progress = _load_openclaw_sessions_summary()
+    return {
+        "agent_id": "openclaw-main",
+        "name": "OpenClaw",
+        "source": f"{OPENCLAW_CONFIG_FILE} + {OPENCLAW_MEMORY_FILE}",
+        "summary": config_summary + [memory_summary, index_summary],
+        "status": "可读取" if OPENCLAW_CONFIG_FILE.exists() else "缺失",
+        "current_focus": focus,
+        "last_active_at": last_active if last_active != "未记录" else config_time,
+        "progress_hint": session_progress,
+        "memory_scope": "config + main.sqlite + main sessions",
+    }
+
+
+def list_agent_memories() -> list[dict]:
+    items = [load_gemini_memory(), load_openclaw_memory()]
+    return sorted(items, key=lambda item: item["name"].lower())
+
+
 def build_snapshot() -> BrainSnapshot:
     cloud_online, cloud_version, notifications, tasks = get_cloud_data()
     pending_notifications = [
@@ -455,6 +647,7 @@ def build_snapshot() -> BrainSnapshot:
         skills=list_skills(),
         mcp_servers=list_mcp_servers(),
         mcp_tools=list_mcp_tools(),
+        agent_memories=list_agent_memories(),
         api_endpoints=list_api_endpoints(),
         ports=list_ports(),
         recent_logs=recent_log_lines(),
