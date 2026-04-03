@@ -24,6 +24,16 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 - Cohesive with a clear aesthetic point-of-view
 - Meticulously refined in every detail
 
+## System Rule
+
+### One product, one visual system
+- A page or product must commit to **one** visual language, not several competing mini-themes.
+- Pick one core theme color family and build accents, states, and depth around it.
+- Buttons, cards, inputs, modals, badges, and navigation should feel like they belong to the same design system.
+- Variation is allowed through hierarchy and emphasis, not by inventing a new style for every section.
+- Build reusable components and shared design tokens before polishing edge cases.
+- If a screen looks like multiple unrelated Dribbble shots stitched together, the design is wrong.
+
 ## Frontend Aesthetics Guidelines
 
 ### 核心流派：Premium Modern Style (高级现代风格)
@@ -34,6 +44,12 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 4. **三维空间感与悬浮景深 (3D Spatial Interaction)**: 对象不仅在画板平面排布，更要在 Z 轴分布。使用多层叠合 (`box-shadow`)、悬浮放大及位移变换 (`translateZ`, `scale`) 构建强烈的景深立体感。
 5. **微交互发动机 (Micro-Interaction Engine)**: 状态切换不能是非黑即白的。Hover / Focus / Active 必须伴生顺滑克制的缓动曲线（推荐定制 `cubic-bezier`），给用户极致流畅和高级的响应反馈。
 6. **Token-first 设计集落库**: 设计变量即代码本身。杜绝一次性的样式和“AI廉价的默认妥协设计”。所有视觉变量必须在 CSS 中成为全局单一事实 (SSOT) 的局部引用。
+
+### Componentization / 组件化原则
+- 优先建立基础组件层：Button、Input、Card、Panel、Modal、Tabs、Empty State
+- 页面层负责编排，不应重新定义基础组件视觉规则
+- 同类交互必须复用统一状态语义：default / hover / focus / active / disabled / error
+- 样式优先由 token 和可复用组件驱动，不靠页面局部补丁堆出来
 
 ### General Rules / 边界规范
 Focus on:
