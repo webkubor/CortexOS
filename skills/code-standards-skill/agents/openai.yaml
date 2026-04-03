@@ -1,7 +1,7 @@
 interface:
   display_name: "Code Standards"
-  short_description: "Review maintainability and reduce code complexity."
-  default_prompt: "Use $code-standards-skill to review maintainability risks and propose the smallest useful refactor."
+  short_description: "TypeScript-first code standards for SSOT, Vue, React, and maintainability."
+  default_prompt: "Use $code-standards-skill to review TypeScript contracts, SSOT boundaries, interaction structure, and the smallest useful refactor across Vue, React, or framework-agnostic code."
 
 policy:
   allow_implicit_invocation: true

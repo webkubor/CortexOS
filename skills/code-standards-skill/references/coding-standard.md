@@ -3,38 +3,47 @@
 ## Primary Goals
 
 - Make intent obvious
-- Keep data flow explicit
-- Minimize surprise and side effects
-- Favor local readability over abstract cleverness
+- Keep the TypeScript contract explicit
+- Preserve SSOT for state, rules, and mappings
+- Minimize surprise, hidden coupling, and side effects
+- Keep UI interaction logic understandable and replaceable
 
 ## Review Questions
 
-### Naming
-- Would a new maintainer understand what this variable, function, or module owns?
-- Do names describe intent instead of implementation trivia?
+### Type System
+- Does TypeScript describe the real business contract?
+- Are props, params, payloads, and return values explicit and narrow enough?
+- Is `any`, unsafe casting, or duplicated shape definition hiding a deeper design problem?
+
+### SSOT
+- What is the single source of truth for this state or rule?
+- Are display values, derived values, and payloads computed from the source instead of manually mirrored?
+- If multiple modules can mutate the same fact, is that boundary intentional?
 
 ### Structure
 - Does one module own one coherent responsibility?
-- Are orchestration, side effects, and rendering separated enough to debug safely?
+- Are orchestration, side effects, rendering, and business rules separated enough to debug safely?
 - Is shared logic extracted only when reuse is real?
 
-### Complexity
-- Can a reader follow the happy path without jumping through several files?
-- Are condition branches and reactive paths bounded enough to test mentally?
-- Is state concentrated where it belongs, instead of spread across unrelated layers?
+### Interaction
+- Can the user interaction flow be understood without mentally simulating five files at once?
+- Are handlers, effects, and async transitions obvious and bounded?
+- Does the component own too many UI states, requests, validations, and side effects at once?
 
-### Contracts
-- Are types, props, params, and return values explicit enough?
-- Are side effects and failure conditions visible at the boundary?
+### Framework Usage
+- Vue: are template, composables, and side effects appropriately separated?
+- React: are hooks, derived state, and effects used to model reality rather than patch over poor ownership?
+- Is the framework carrying business logic that should live in TS modules instead?
 
 ### Comments
-- Comments should explain motivation, edge cases, or dangerous assumptions
-- Comments should not restate the code line by line
+- Comments should explain motivation, dangerous assumptions, or edge cases
+- Comments should not narrate the code line by line
 
 ## Refactor Preference Order
 
 1. Rename for clarity
-2. Extract a small pure helper
-3. Extract a focused module or composable
-4. Split UI, state, and effect orchestration
-5. Reconsider the broader abstraction only if the first four are insufficient
+2. Tighten types and remove unsafe escape hatches
+3. Restore SSOT if state or rules are duplicated
+4. Extract a small pure helper or domain module
+5. Split UI, state, and effect orchestration
+6. Reconsider the broader abstraction only if the first five are insufficient
